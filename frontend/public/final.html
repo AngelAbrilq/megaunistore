@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mega_Uni_Store — Multitienda Premium · Home</title>
+  <meta name="description" content="Mega_Uni_Store: plataforma multitienda premium. Gestión multi-sucursal, facturación DIAN, inventario sincronizado y marketplaces integrados." />
+
+  <!-- Fuentes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=Poppins:wght@400;600;700&family=Cormorant+Garamond:wght@500;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: "#040612",
+            navy: "#07102a",
+            cyan: "#2EE6FF",
+            violet: "#9B6BFF",
+            gold: "#FFD36A",
+            emerald: "#22c55e"
+          },
+          boxShadow: {
+            glow: "0 12px 40px rgba(46,230,255,.16), 0 18px 60px rgba(155,107,255,.10)",
+            luxe: "0 22px 80px rgba(2,6,20,.48)",
+            card: "0 12px 36px rgba(7,12,25,.08)"
+          },
+          keyframes: {
+            float: {
+              "0%,100%": { transform: "translateY(0px)" },
+              "50%": { transform: "translateY(-8px)" }
+            },
+            fadeUp: {
+              "0%": { opacity: 0, transform: "translateY(18px)" },
+              "100%": { opacity: 1, transform: "translateY(0)" }
+            },
+            shimmer: {
+              "0%": { backgroundPosition: "0% 50%" },
+              "100%": { backgroundPosition: "200% 50%" }
+            }
+          },
+          animation: {
+            float: "float 7s ease-in-out infinite",
+            fadeUp: "fadeUp .9s ease both",
+            shimmer: "shimmer 10s linear infinite"
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --bg-1: #030515;
+      --bg-2: #07102a;
+      --glass: rgba(255,255,255,.06);
+      --muted: rgba(255,255,255,.12);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      color: #e8f0ff;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(46,230,255,.08), transparent 20%),
+        radial-gradient(circle at 90% 20%, rgba(155,107,255,.06), transparent 22%),
+        linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 48%, #02030a 100%);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow-x: hidden;
+    }
+
+    /* Typography */
+    .font-display { font-family: "Poppins", sans-serif; }
+    .font-lux { font-family: "Cormorant Garamond", serif; }
+
+    /* Utilities */
+    .glass {
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.06);
+      backdrop-filter: blur(10px);
+    }
+    .btn-primary {
+      background: linear-gradient(90deg, #2EE6FF 0%, #2A72FF 40%, #9B6BFF 100%);
+      color: white;
+      box-shadow: 0 10px 30px rgba(42,114,255,.18);
+    }
+    .btn-gold {
+      background: linear-gradient(90deg, #FFD36A 0%, #F6C96A 100%);
+      color: #08122A;
+    }
+    .text-gradient {
+      background: linear-gradient(90deg, #ffffff 0%, #cfe7ff 18%, #58e7ff 40%, #9B6BFF 72%, #FFD36A 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .hover-rise {
+      transition: transform .26s ease, box-shadow .26s ease;
+    }
+    .hover-rise:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(2,6,20,.24); }
+
+    .thin-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+    }
+
+    /* Visual accents */
+    .hero-accent {
+      background: radial-gradient(circle at 20% 20%, rgba(46,230,255,.12), transparent 24%),
+                  radial-gradient(circle at 80% 10%, rgba(155,107,255,.10), transparent 22%);
+    }
+
+    /* Responsive tweaks for mobile-first luxury feel */
+    @media (max-width: 640px) {
+      h1 { font-size: 2.1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Decorative background elements -->
+  <div class="fixed inset-0 pointer-events-none">
+    <div class="absolute left-1/4 top-[-120px] w-[520px] h-[520px] rounded-full bg-cyan/10 blur-3xl animate-float opacity-70"></div>
+    <div class="absolute right-0 bottom-[-80px] w-[480px] h-[480px] rounded-full bg-violet/10 blur-3xl animate-float opacity-70"></div>
+  </div>
+
+  <!-- NAVBAR -->
+  <header class="sticky top-0 z-50">
+    <div class="backdrop-blur bg-white/90 border-b border-slate-200/60">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="h-20 flex items-center justify-between gap-4">
+          <a href="#" class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan to-violet flex items-center justify-center text-white font-black shadow-glow">MU</div>
+            <div class="leading-tight">
+              <div class="font-display font-extrabold text-slate-950 text-lg">Mega_Uni_Store</div>
+              <div class="text-[11px] text-slate-500 -mt-0.5">Multitienda · Escala · Cumplimiento</div>
+            </div>
+          </a>
+
+          <div class="hidden xl:flex items-center gap-8 text-[15px] font-medium text-slate-600">
+            <a href="#quienes" class="hover:text-slate-900 transition">Quiénes</a>
+            <a href="#modulos" class="hover:text-slate-900 transition">Módulos</a>
+            <a href="#multitiendas" class="hover:text-slate-900 transition">MultiTiendas</a>
+            <a href="planes.html" class="hover:text-slate-900 transition">Planes</a>
+            <a href="#integraciones" class="hover:text-slate-900 transition">Integraciones</a>
+            <a href="#beneficios" class="hover:text-slate-900 transition">Beneficios</a>
+          </div>
+
+          <div class="hidden md:flex items-center gap-3">
+            <a href="#login" class="px-4 py-2 rounded-full text-slate-800 font-semibold bg-slate-100 border border-slate-200 hover:bg-slate-200 transition">Iniciar Sesión</a>
+            <a href="#registro" class="px-5 py-2.5 rounded-full text-white font-semibold btn-primary">Unirse Ahora</a>
+          </div>
+
+          <button id="menuBtn" class="md:hidden w-11 h-11 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200">
+            <svg id="menuIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </nav>
+
+        <div id="mobileMenu" class="hidden md:hidden pb-4">
+          <div class="panel rounded-3xl p-4 mt-2">
+            <div class="grid gap-2 text-slate-700 font-medium">
+              <a href="#quienes" class="px-4 py-3 rounded-2xl hover:bg-slate-100 transition">Quiénes</a>
+              <a href="#modulos" class="px-4 py-3 rounded-2xl hover:bg-slate-100 transition">Módulos</a>
+              <a href="#multitiendas" class="px-4 py-3 rounded-2xl hover:bg-slate-100 transition">MultiTiendas</a>
+              <a href="planes.html" class="px-4 py-3 rounded-2xl hover:bg-slate-100 transition">Planes</a>
+              <a href="#integraciones" class="px-4 py-3 rounded-2xl hover:bg-slate-100 transition">Integraciones</a>
+            </div>
+            <div class="mt-4 flex gap-3">
+              <a href="#login" class="flex-1 px-5 py-3 rounded-2xl text-slate-800 font-semibold bg-slate-100 text-center">Iniciar Sesión</a>
+              <a href="#registro" class="flex-1 px-5 py-3 rounded-2xl text-white font-semibold btn-primary text-center">Unirse Ahora</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="relative hero-accent pt-10 pb-14">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+          <div class="animate-fadeUp">
+            <div class="inline-flex items-center gap-3 px-4 py-2 rounded-full glass text-sm font-semibold text-white/90">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald/400 shadow-[0_0_10px_rgba(34,197,94,.3)]"></span>
+              Plataforma multitienda lista para crecer
+            </div>
+
+            <h1 class="mt-6 font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-tight">
+              Tu Universo de Compras
+              <span class="block text-gradient">en un Solo Lugar — Multitiendas reales</span>
+            </h1>
+
+            <p class="mt-6 text-lg sm:text-xl text-slate-200/90 max-w-xl leading-relaxed">
+              Gestiona múltiples tiendas, bodegas, facturación DIAN y marketplaces desde un mismo panel. Rápido, seguro y diseñado para conversiones.
+            </p>
+
+            <div class="mt-8 flex flex-col sm:flex-row gap-3">
+              <a href="#registro" class="inline-flex items-center gap-3 px-6 py-3 rounded-2xl btn-primary font-bold hover-rise">
+                Probar gratis →
+              </a>
+              <a href="#contacto" class="inline-flex items-center gap-3 px-6 py-3 rounded-2xl btn-gold font-semibold hover-rise">
+                Agendar demo
+              </a>
+            </div>
+
+            <div class="mt-6 flex flex-wrap gap-2 text-sm text-slate-300">
+              <div class="px-3 py-2 rounded-full bg-white/6 border border-white/10">Soporte en español</div>
+              <div class="px-3 py-2 rounded-full bg-white/6 border border-white/10">Sin permanencia</div>
+              <div class="px-3 py-2 rounded-full bg-white/6 border border-white/10">Escala sin límites</div>
+            </div>
+
+            <!-- Quick stats -->
+            <div class="mt-8 grid grid-cols-3 gap-3 max-w-sm">
+              <div class="glass rounded-2xl p-4 text-center">
+                <div class="text-2xl font-extrabold text-white">+500</div>
+                <div class="text-xs text-slate-300">negocios</div>
+              </div>
+              <div class="glass rounded-2xl p-4 text-center">
+                <div class="text-2xl font-extrabold text-white">24/7</div>
+                <div class="text-xs text-slate-300">soporte</div>
+              </div>
+              <div class="glass rounded-2xl p-4 text-center">
+                <div class="text-2xl font-extrabold text-white">0.8s</div>
+                <div class="text-xs text-slate-300">respuesta</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mockup / Dashboard preview (luxury + mobile) -->
+          <div class="relative animate-fadeUp">
+            <div class="panel rounded-[1.8rem] overflow-hidden shadow-luxe">
+              <div class="px-4 py-3 bg-white/90 border-b border-slate-200/80 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full bg-rose-400"></span>
+                  <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+                  <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+                </div>
+                <div class="text-xs text-slate-500 font-medium">dashboard.megaunistore.com</div>
+              </div>
+
+              <div class="p-5 sm:p-6 bg-gradient-to-br from-white/95 to-white/90">
+                <div class="grid lg:grid-cols-[1.1fr_.9fr] gap-4">
+                  <div class="rounded-[1.2rem] bg-white border border-slate-200 p-4">
+                    <div class="text-xs uppercase tracking-[.18em] text-cyan font-bold">Vista ejecutiva</div>
+                    <h3 class="mt-3 text-2xl font-black text-slate-900">Inventario & Ventas</h3>
+                    <p class="mt-2 text-slate-500">Sincronización multi-bodega y métricas por tienda.</p>
+
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3">
+                      <div class="rounded-2xl border border-slate-200 p-3">
+                        <div class="text-xs text-slate-400 uppercase font-semibold">Ventas hoy</div>
+                        <div class="mt-2 text-2xl font-black text-slate-900">$2.3M</div>
+                        <div class="text-xs text-emerald font-semibold mt-1">+12%</div>
+                      </div>
+                      <div class="rounded-2xl border border-slate-200 p-3">
+                        <div class="text-xs text-slate-400 uppercase font-semibold">Pedidos</div>
+                        <div class="mt-2 text-2xl font-black text-slate-900">94</div>
+                        <div class="text-xs text-slate-500 mt-1">En despacho</div>
+                      </div>
+                    </div>
+
+                    <div class="mt-4 rounded-2xl bg-slate-950 text-white p-3">
+                      <div class="flex items-center justify-between">
+                        <div>
+                          <div class="text-xs text-slate-300 uppercase">Stock consolidado</div>
+                          <div class="font-bold text-lg mt-1">3 bodegas · 12.534 SKUs</div>
+                        </div>
+                        <div class="px-3 py-1 rounded-xl bg-emerald/400/15 text-emerald font-semibold border border-emerald/400/20">Sincronizado</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="space-y-3">
+                    <div class="rounded-2xl bg-white border border-slate-200 p-3">
+                      <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-cyan/10 flex items-center justify-center text-cyan font-bold">DI</div>
+                        <div>
+                          <div class="font-bold text-slate-900">Facturación DIAN</div>
+                          <div class="text-sm text-slate-500 mt-1">CUFE, XML y rutas automáticas.</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="rounded-2xl bg-white border border-slate-200 p-3">
+                      <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-violet/10 flex items-center justify-center text-violet font-bold">3</div>
+                        <div>
+                          <div class="font-bold text-slate-900">Bodegas sincronizadas</div>
+                          <div class="text-sm text-slate-500 mt-1">Visión consolidada por tienda.</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="rounded-2xl bg-white border border-slate-200 p-3">
+                      <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-emerald/10 flex items-center justify-center text-emerald font-bold">↻</div>
+                        <div>
+                          <div class="font-bold text-slate-900">Alertas inteligentes</div>
+                          <div class="text-sm text-slate-500 mt-1">Reposición, rupturas y desvios por tienda.</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- Tiny KPI badges -->
+            <div class="absolute -right-6 top-6 rounded-2xl glass px-4 py-3 shadow-glow border border-white/10">
+              <div class="text-xs text-slate-300">Clientes</div>
+              <div class="font-bold text-white text-xl">+12K</div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRUST + INTEGRACIONES -->
+    <section id="integraciones" class="py-8 lg:py-10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="panel rounded-[1.5rem] p-5 sm:p-6">
+          <div class="grid md:grid-cols-2 gap-6 items-center">
+            <div>
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/6 border border-white/10 text-sm font-semibold text-white/90">Integraciones & Cumplimiento</div>
+              <h3 class="mt-4 text-2xl font-extrabold text-slate-900">Conecta tu operación con lo que ya usas</h3>
+              <p class="mt-2 text-slate-600">MercadoLibre, Shopify, WooCommerce, ePayco, pasarelas y logística — todo sincronizado con inventario y facturación.</p>
+
+              <div class="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-3">
+                <div class="rounded-2xl bg-white/6 border border-white/10 p-3 text-center text-white/90">Factus/DIAN</div>
+                <div class="rounded-2xl bg-white/6 border border-white/10 p-3 text-center text-white/90">ePayco</div>
+                <div class="rounded-2xl bg-white/6 border border-white/10 p-3 text-center text-white/90">MercadoLibre</div>
+                <div class="rounded-2xl bg-white/6 border border-white/10 p-3 text-center text-white/90">Shopify</div>
+                <div class="rounded-2xl bg-white/6 border border-white/10 p-3 text-center text-white/90">WooCommerce</div>
+                <div class="rounded-2xl bg-white/6 border border-white/10 p-3 text-center text-white/90">WhatsApp</div>
+                <div class="rounded-2xl bg-white/6 border border-white/10 p-3 text-center text-white/90">API Abierta</div>
+                <div class="rounded-2xl bg-white/6 border border-white/10 p-3 text-center text-white/90">Logística</div>
+              </div>
+            </div>
+
+            <div>
+              <div class="rounded-2xl bg-slate-950 p-4 text-white">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="text-xs text-slate-300 uppercase">Seguridad & Datos</div>
+                    <div class="text-lg font-bold mt-1">Aislamiento por cliente · Backups diarios</div>
+                  </div>
+                  <div class="px-3 py-1 rounded-full bg-emerald/400/15 text-emerald font-semibold border border-emerald/400/20">Certificado</div>
+                </div>
+
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                  <div class="text-sm text-slate-300">
+                    <div class="font-semibold">Cifrado en tránsito</div>
+                    <div class="text-xs mt-1 text-slate-400">TLS 1.2+</div>
+                  </div>
+                  <div class="text-sm text-slate-300">
+                    <div class="font-semibold">Backups</div>
+                    <div class="text-xs mt-1 text-slate-400">Retención 30 días</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MULTITIENDAS (Nueva sección superior) -->
+    <section id="multitiendas" class="py-12 lg:py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto text-center">
+          <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-white">MultiTiendas · Gestión por tienda</h2>
+          <p class="mt-3 text-slate-300">Crea, configura y administra múltiples tiendas con control de catálogo, precios y políticas por tienda o grupo de tiendas.</p>
+        </div>
+
+        <div class="mt-8 grid lg:grid-cols-3 gap-6">
+          <article class="glass rounded-[1.2rem] p-5 hover-rise">
+            <div class="flex items-start gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-cyan/10 flex items-center justify-center text-cyan font-bold">🏬</div>
+              <div>
+                <h3 class="font-bold text-lg text-white">Onboarding por tienda</h3>
+                <p class="mt-1 text-slate-300 text-sm">Plantillas, importación CSV y reglas rápidas para abrir sucursales en minutos.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="glass rounded-[1.2rem] p-5 hover-rise">
+            <div class="flex items-start gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-violet/10 flex items-center justify-center text-violet font-bold">🔀</div>
+              <div>
+                <h3 class="font-bold text-lg text-white">Sincronización de precios</h3>
+                <p class="mt-1 text-slate-300 text-sm">Reglas de precios por canal, descuentos y políticas específicas por tienda.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="glass rounded-[1.2rem] p-5 hover-rise">
+            <div class="flex items-start gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-emerald/10 flex items-center justify-center text-emerald font-bold">📈</div>
+              <div>
+                <h3 class="font-bold text-lg text-white">Comparador de métricas</h3>
+                <p class="mt-1 text-slate-300 text-sm">Compara ventas, margen y conversiones entre tiendas en una sola vista.</p>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="mt-8 grid lg:grid-cols-2 gap-6 items-start">
+          <div class="rounded-[1.25rem] bg-white/5 p-5 border border-white/6">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-xs text-slate-300 uppercase">Panel MultiTiendas</div>
+                <div class="font-extrabold text-white text-xl mt-1">Control total por tienda</div>
+              </div>
+              <div class="text-sm text-slate-300">Última sincronización: 2m</div>
+            </div>
+
+            <div class="mt-4 overflow-x-auto">
+              <table class="min-w-full text-sm text-left">
+                <thead>
+                  <tr class="text-slate-400">
+                    <th class="py-3 pr-4">Tienda</th>
+                    <th class="py-3 pr-4">Ventas Hoy</th>
+                    <th class="py-3 pr-4">Stock</th>
+                    <th class="py-3 pr-4">Pedidos</th>
+                  </tr>
+                </thead>
+                <tbody class="text-slate-200">
+                  <tr class="border-t border-white/6">
+                    <td class="py-3 pr-4 font-medium">Centro Bogotá</td>
+                    <td class="py-3 pr-4">$1.230.000</td>
+                    <td class="py-3 pr-4">3.540</td>
+                    <td class="py-3 pr-4">32</td>
+                  </tr>
+                  <tr class="border-t border-white/6">
+                    <td class="py-3 pr-4 font-medium">Sucursal Norte</td>
+                    <td class="py-3 pr-4">$830.500</td>
+                    <td class="py-3 pr-4">1.140</td>
+                    <td class="py-3 pr-4">14</td>
+                  </tr>
+                  <tr class="border-t border-white/6">
+                    <td class="py-3 pr-4 font-medium">E-commerce</td>
+                    <td class="py-3 pr-4">$1.630.400</td>
+                    <td class="py-3 pr-4">7.860</td>
+                    <td class="py-3 pr-4">48</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="rounded-[1.25rem] bg-white/5 p-5 border border-white/6">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-xs text-slate-300 uppercase">Operación</div>
+                <div class="font-extrabold text-white text-xl mt-1">Rutas y logística</div>
+              </div>
+              <div class="text-sm text-slate-300">Integraciones: 8</div>
+            </div>
+
+            <div class="mt-4 space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="text-sm text-slate-300">Pedidos en cola</div>
+                <div class="font-bold text-white">128</div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="text-sm text-slate-300">Envíos pendientes</div>
+                <div class="font-bold text-white">42</div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="text-sm text-slate-300">Etiquetas/Impresión</div>
+                <div class="font-bold text-white">OK</div>
+              </div>
+            </div>
+
+            <div class="mt-5">
+              <a href="#" class="inline-flex items-center gap-2 px-4 py-2 rounded-full btn-primary font-semibold hover-rise">Administrar rutas</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULOS DESTACADOS -->
+    <section id="modulos" class="py-12 lg:py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto text-center">
+          <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-white">Módulos que hacen la diferencia</h2>
+          <p class="mt-3 text-slate-300">Diseñados para integrarse entre sí y centralizar tu operación con foco en conversión y cumplimiento.</p>
+        </div>
+
+        <div class="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="bg-white rounded-[1.2rem] p-5 border border-slate-200 shadow-card hover-rise">
+            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">🛒</div>
+            <h4 class="mt-3 font-bold text-slate-900">Punto de Venta</h4>
+            <p class="mt-2 text-sm text-slate-600">POS rápido, manejo de efectivo y tarjetas, corte y cierres.</p>
+          </div>
+
+          <div class="bg-white rounded-[1.2rem] p-5 border border-slate-200 shadow-card hover-rise">
+            <div class="w-12 h-12 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center">📦</div>
+            <h4 class="mt-3 font-bold text-slate-900">Inventario</h4>
+            <p class="mt-2 text-sm text-slate-600">Multi-bodega, variantes y alertas automáticas.</p>
+          </div>
+
+          <div class="bg-white rounded-[1.2rem] p-5 border border-slate-200 shadow-card hover-rise">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">🧾</div>
+            <h4 class="mt-3 font-bold text-slate-900">Facturación DIAN</h4>
+            <p class="mt-2 text-sm text-slate-600">CUFE, documentos electrónicos y conciliación automática.</p>
+          </div>
+
+          <div class="bg-white rounded-[1.2rem] p-5 border border-slate-200 shadow-card hover-rise">
+            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">🔌</div>
+            <h4 class="mt-3 font-bold text-slate-900">Integraciones</h4>
+            <p class="mt-2 text-sm text-slate-600">Marketplaces, pagos y logística con sincronía bidireccional.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIOS -->
+    <section id="testimonios" class="py-12 lg:py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto text-center">
+          <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-white">Lo que dicen nuestros clientes</h2>
+          <p class="mt-3 text-slate-300">Historias reales de tiendas que ya escalaron con Mega_Uni_Store.</p>
+        </div>
+
+        <div class="mt-8 grid lg:grid-cols-3 gap-6">
+          <article class="bg-white rounded-[1.5rem] p-5 shadow-card hover-rise">
+            <div class="text-4xl text-cyan/35">“</div>
+            <p class="mt-3 text-slate-700 italic">"Antes todo era caótico; ahora todo fluye. La vista por tienda me cambió la operación."</p>
+            <div class="mt-4 flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan to-violet text-white flex items-center justify-center font-bold">MG</div>
+              <div>
+                <div class="font-bold">María González</div>
+                <div class="text-xs text-slate-500">Dueña • Bogotá</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="bg-white rounded-[1.5rem] p-5 shadow-card hover-rise">
+            <div class="text-4xl text-violet/35">“</div>
+            <p class="mt-3 text-slate-700 italic">"La sincronía con MercadoLibre y mis tiendas físicas es impecable."</p>
+            <div class="mt-4 flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-violet to-gold text-white flex items-center justify-center font-bold">CH</div>
+              <div>
+                <div class="font-bold">Carlos Herrera</div>
+                <div class="text-xs text-slate-500">Administrador • Medellín</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="bg-white rounded-[1.5rem] p-5 shadow-card hover-rise">
+            <div class="text-4xl text-emerald/35">“</div>
+            <p class="mt-3 text-slate-700 italic">"Soporte en español y facturación DIAN sin dolores de cabeza."</p>
+            <div class="mt-4 flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald to-cyan text-white flex items-center justify-center font-bold">AP</div>
+              <div>
+                <div class="font-bold">Andrés Patiño</div>
+                <div class="text-xs text-slate-500">Cadena • Cali</div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA FINAL / PRICING HINT -->
+    <section id="registro" class="py-12 lg:py-16">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="relative overflow-hidden rounded-[1.6rem] px-6 py-10 sm:px-10 sm:py-12 text-center bg-gradient-to-br from-[#07102a] to-[#041026]">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/6 border border-white/10 text-sm font-semibold text-white/90">Empieza hoy</div>
+          <h3 class="mt-4 text-3xl font-extrabold text-white">Prueba gratis y escala con MultiTiendas</h3>
+          <p class="mt-3 text-slate-300">Planes flexibles por número de tiendas — desde local único hasta enterprise con soporte dedicado.</p>
+
+          <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+            <a href="#registro" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl btn-primary font-bold hover-rise">Crear mi cuenta gratis</a>
+            <a href="#contacto" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl btn-gold font-semibold hover-rise">Hablar con ventas</a>
+          </div>
+
+          <p class="mt-4 text-sm text-slate-400">¿Quieres demo por tienda? Agenda y te hacemos onboarding en menos de 48h.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer id="contacto" class="pt-10 pb-12 bg-[#030515] border-t border-white/6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-slate-300">
+        <div>
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan to-violet flex items-center justify-center text-white font-black">MU</div>
+            <div>
+              <div class="font-extrabold text-white text-lg">Mega_Uni_Store</div>
+              <div class="text-xs text-slate-400">ERP • POS • E-commerce</div>
+            </div>
+          </div>
+          <p class="mt-4 text-slate-400 leading-relaxed">Plataforma multitienda pensada para escalar ventas y operación con cumplimiento DIAN.</p>
+        </div>
+
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-[.16em] text-sm">Producto</h4>
+          <ul class="mt-4 space-y-2 text-slate-400 text-sm">
+            <li><a href="#modulos" class="hover:text-white transition">Módulos</a></li>
+            <li><a href="#multitiendas" class="hover:text-white transition">MultiTiendas</a></li>
+            <li><a href="#integraciones" class="hover:text-white transition">Integraciones</a></li>
+            <li><a href="planes.html" class="hover:text-white transition">Planes</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-[.16em] text-sm">Recursos</h4>
+          <ul class="mt-4 space-y-2 text-slate-400 text-sm">
+            <li><a href="#" class="hover:text-white transition">Documentación</a></li>
+            <li><a href="#" class="hover:text-white transition">Soporte</a></li>
+            <li><a href="#" class="hover:text-white transition">API</a></li>
+            <li><a href="#" class="hover:text-white transition">Blog</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-[.16em] text-sm">Contacto</h4>
+          <ul class="mt-4 space-y-2 text-slate-400 text-sm">
+            <li>+57 310 285 9780</li>
+            <li>contacto@megaunistore.com</li>
+            <li>Bogotá, Colombia</li>
+            <li><a href="#" class="hover:text-white transition">WhatsApp empresarial</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="thin-divider my-8"></div>
+
+      <div class="flex flex-col sm:flex-row justify-between gap-3 text-sm text-slate-500">
+        <div>© 2026 Mega_Uni_Store. Hecho con ♥ en Colombia.</div>
+        <div class="flex gap-5">
+          <a href="#" class="hover:text-white transition">Privacidad</a>
+          <a href="#" class="hover:text-white transition">Términos</a>
+          <a href="#" class="hover:text-white transition">Ayuda</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JS: menú móvil ligero + animaciones -->
+  <script>
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuIcon = document.getElementById('menuIcon');
+    let open = false;
+    menuBtn?.addEventListener('click', () => {
+      open = !open;
+      mobileMenu.classList.toggle('hidden', !open);
+      menuIcon.innerHTML = open
+        ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />'
+        : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
+    });
+
+    // small entrance stagger
+    window.addEventListener('load', () => {
+      document.querySelectorAll('.animate-fadeUp, .animate-fadeUp *').forEach((el, i) => {
+        if (i > 0) el.style.animationDelay = `${i * 40}ms`;
+      });
+    });
+  </script>
+</body>
+</html>

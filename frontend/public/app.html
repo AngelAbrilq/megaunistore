@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mega_Uni_Store | Luxury Premium</title>
+  <meta name="description" content="Landing premium estilo luxury para Mega_Uni_Store, con estética enterprise y alto impacto visual." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            obsidian: "#040712",
+            velvet: "#08122A",
+            cyan: "#35F3FF",
+            violet: "#9B6BFF",
+            gold: "#F6C96A"
+          },
+          boxShadow: {
+            luxe: "0 20px 70px rgba(0,0,0,.28)",
+            glow: "0 14px 40px rgba(53,243,255,.14), 0 18px 50px rgba(155,107,255,.12)"
+          },
+          keyframes: {
+            drift: {
+              "0%,100%": { transform: "translateY(0px)" },
+              "50%": { transform: "translateY(-12px)" }
+            },
+            shimmer: {
+              "0%": { backgroundPosition: "0% 50%" },
+              "100%": { backgroundPosition: "200% 50%" }
+            },
+            reveal: {
+              "0%": { opacity: 0, transform: "translateY(24px)" },
+              "100%": { opacity: 1, transform: "translateY(0)" }
+            }
+          },
+          animation: {
+            drift: "drift 7s ease-in-out infinite",
+            shimmer: "shimmer 12s linear infinite",
+            reveal: "reveal .95s ease both"
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+    body{
+      margin:0;
+      font-family:"Inter", sans-serif;
+      color:#edf3ff;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(53,243,255,.10), transparent 22%),
+        radial-gradient(circle at 80% 20%, rgba(155,107,255,.12), transparent 24%),
+        radial-gradient(circle at 50% 100%, rgba(246,201,106,.06), transparent 22%),
+        linear-gradient(180deg, #02040c 0%, #050816 52%, #02040c 100%);
+      overflow-x:hidden;
+    }
+    .font-lux {
+      font-family: "Cormorant Garamond", serif;
+    }
+    .glass {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.10);
+      backdrop-filter: blur(16px);
+    }
+    .panel {
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(248,250,255,.95));
+      border: 1px solid rgba(15,23,42,.08);
+      box-shadow: 0 18px 55px rgba(5,8,18,.10);
+    }
+    .hero-glow {
+      background: linear-gradient(90deg, #ffffff 0%, #d9edff 18%, #6ee7ff 38%, #9b6bff 68%, #f6c96a 100%);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+    .btn-luxe {
+      background: linear-gradient(90deg, #35F3FF 0%, #3A78FF 35%, #9B6BFF 100%);
+      box-shadow: 0 12px 30px rgba(58,120,255,.20);
+    }
+    .btn-gold {
+      background: linear-gradient(90deg, #f6c96a 0%, #ffd989 100%);
+      color:#08122A;
+    }
+    .card-luxe {
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(252,253,255,.95));
+      border: 1px solid rgba(15,23,42,.07);
+      box-shadow: 0 20px 48px rgba(5,8,18,.09);
+    }
+    .soft-divider {
+      height:1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+    }
+    .hover-rise{
+      transition: transform .26s ease, box-shadow .26s ease, border-color .26s ease;
+    }
+    .hover-rise:hover{ transform: translateY(-5px); box-shadow: 0 20px 48px rgba(5,8,18,.14); }
+    .lux-title {
+      letter-spacing: -0.05em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background -->
+  <div class="fixed inset-0 pointer-events-none">
+    <div class="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_top_left,rgba(53,243,255,.15),transparent_25%),radial-gradient(circle_at_top_right,rgba(155,107,255,.12),transparent_25%),radial-gradient(circle_at_bottom,rgba(246,201,106,.08),transparent_25%)]"></div>
+    <div class="absolute top-20 left-1/2 -translate-x-1/2 w-[900px] h-[900px] rounded-full bg-violet/10 blur-3xl animate-drift"></div>
+  </div>
+
+  <!-- Navbar -->
+  <header class="sticky top-0 z-50">
+    <div class="bg-white/92 backdrop-blur-xl border-b border-slate-200/80">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="h-20 flex items-center justify-between">
+          <a href="#" class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan to-violet flex items-center justify-center text-white font-black shadow-glow">
+              MU
+            </div>
+            <div>
+              <div class="font-extrabold text-slate-950 text-lg tracking-tight">Mega_Uni_Store</div>
+              <div class="text-[11px] text-slate-500">Luxury Multistore Platform</div>
+            </div>
+          </a>
+
+          <div class="hidden xl:flex items-center gap-8 text-[15px] font-medium text-slate-600">
+            <a href="#quienes" class="hover:text-slate-950 transition">Quiénes Somos</a>
+            <a href="#modulos" class="hover:text-slate-950 transition">Módulos</a>
+            <a href="#integraciones" class="hover:text-slate-950 transition">Integraciones</a>
+            <a href="#beneficios" class="hover:text-slate-950 transition">Cumplimiento</a>
+            <a href="#testimonios" class="hover:text-slate-950 transition">Casos Reales</a>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <a href="#login" class="hidden sm:inline-flex px-5 py-2.5 rounded-full font-semibold text-slate-800 bg-slate-100 border border-slate-200 hover:bg-slate-200 transition">
+              Iniciar Sesión
+            </a>
+            <a href="#registro" class="px-5 py-2.5 rounded-full font-semibold btn-luxe text-white hover-rise">
+              Unirse Ahora
+            </a>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="relative py-14 lg:py-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-[1.02fr_.98fr] gap-12 items-center">
+          <div class="animate-reveal">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm font-semibold text-white/90">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+              Solución enterprise con presencia premium
+            </div>
+
+            <h1 class="mt-6 font-lux font-bold text-5xl sm:text-6xl lg:text-7xl leading-[.95] tracking-tight hero-glow">
+              Tu Universo de Compras
+              <span class="block">en un Solo Lugar</span>
+            </h1>
+
+            <p class="mt-6 max-w-xl text-lg sm:text-xl text-slate-200/90 leading-relaxed">
+              Mega_Uni_Store eleva la experiencia de multitienda con una plataforma más elegante, más clara y más rentable para negocios que quieren destacar.
+            </p>
+
+            <div class="mt-8 flex flex-col sm:flex-row gap-4">
+              <a href="#registro" class="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl font-bold text-white btn-luxe hover-rise">
+                Prueba Gratis
+                <span>→</span>
+              </a>
+              <a href="#contacto" class="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl font-semibold text-white glass hover-rise">
+                Agendar Demo
+              </a>
+            </div>
+
+            <div class="mt-8 flex flex-wrap gap-3">
+              <span class="px-4 py-2 rounded-full bg-white/6 border border-white/10 text-sm text-slate-200">Sin contratos</span>
+              <span class="px-4 py-2 rounded-full bg-white/6 border border-white/10 text-sm text-slate-200">Soporte VIP</span>
+              <span class="px-4 py-2 rounded-full bg-white/6 border border-white/10 text-sm text-slate-200">Listo para escalar</span>
+            </div>
+
+            <div class="mt-10 grid grid-cols-3 gap-3 max-w-xl">
+              <div class="glass rounded-3xl p-4">
+                <div class="text-2xl font-black text-white">+500</div>
+                <div class="text-sm text-slate-300 mt-1">negocios activos</div>
+              </div>
+              <div class="glass rounded-3xl p-4">
+                <div class="text-2xl font-black text-white">24/7</div>
+                <div class="text-sm text-slate-300 mt-1">acompañamiento</div>
+              </div>
+              <div class="glass rounded-3xl p-4">
+                <div class="text-2xl font-black text-white">99%</div>
+                <div class="text-sm text-slate-300 mt-1">claridad operativa</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Luxury mockup -->
+          <div class="relative animate-reveal">
+            <div class="absolute -top-8 -right-8 w-36 h-36 rounded-full bg-cyan/10 blur-3xl"></div>
+            <div class="absolute bottom-0 left-0 w-44 h-44 rounded-full bg-violet/10 blur-3xl"></div>
+
+            <div class="relative max-w-[680px] mx-auto">
+              <div class="panel rounded-[2.4rem] overflow-hidden shadow-luxe">
+                <div class="bg-white/90 px-5 py-4 border-b border-slate-200/80 flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-rose-400"></span>
+                    <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+                    <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+                  </div>
+                  <div class="text-xs sm:text-sm text-slate-500 font-medium">dashboard.megaunistore.com</div>
+                </div>
+
+                <div class="p-5 sm:p-6 bg-gradient-to-br from-slate-50 via-white to-slate-50">
+                  <div class="grid lg:grid-cols-[1fr_.92fr] gap-5">
+                    <div class="rounded-[1.9rem] bg-gradient-to-br from-white to-slate-50 border border-slate-200 p-6">
+                      <div class="flex items-start justify-between">
+                        <div>
+                          <div class="text-xs uppercase tracking-[.18em] text-slate-400 font-black">Vista ejecutiva</div>
+                          <h3 class="mt-4 text-3xl font-black text-slate-950 tracking-tight">Todo bajo control.</h3>
+                          <p class="mt-2 text-slate-500">Ventas, stock, tiendas y cumplimiento en una sola lectura.</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan to-violet text-white flex items-center justify-center shadow-glow">
+                          ✦
+                        </div>
+                      </div>
+
+                      <div class="mt-5 grid sm:grid-cols-2 gap-3">
+                        <div class="rounded-2xl bg-white border border-slate-200 p-4">
+                          <div class="text-xs uppercase tracking-[.18em] text-slate-400 font-bold">Ventas hoy</div>
+                          <div class="mt-2 text-3xl font-black text-slate-950">$4.2M</div>
+                          <div class="text-sm text-emerald-600 font-semibold mt-1">+18%</div>
+                        </div>
+                        <div class="rounded-2xl bg-white border border-slate-200 p-4">
+                          <div class="text-xs uppercase tracking-[.18em] text-slate-400 font-bold">Pedidos</div>
+                          <div class="mt-2 text-3xl font-black text-slate-950">128</div>
+                          <div class="text-sm text-slate-500 mt-1">En proceso</div>
+                        </div>
+                      </div>
+
+                      <div class="mt-5 rounded-2xl bg-slate-950 text-white p-4 overflow-hidden relative">
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(53,243,255,.18),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(155,107,255,.14),transparent_35%)]"></div>
+                        <div class="relative flex items-center justify-between">
+                          <div>
+                            <div class="text-xs text-slate-300 uppercase tracking-[.18em] font-semibold">Inventario</div>
+                            <div class="mt-1 font-bold text-lg">Sincronización total</div>
+                          </div>
+                          <div class="px-3 py-1 rounded-full bg-emerald-400/15 text-emerald-300 text-xs font-bold border border-emerald-400/20">
+                            LIVE
+                          </div>
+                        </div>
+                        <div class="relative mt-4 grid grid-cols-3 gap-3">
+                          <div class="h-3 rounded-full bg-white/10 overflow-hidden"><div class="h-full w-[82%] bg-gradient-to-r from-cyan to-violet rounded-full"></div></div>
+                          <div class="h-3 rounded-full bg-white/10 overflow-hidden"><div class="h-full w-[69%] bg-gradient-to-r from-violet to-gold rounded-full"></div></div>
+                          <div class="h-3 rounded-full bg-white/10 overflow-hidden"><div class="h-full w-[55%] bg-gradient-to-r from-cyan to-gold rounded-full"></div></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="space-y-4">
+                      <div class="rounded-[1.7rem] bg-white border border-slate-200 p-5">
+                        <div class="flex items-start gap-3">
+                          <div class="w-11 h-11 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 font-black">✓</div>
+                          <div>
+                            <div class="font-bold text-slate-950">Factura DIAN emitida</div>
+                            <div class="text-sm text-slate-500 mt-1">Validación y envío automático.</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="rounded-[1.7rem] bg-white border border-slate-200 p-5">
+                        <div class="flex items-start gap-3">
+                          <div class="w-11 h-11 rounded-2xl bg-cyan/10 border border-cyan/20 flex items-center justify-center text-cyan font-black">3</div>
+                          <div>
+                            <div class="font-bold text-slate-950">3 bodegas sincronizadas</div>
+                            <div class="text-sm text-slate-500 mt-1">Stock consolidado en tiempo real.</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="rounded-[1.7rem] bg-white border border-slate-200 p-5">
+                        <div class="flex items-start gap-3">
+                          <div class="w-11 h-11 rounded-2xl bg-violet/10 border border-violet/20 flex items-center justify-center text-violet font-black">24</div>
+                          <div>
+                            <div class="font-bold text-slate-950">Asistencia continua</div>
+                            <div class="text-sm text-slate-500 mt-1">Acompañamiento premium para crecer.</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="rounded-[1.7rem] bg-gradient-to-br from-slate-950 to-[#16234d] text-white p-5">
+                        <div class="text-sm text-slate-300">Experiencia</div>
+                        <div class="mt-1 font-bold text-lg">Diseñada para impresionar</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Integraciones -->
+    <section id="integraciones" class="py-18">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="rounded-[2rem] overflow-hidden shadow-luxe">
+          <div class="bg-gradient-to-r from-[#06102b] via-[#0a1436] to-[#09193d] px-6 py-8 sm:px-10 sm:py-10">
+            <div class="flex flex-col lg:flex-row gap-8 lg:items-center lg:justify-between">
+              <div class="max-w-xl">
+                <div class="inline-flex px-4 py-2 rounded-full bg-white/8 border border-white/10 text-white/90 text-sm font-semibold">
+                  Integraciones nativas
+                </div>
+                <h2 class="mt-5 text-3xl sm:text-4xl font-black text-white lux-title">
+                  Conecta con el ecosistema que ya usas
+                </h2>
+                <p class="mt-4 text-slate-300 text-lg leading-relaxed">
+                  MercadoLibre, Shopify, WooCommerce, medios de pago, logística y herramientas de operación en una sola visión.
+                </p>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 lg:min-w-[420px]">
+                <div class="rounded-2xl bg-white/6 border border-white/10 px-4 py-3 text-white/85 text-center font-semibold">Factus / DIAN</div>
+                <div class="rounded-2xl bg-white/6 border border-white/10 px-4 py-3 text-white/85 text-center font-semibold">ePayco</div>
+                <div class="rounded-2xl bg-white/6 border border-white/10 px-4 py-3 text-white/85 text-center font-semibold">MercadoLibre</div>
+                <div class="rounded-2xl bg-white/6 border border-white/10 px-4 py-3 text-white/85 text-center font-semibold">Shopify</div>
+                <div class="rounded-2xl bg-white/6 border border-white/10 px-4 py-3 text-white/85 text-center font-semibold">WooCommerce</div>
+                <div class="rounded-2xl bg-white/6 border border-white/10 px-4 py-3 text-white/85 text-center font-semibold">WhatsApp</div>
+                <div class="rounded-2xl bg-white/6 border border-white/10 px-4 py-3 text-white/85 text-center font-semibold">API Abierta</div>
+                <div class="rounded-2xl bg-white/6 border border-white/10 px-4 py-3 text-white/85 text-center font-semibold">Logística</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modules -->
+    <section id="modulos" class="py-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto text-center">
+          <h2 class="font-lux font-bold text-4xl sm:text-5xl text-white tracking-tight">
+            Una plataforma completa para
+            <span class="hero-glow">cada área de tu negocio</span>
+          </h2>
+          <p class="mt-5 text-lg text-slate-300">Módulos integrados que trabajan como una sola máquina comercial.</p>
+        </div>
+
+        <div class="mt-12 grid sm:grid-cols-2 xl:grid-cols-4 gap-5">
+          <div class="card-luxe rounded-[1.75rem] p-6 hover-rise">
+            <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl">🛒</div>
+            <h3 class="mt-4 text-xl font-extrabold text-slate-950">Punto de Venta</h3>
+            <p class="mt-3 text-slate-600">Cobro rápido, caja, métodos de pago y operación limpia.</p>
+            <a href="#" class="inline-flex mt-4 text-blue-600 font-bold">Conocer más →</a>
+          </div>
+          <div class="card-luxe rounded-[1.75rem] p-6 hover-rise">
+            <div class="w-14 h-14 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center text-2xl">📦</div>
+            <h3 class="mt-4 text-xl font-extrabold text-slate-950">Inventario</h3>
+            <p class="mt-3 text-slate-600">Stock, variantes, bodegas y alertas en tiempo real.</p>
+            <a href="#" class="inline-flex mt-4 text-blue-600 font-bold">Conocer más →</a>
+          </div>
+          <div class="card-luxe rounded-[1.75rem] p-6 hover-rise">
+            <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl">🧾</div>
+            <h3 class="mt-4 text-xl font-extrabold text-slate-950">Facturación DIAN</h3>
+            <p class="mt-3 text-slate-600">CUFE, notas crédito y soporte validado.</p>
+            <a href="#" class="inline-flex mt-4 text-blue-600 font-bold">Conocer más →</a>
+          </div>
+          <div class="card-luxe rounded-[1.75rem] p-6 hover-rise">
+            <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl">📈</div>
+            <h3 class="mt-4 text-xl font-extrabold text-slate-950">Ventas</h3>
+            <p class="mt-3 text-slate-600">Cotizaciones, devoluciones y trazabilidad comercial.</p>
+            <a href="#" class="inline-flex mt-4 text-blue-600 font-bold">Conocer más →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Beneficios dark -->
+    <section id="beneficios" class="py-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="rounded-[2.2rem] overflow-hidden shadow-luxe">
+          <div class="bg-gradient-to-r from-[#0a1432] via-[#13225a] to-[#091126] px-6 py-12 sm:px-10 sm:py-14">
+            <div class="grid lg:grid-cols-[1fr_1fr] gap-10 items-center">
+              <div>
+                <div class="inline-flex px-4 py-2 rounded-full bg-white/8 border border-white/10 text-sm font-semibold">
+                  Diseñado para Colombia, conforme con la DIAN
+                </div>
+                <h2 class="mt-5 font-lux font-bold text-4xl sm:text-5xl text-white tracking-tight">
+                  No es un software genérico.
+                  <span class="block hero-glow">Es una plataforma seria.</span>
+                </h2>
+                <p class="mt-5 text-lg text-slate-200/90 leading-relaxed">
+                  Cada detalle fue pensado para negocios que exigen orden, cumplimiento, velocidad y una apariencia de alto nivel.
+                </p>
+              </div>
+
+              <div class="grid sm:grid-cols-2 gap-4">
+                <div class="glass rounded-[1.5rem] p-5 border border-white/10">
+                  <div class="text-emerald-300 font-black text-lg">✓ Facturación validada</div>
+                  <p class="mt-2 text-slate-300">Documentos con respaldo y envío automático.</p>
+                </div>
+                <div class="glass rounded-[1.5rem] p-5 border border-white/10">
+                  <div class="text-cyan font-black text-lg">↻ Inventario sincronizado</div>
+                  <p class="mt-2 text-slate-300">Control total por tienda y sucursal.</p>
+                </div>
+                <div class="glass rounded-[1.5rem] p-5 border border-white/10">
+                  <div class="text-violet font-black text-lg">★ Crecimiento comercial</div>
+                  <p class="mt-2 text-slate-300">Más ventas, menos fricción operativa.</p>
+                </div>
+                <div class="glass rounded-[1.5rem] p-5 border border-white/10">
+                  <div class="text-gold font-black text-lg">⚡ Velocidad premium</div>
+                  <p class="mt-2 text-slate-300">Interfaz rápida, limpia y precisa.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonios -->
+    <section id="testimonios" class="py-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto text-center">
+          <h2 class="font-lux font-bold text-4xl sm:text-5xl text-white tracking-tight">
+            Negocios como el tuyo ya usan
+            <span class="hero-glow">Mega_Uni_Store</span>
+          </h2>
+          <p class="mt-5 text-lg text-slate-300">
+            Una experiencia superior, elegante y confiable.
+          </p>
+        </div>
+
+        <div class="mt-12 grid lg:grid-cols-3 gap-5">
+          <article class="bg-white rounded-[2rem] p-7 border border-slate-200 shadow-luxe hover-rise">
+            <div class="text-5xl text-cyan/35">“</div>
+            <p class="mt-3 text-slate-700 italic text-lg leading-relaxed">
+              El sistema se siente de otra liga. Finalmente tengo operación y presentación al mismo nivel.
+            </p>
+            <div class="mt-6 flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan to-violet text-white flex items-center justify-center font-black">MG</div>
+              <div>
+                <div class="font-extrabold text-slate-950">María González</div>
+                <div class="text-sm text-slate-500">Bogotá</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="bg-white rounded-[2rem] p-7 border border-slate-200 shadow-luxe hover-rise">
+            <div class="text-5xl text-violet/35">“</div>
+            <p class="mt-3 text-slate-700 italic text-lg leading-relaxed">
+              Más control, más orden y una mejor sensación para mi equipo y mis clientes.
+            </p>
+            <div class="mt-6 flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-violet to-gold text-white flex items-center justify-center font-black">CH</div>
+              <div>
+                <div class="font-extrabold text-slate-950">Carlos Herrera</div>
+                <div class="text-sm text-slate-500">Medellín</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="bg-white rounded-[2rem] p-7 border border-slate-200 shadow-luxe hover-rise">
+            <div class="text-5xl text-emerald-400/35">“</div>
+            <p class="mt-3 text-slate-700 italic text-lg leading-relaxed">
+              Ahora mi negocio se ve y opera como una marca mucho más grande.
+            </p>
+            <div class="mt-6 flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-cyan text-white flex items-center justify-center font-black">AP</div>
+              <div>
+                <div class="font-extrabold text-slate-950">Andrés Patiño</div>
+                <div class="text-sm text-slate-500">Cali</div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section id="registro" class="py-20">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="relative overflow-hidden rounded-[2.4rem] px-6 py-14 sm:px-10 sm:py-16 text-center">
+          <div class="absolute inset-0 bg-gradient-to-br from-[#091126] via-[#13224f] to-[#050816]"></div>
+          <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top,rgba(53,243,255,.35),transparent_18%),radial-gradient(circle_at_bottom_right,rgba(155,107,255,.28),transparent_18%)]"></div>
+
+          <div class="relative max-w-3xl mx-auto">
+            <div class="inline-flex px-4 py-2 rounded-full bg-white/8 border border-white/10 text-white/90 text-sm font-semibold">
+              El momento de dar el salto es ahora
+            </div>
+            <h2 class="mt-6 font-lux font-bold text-4xl sm:text-6xl text-white tracking-tight">
+              Empieza hoy.
+              <span class="block hero-glow">Tu negocio no puede esperar.</span>
+            </h2>
+            <p class="mt-6 text-lg sm:text-xl text-slate-300 leading-relaxed">
+              Da el salto a una plataforma que no solo funciona bien, sino que también se ve y se siente premium.
+            </p>
+            <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+              <a href="#registro" class="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl font-bold text-white btn-luxe hover-rise">
+                Crear mi cuenta gratis
+                <span>→</span>
+              </a>
+              <a href="#contacto" class="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl font-semibold text-white glass hover-rise">
+                Agenda una demo personalizada
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="contacto" class="pt-10 pb-12 bg-[#040712] border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-slate-300">
+        <div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan to-violet flex items-center justify-center text-white font-black">MU</div>
+            <div class="font-extrabold text-white text-lg">Mega_Uni_Store</div>
+          </div>
+          <p class="mt-4 text-slate-400 leading-relaxed">
+            Una plataforma de alto nivel para centralizar, vender y escalar con elegancia.
+          </p>
+        </div>
+        <div>
+          <div class="font-bold text-white uppercase tracking-[.16em] text-sm">Producto</div>
+          <ul class="mt-4 space-y-3 text-slate-400">
+            <li>Módulos</li>
+            <li>Facturación</li>
+            <li>Inventario</li>
+            <li>Finanzas</li>
+          </ul>
+        </div>
+        <div>
+          <div class="font-bold text-white uppercase tracking-[.16em] text-sm">Soluciones</div>
+          <ul class="mt-4 space-y-3 text-slate-400">
+            <li>Tiendas</li>
+            <li>Restaurantes</li>
+            <li>Salones</li>
+            <li>Distribución</li>
+          </ul>
+        </div>
+        <div>
+          <div class="font-bold text-white uppercase tracking-[.16em] text-sm">Contacto</div>
+          <ul class="mt-4 space-y-3 text-slate-400">
+            <li>+57 310 285 9780</li>
+            <li>contacto@megaunistore.com</li>
+            <li>Bogotá, Colombia</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="soft-divider my-8"></div>
+
+      <div class="flex flex-col sm:flex-row justify-between gap-3 text-sm text-slate-500">
+        <div>© 2026 Mega_Uni_Store. Hecho con ♥ en Colombia.</div>
+        <div class="flex gap-5">
+          <a href="#">Privacidad</a>
+          <a href="#">Términos</a>
+          <a href="#">Ayuda</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

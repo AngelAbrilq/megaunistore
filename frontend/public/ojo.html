@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Mega_Uni_Store — Tu Universo de Compras</title>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind Play CDN (rápido para prototipos) -->
+    <script>
+      tailwind = window.tailwind || {};
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Extendir configuración de Tailwind para este archivo
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              midnight: "#071024",
+              "neon-cyan": "#00f5ff",
+              "neon-violet": "#8b5cf6",
+              "neon-gold": "#ffd166",
+            },
+            keyframes: {
+              float: {
+                "0%": { transform: "translateY(0px)" },
+                "50%": { transform: "translateY(-12px)" },
+                "100%": { transform: "translateY(0px)" },
+              },
+              slowSpin: {
+                "0%": { transform: "rotate(0deg)" },
+                "100%": { transform: "rotate(360deg)" },
+              },
+              fadeInUp: {
+                "0%": { opacity: 0, transform: "translateY(12px)" },
+                "100%": { opacity: 1, transform: "translateY(0)" },
+              },
+            },
+            animation: {
+              float: "float 6s ease-in-out infinite",
+              slowSpin: "slowSpin 28s linear infinite",
+              fadeInUp: "fadeInUp .9s ease both",
+            },
+            boxShadow: {
+              "neon-lg":
+                "0 20px 50px rgba(139,92,246,0.14), 0 6px 18px rgba(0,245,255,0.06)",
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      :root {
+        --glass: rgba(255, 255, 255, 0.04);
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        font-family:
+          "Poppins",
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          "Helvetica Neue",
+          Arial;
+        background:
+          linear-gradient(180deg, #030416 0%, #071024 55%),
+          radial-gradient(
+            circle at 10% 10%,
+            rgba(0, 245, 255, 0.03),
+            transparent 10%
+          ),
+          radial-gradient(
+            circle at 90% 80%,
+            rgba(139, 92, 246, 0.03),
+            transparent 10%
+          );
+        color: #e6eef8;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* Gradient text utility for heading */
+      .gradient-text {
+        background: linear-gradient(
+          90deg,
+          #00f5ff 0%,
+          #7c3aed 45%,
+          #ffd166 100%
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      /* Neon glow effect for CTA */
+      .glow {
+        box-shadow:
+          0 8px 30px rgba(139, 92, 246, 0.16),
+          0 0 28px rgba(0, 245, 255, 0.04);
+      }
+
+      /* Soft glass panel */
+      .glass {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.04);
+      }
+
+      /* small screen nav center links spacing fix */
+      @media (max-width: 768px) {
+        .nav-center {
+          display: none;
+        } /* hide center links on mobile, hamburger used */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <header class="fixed top-4 left-0 right-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav
+          class="glass rounded-xl px-4 py-3 flex items-center justify-between shadow-neon-lg"
+        >
+          <!-- Left: Logo -->
+          <div class="flex items-center gap-3">
+            <div
+              class="p-2 rounded-lg bg-gradient-to-br from-white/5 to-white/3"
+            >
+              <!-- Logo mark (simple) -->
+              <svg
+                width="40"
+                height="40"
+                viewBox="0 0 24 24"
+                fill="none"
+                class="text-white"
+              >
+                <defs>
+                  <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+                    <stop offset="0" stop-color="#00f5ff" />
+                    <stop offset="1" stop-color="#8b5cf6" />
+                  </linearGradient>
+                </defs>
+                <rect
+                  x="2"
+                  y="2"
+                  width="20"
+                  height="20"
+                  rx="5"
+                  stroke="url(#g1)"
+                  stroke-width="1.6"
+                  fill="transparent"
+                ></rect>
+                <path
+                  d="M7 13L10.5 8L14 13"
+                  stroke="url(#g1)"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
+              </svg>
+            </div>
+            <a href="#" class="text-white font-semibold text-lg tracking-tight"
+              >Mega_Uni_Store</a
+            >
+          </div>
+
+          <!-- Center: nav links (hidden on small screens) -->
+          <ul
+            class="nav-center flex gap-8 text-sm font-medium items-center text-slate-200/80"
+          >
+            <li>
+              <a href="#quienes" class="hover:text-white transition"
+                >Quiénes Somos</a
+              >
+            </li>
+            <li>
+              <a href="#productos" class="hover:text-white transition"
+                >Productos</a
+              >
+            </li>
+            <li>
+              <a href="#beneficios" class="hover:text-white transition"
+                >Por qué elegirnos</a
+              >
+            </li>
+            <li>
+              <a href="#contacto" class="hover:text-white transition"
+                >Contacto</a
+              >
+            </li>
+          </ul>
+
+          <!-- Right: actions -->
+          <div class="flex items-center gap-3">
+            <a
+              href="#login"
+              class="inline-flex items-center px-4 py-2 rounded-lg border border-slate-600 text-sm font-medium text-white/90 hover:bg-white/3 transition"
+            >
+              Iniciar Sesión
+            </a>
+            <a
+              href="#signup"
+              class="inline-flex items-center px-5 py-2.5 rounded-lg text-sm font-semibold text-midnight bg-gradient-to-r from-neon-cyan to-neon-violet shadow-neon-lg hover:scale-105 transform transition"
+            >
+              Unirse Ahora
+            </a>
+
+            <!-- Mobile menu button -->
+            <button
+              id="mobileBtn"
+              class="ml-2 inline-flex md:hidden items-center justify-center p-2 rounded-lg bg-transparent border border-transparent hover:bg-white/3 transition"
+            >
+              <svg
+                id="menuOpen"
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-slate-200"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 8h16M4 16h16"
+                />
+              </svg>
+              <svg
+                id="menuClose"
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-slate-200 hidden"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </nav>
+
+        <!-- Mobile menu (hidden by default) -->
+        <div id="mobileMenu" class="mt-3 hidden glass rounded-xl p-4">
+          <ul class="flex flex-col gap-3 text-sm">
+            <li>
+              <a
+                href="#quienes"
+                class="block py-2 px-3 rounded hover:bg-white/3 transition"
+                >Quiénes Somos</a
+              >
+            </li>
+            <li>
+              <a
+                href="#productos"
+                class="block py-2 px-3 rounded hover:bg-white/3 transition"
+                >Productos</a
+              >
+            </li>
+            <li>
+              <a
+                href="#beneficios"
+                class="block py-2 px-3 rounded hover:bg-white/3 transition"
+                >Por qué elegirnos</a
+              >
+            </li>
+            <li>
+              <a
+                href="#contacto"
+                class="block py-2 px-3 rounded hover:bg-white/3 transition"
+                >Contacto</a
+              >
+            </li>
+            <li class="pt-2 border-t border-white/5">
+              <a
+                href="#login"
+                class="block py-2 px-3 rounded hover:bg-white/3 transition"
+                >Iniciar Sesión</a
+              >
+              <a
+                href="#signup"
+                class="mt-2 block py-2 px-3 rounded bg-gradient-to-r from-neon-cyan to-neon-violet text-midnight text-center font-semibold"
+                >Unirse Ahora</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <main class="pt-28">
+      <section class="relative overflow-hidden">
+        <!-- Decorative floating shapes -->
+        <svg
+          class="absolute -left-8 -top-12 w-80 opacity-30 animate-slowSpin"
+          viewBox="0 0 200 200"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <linearGradient id="lg1" x1="0" x2="1">
+              <stop offset="0" stop-color="#00f5ff" />
+              <stop offset="1" stop-color="#8b5cf6" />
+            </linearGradient>
+          </defs>
+          <circle cx="100" cy="100" r="80" fill="url(#lg1)"></circle>
+        </svg>
+
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <!-- Left: Text -->
+            <div class="relative z-10">
+              <div
+                class="mb-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/3 text-sm font-medium text-white/90 glass"
+              >
+                <span
+                  class="w-2 h-2 rounded-full bg-neon-cyan inline-block shadow-[0_0_12px_rgba(0,245,255,0.6)]"
+                ></span>
+                Plataforma Multitienda · Lanzamiento Beta
+              </div>
+
+              <h1
+                class="mt-6 text-4xl sm:text-5xl lg:text-6xl leading-tight font-extrabold gradient-text tracking-tight animate-fadeInUp"
+              >
+                Tu Universo de Compras en un Solo Lugar
+              </h1>
+
+              <p
+                class="mt-6 text-lg text-white/80 max-w-xl leading-relaxed animate-fadeInUp delay-100"
+              >
+                Mega_Uni_Store conecta calidad, variedad y velocidad de entrega
+                con una experiencia fluida. Gestiona múltiples tiendas, descubre
+                productos exclusivos y alcanza a tus clientes en todos los
+                canales.
+              </p>
+
+              <div class="mt-8 flex flex-wrap gap-4 items-center">
+                <a
+                  href="#productos"
+                  class="inline-flex items-center px-6 py-3 rounded-lg font-semibold text-midnight bg-gradient-to-r from-neon-cyan to-neon-violet shadow-neon-lg transform hover:scale-105 transition"
+                >
+                  Explorar Productos
+                </a>
+                <a
+                  href="#beneficios"
+                  class="inline-flex items-center px-6 py-3 rounded-lg border border-white/8 text-white/90 hover:bg-white/3 transition"
+                >
+                  Ver Beneficios
+                </a>
+              </div>
+
+              <!-- Trust badges -->
+              <div class="mt-8 flex gap-4 items-center text-sm text-white/70">
+                <div class="flex items-center gap-2">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    class="text-neon-gold"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M12 2L14.09 8.26L20.97 8.27L15.44 11.97L17.54 18.2L12 14.3L6.46 18.2L8.56 11.97L3.03 8.27L9.91 8.26L12 2Z"
+                    />
+                  </svg>
+                  <span>Calidad verificada</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    class="text-neon-cyan"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M12 2L2 7l10 5 10-5-10-5zm0 7L2 9v6l10 5 10-5V9l-10 0z"
+                    />
+                  </svg>
+                  <span>Soporte 24/7</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: visual / card -->
+            <div class="relative">
+              <div class="relative mx-auto w-full max-w-lg">
+                <div
+                  class="glass rounded-3xl p-6 shadow-neon-lg border border-white/4 animate-fadeInUp"
+                  style="transform-origin: right"
+                >
+                  <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0">
+                      <div
+                        class="w-14 h-14 rounded-xl bg-gradient-to-br from-neon-cyan to-neon-violet flex items-center justify-center"
+                      >
+                        <svg
+                          width="28"
+                          height="28"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <path
+                            d="M3 12h18"
+                            stroke="#071024"
+                            stroke-width="1.6"
+                            stroke-linecap="round"
+                          />
+                          <path
+                            d="M7 6h10"
+                            stroke="#071024"
+                            stroke-width="1.6"
+                            stroke-linecap="round"
+                          />
+                          <path
+                            d="M7 18h10"
+                            stroke="#071024"
+                            stroke-width="1.6"
+                            stroke-linecap="round"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+
+                    <div class="flex-1">
+                      <div class="flex justify-between items-start">
+                        <div>
+                          <h3 class="text-white font-semibold">
+                            Tienda destacada: NovaTech
+                          </h3>
+                          <p class="text-sm text-white/70 mt-1">
+                            Electrónica · Envío en 24h · Stock sincronizado en
+                            tiempo real
+                          </p>
+                        </div>
+                        <div class="text-right">
+                          <div class="text-sm text-neon-gold font-bold">
+                            4.9 <span class="text-xs text-white/70">/5</span>
+                          </div>
+                          <div class="text-xs text-white/60 mt-1">
+                            +10K ventas
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- small product previews -->
+                      <div class="mt-4 grid grid-cols-2 gap-3">
+                        <div class="p-3 rounded-lg bg-white/3 glass">
+                          <div
+                            class="h-20 bg-gradient-to-br from-white/5 to-white/3 rounded-md flex items-center justify-center text-sm text-white/80"
+                          >
+                            Producto A
+                          </div>
+                          <div class="mt-2 text-xs text-white/70">
+                            SKU: NT-001
+                          </div>
+                          <div class="mt-1 text-sm font-semibold">₲ 199</div>
+                        </div>
+                        <div class="p-3 rounded-lg bg-white/3 glass">
+                          <div
+                            class="h-20 bg-gradient-to-br from-white/5 to-white/3 rounded-md flex items-center justify-center text-sm text-white/80"
+                          >
+                            Producto B
+                          </div>
+                          <div class="mt-2 text-xs text-white/70">
+                            SKU: NT-002
+                          </div>
+                          <div class="mt-1 text-sm font-semibold">₲ 299</div>
+                        </div>
+                      </div>
+
+                      <div class="mt-4 flex gap-3">
+                        <a
+                          href="#tienda"
+                          class="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-lg bg-white/6 hover:bg-white/8 transition"
+                        >
+                          Ver Tienda
+                        </a>
+                        <a
+                          href="#carrito"
+                          class="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-lg border border-white/6 hover:bg-white/6 transition"
+                        >
+                          Añadir al Carrito
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- floating neon orb -->
+                <div
+                  class="absolute -right-10 -bottom-8 w-36 h-36 rounded-full bg-gradient-to-br from-neon-cyan to-neon-violet opacity-30 filter blur-2xl animate-float"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- WHO / WHAT (Quiénes somos) -->
+      <section id="quienes" class="mt-24 max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 items-start">
+          <div class="lg:col-span-1">
+            <h2 class="text-2xl font-bold">Quiénes Somos</h2>
+            <p class="mt-3 text-white/75 max-w-md">
+              Somos Mega_Uni_Store, una multitienda que reúne marcas y tiendas
+              locales e internacionales en una sola plataforma. Combinamos
+              tecnología, logística y atención para ofrecer una experiencia
+              superior.
+            </p>
+            <a
+              href="#contacto"
+              class="mt-6 inline-block px-5 py-3 rounded-lg bg-white/6 hover:bg-white/8 transition"
+              >Conócenos</a
+            >
+          </div>
+
+          <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <!-- Card 1 -->
+            <article
+              class="glass p-6 rounded-xl border border-white/4 hover:scale-102 transform transition shadow-neon-lg"
+            >
+              <div class="flex items-start gap-4">
+                <div
+                  class="p-3 rounded-lg bg-gradient-to-br from-neon-cyan to-neon-violet"
+                >
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M3 12h18"
+                      stroke="#071024"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d="M12 3v18"
+                      stroke="#071024"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-white font-semibold">Plataforma Unificada</h3>
+                  <p class="mt-2 text-sm text-white/70">
+                    Administra múltiples tiendas, catálogos y ventas desde un
+                    único panel.
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <!-- Card 2 -->
+            <article
+              class="glass p-6 rounded-xl border border-white/4 hover:scale-102 transform transition shadow-neon-lg"
+            >
+              <div class="flex items-start gap-4">
+                <div
+                  class="p-3 rounded-lg bg-gradient-to-br from-neon-violet to-neon-gold"
+                >
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7l3-7z"
+                      fill="#071024"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-white font-semibold">Marcas y Curaduría</h3>
+                  <p class="mt-2 text-sm text-white/70">
+                    Seleccionamos tiendas con altos estándares de calidad y
+                    servicio.
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <!-- Card 3 -->
+            <article
+              class="glass p-6 rounded-xl border border-white/4 hover:scale-102 transform transition shadow-neon-lg"
+            >
+              <div class="flex items-start gap-4">
+                <div
+                  class="p-3 rounded-lg bg-gradient-to-br from-neon-cyan to-neon-gold"
+                >
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2a9 9 0 100 18 9 9 0 000-18z" fill="#071024" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-white font-semibold">Tecnología y Datos</h3>
+                  <p class="mt-2 text-sm text-white/70">
+                    Analíticas en tiempo real para decisiones más inteligentes y
+                    ventas optimizadas.
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <!-- Card 4 -->
+            <article
+              class="glass p-6 rounded-xl border border-white/4 hover:scale-102 transform transition shadow-neon-lg"
+            >
+              <div class="flex items-start gap-4">
+                <div
+                  class="p-3 rounded-lg bg-gradient-to-br from-neon-violet to-neon-cyan"
+                >
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M3 12h18"
+                      stroke="#071024"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-white font-semibold">Atención 24/7</h3>
+                  <p class="mt-2 text-sm text-white/70">
+                    Soporte para tiendas y clientes en todos los canales.
+                  </p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- WHY CHOOSE US -->
+      <section id="beneficios" class="mt-20 max-w-7xl mx-auto px-6 lg:px-8">
+        <h2 class="text-2xl font-bold">Por qué elegirnos</h2>
+        <p class="mt-2 text-white/70 max-w-2xl">
+          Combinamos garantía, alcance y rapidez en cada paso del proceso. Tres
+          pilares que marcan la diferencia.
+        </p>
+
+        <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <!-- Garantía -->
+          <div
+            class="p-6 rounded-xl glass border border-white/6 hover:-translate-y-2 transform transition shadow-lg"
+          >
+            <div class="flex items-center gap-4">
+              <div
+                class="w-14 h-14 rounded-lg flex items-center justify-center bg-gradient-to-br from-neon-violet to-neon-cyan"
+              >
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7l3-7z"
+                    fill="#071024"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold">Garantía</h3>
+                <p class="mt-1 text-white/75 text-sm">
+                  Productos verificados y política clara de devoluciones para tu
+                  tranquilidad.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Variedad Global -->
+          <div
+            class="p-6 rounded-xl glass border border-white/6 hover:-translate-y-2 transform transition shadow-lg"
+          >
+            <div class="flex items-center gap-4">
+              <div
+                class="w-14 h-14 rounded-lg flex items-center justify-center bg-gradient-to-br from-neon-cyan to-neon-gold"
+              >
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 2a9 9 0 100 18 9 9 0 000-18z" fill="#071024" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold">Variedad Global</h3>
+                <p class="mt-1 text-white/75 text-sm">
+                  Miles de productos y múltiples tiendas, todo en una plataforma
+                  única.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Envío veloz -->
+          <div
+            class="p-6 rounded-xl glass border border-white/6 hover:-translate-y-2 transform transition shadow-lg"
+          >
+            <div class="flex items-center gap-4">
+              <div
+                class="w-14 h-14 rounded-lg flex items-center justify-center bg-gradient-to-br from-neon-gold to-neon-violet"
+              >
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M3 12h18"
+                    stroke="#071024"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold">Envío Veloz</h3>
+                <p class="mt-1 text-white/75 text-sm">
+                  Logística optimizada para entregas rápidas y seguimiento en
+                  tiempo real.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA FINAL -->
+      <section class="mt-16 mb-28">
+        <div class="max-w-4xl mx-auto px-6 lg:px-8 text-center">
+          <div class="glass p-8 rounded-2xl border border-white/6">
+            <h3 class="text-2xl font-bold">
+              ¿Listo para llevar tu tienda al siguiente nivel?
+            </h3>
+            <p class="mt-2 text-white/75">
+              Únete a Mega_Uni_Store y alcanza más clientes con nuestra
+              tecnología y soporte.
+            </p>
+            <div class="mt-6 flex justify-center gap-4">
+              <a
+                href="#signup"
+                class="px-6 py-3 rounded-lg bg-gradient-to-r from-neon-cyan to-neon-violet font-semibold text-midnight glow hover:scale-105 transition"
+                >Comenzar Ahora</a
+              >
+              <a
+                href="#contacto"
+                class="px-6 py-3 rounded-lg border border-white/8 text-white/90 hover:bg-white/4 transition"
+                >Hablar con Ventas</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer (simple) -->
+    <footer class="border-t border-white/6 py-8 mt-12">
+      <div
+        class="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4"
+      >
+        <div class="text-sm text-white/70">
+          © 2026 Mega_Uni_Store · Todos los derechos reservados
+        </div>
+        <div class="flex gap-4 text-sm">
+          <a href="#legal" class="hover:text-white transition">Términos</a>
+          <a href="#privacidad" class="hover:text-white transition"
+            >Privacidad</a
+          >
+          <a href="#ayuda" class="hover:text-white transition">Ayuda</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Minimal JS: mobile menu toggle + small entrance on load -->
+    <script>
+      const mobileBtn = document.getElementById("mobileBtn");
+      const mobileMenu = document.getElementById("mobileMenu");
+      const menuOpen = document.getElementById("menuOpen");
+      const menuClose = document.getElementById("menuClose");
+
+      mobileBtn &&
+        mobileBtn.addEventListener("click", () => {
+          if (mobileMenu.classList.contains("hidden")) {
+            mobileMenu.classList.remove("hidden");
+            menuOpen.classList.add("hidden");
+            menuClose.classList.remove("hidden");
+          } else {
+            mobileMenu.classList.add("hidden");
+            menuOpen.classList.remove("hidden");
+            menuClose.classList.add("hidden");
+          }
+        });
+
+      // small progressive appearance
+      window.addEventListener("load", () => {
+        document.querySelectorAll(".animate-fadeInUp").forEach((el, i) => {
+          el.style.animationDelay = i * 120 + "ms";
+        });
+      });
+    </script>
+  </body>
+</html>

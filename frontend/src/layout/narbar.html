@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="sticky top-0 z-50">
+      <div
+        class="backdrop-blur-xl bg-white/90 border-b border-slate-200/80 shadow-[0_10px_24px_rgba(10,16,40,.04)]"
+      >
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav class="h-20 flex items-center justify-between gap-4">
+            <a href="#" class="flex items-center gap-3 group min-w-fit">
+              <div
+                class="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan to-violet flex items-center justify-center text-white font-black shadow-glow group-hover:scale-105 transition"
+              >
+                MUS
+              </div>
+              <div class="leading-tight">
+                <div
+                  class="font-display font-extrabold text-slate-950 text-lg tracking-tight"
+                >
+                  Mega_Uni_Store
+                </div>
+                <div class="text-[11px] text-slate-500 -mt-0.5">
+                  Multitienda • Innovación • Escala
+                </div>
+              </div>
+            </a>
+
+            <div
+              class="hidden xl:flex items-center gap-8 text-[15px] font-medium text-slate-600"
+            >
+              <a href="#quienes" class="hover:text-slate-950 transition"
+                >Quiénes Somos</a
+              >
+              <a
+                href="caracteristicas.php"
+                class="hover:text-slate-950 transition"
+                >Caracteristicas</a
+              >
+              <a href="#modulos" class="hover:text-slate-950 transition"
+                >Módulos</a
+              >
+              <a href="#modulos" class="hover:text-slate-950 transition"
+                >Soluciones</a
+              >
+              <a href="#integraciones" class="hover:text-slate-950 transition"
+                >Integraciones</a
+              >
+              <a href="#beneficios" class="hover:text-slate-950 transition"
+                >Beneficios</a
+              >
+
+              <a href="#testimonios" class="hover:text-slate-950 transition"
+                >Testimonios</a
+              >
+
+              <a href="planes.php" class="hover:text-slate-950 transition"
+                >Planes</a
+              >
+
+              <a href="contacto.php" class="hover:text-slate-950 transition"
+                >Contacto</a
+              >
+            </div>
+
+            <div class="hidden md:flex items-center gap-3">
+              <a
+                href="#login"
+                class="px-5 py-2.5 rounded-full text-slate-800 font-semibold btn-outline transition hover:shadow-premium"
+              >
+                Iniciar Sesión
+              </a>
+              <a
+                href="#registro"
+                class="px-5 py-2.5 rounded-full text-white font-semibold btn-primary transition hover:shadow-premium"
+              >
+                Unirse Ahora
+              </a>
+            </div>
+
+            <button
+              id="menuBtn"
+              class="md:hidden w-11 h-11 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200"
+            >
+              <svg
+                id="menuIcon"
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-slate-700"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
+          </nav>
+
+          <div id="mobileMenu" class="hidden md:hidden pb-5">
+            <div class="panel rounded-3xl p-4 mt-2">
+              <div class="grid gap-2 text-slate-700 font-medium">
+                <a
+                  href="#quienes"
+                  class="px-4 py-3 rounded-2xl hover:bg-slate-100 transition"
+                  >Quiénes Somos</a
+                >
+                <a
+                  href="caracteristicas.php"
+                  class="px-4 py-3 rounded-2xl hover:bg-slate-100 transition"
+                  >caracteristicas</a
+                >
+
+                <a
+                  href="modulos.php"
+                  class="px-4 py-3 rounded-2xl hover:bg-slate-100 transition"
+                  >Módulos</a
+                >
+                <a
+                  href="integraciones.php"
+                  class="px-4 py-3 rounded-2xl hover:bg-slate-100 transition"
+                  >Integraciones</a
+                >
+                <a
+                  href="beneficios.php"
+                  class="px-4 py-3 rounded-2xl hover:bg-slate-100 transition"
+                  >Beneficios</a
+                >
+                <a
+                  href="testimonios.php"
+                  class="px-4 py-3 rounded-2xl hover:bg-slate-100 transition"
+                  >Testimonios</a
+                >
+                <a
+                  href="contacto.php"
+                  class="px-4 py-3 rounded-2xl hover:bg-slate-100 transition"
+                  >Contacto</a
+                >
+              </div>
+              <div class="mt-4 flex gap-3">
+                <a
+                  href="#login"
+                  class="flex-1 px-5 py-3 rounded-2xl text-slate-800 font-semibold bg-slate-100 text-center"
+                  >Iniciar Sesión</a
+                >
+                <a
+                  href="#registro"
+                  class="flex-1 px-5 py-3 rounded-2xl text-white font-semibold btn-primary text-center"
+                  >Unirse Ahora</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+  </body>
+</html>
