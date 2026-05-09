@@ -1,0 +1,20 @@
+# Variables de entorno — NUNCA subir al repositorio
+backend/.env
+
+# Dependencias y caché
+vendor/
+node_modules/
+
+# Logs
+*.log
+backend/storage/logs/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
