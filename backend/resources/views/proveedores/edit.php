@@ -1,99 +1,89 @@
 <?php
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
-function e_prove(string $v): string { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
+function e_eprov(string $v): string { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Proveedor | Mega_Uni_Store</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f3f6fb;color:#111827}
-        .container{max-width:700px;margin:0 auto;padding:34px 20px}
-        h1{margin:0 0 6px;color:#172554} p{margin:0 0 24px;color:#6b7280}
-        .card{background:#fff;border:1px solid #dbe3ef;border-radius:22px;box-shadow:0 18px 48px rgba(15,23,42,.10);padding:28px}
-        .form-group{margin-bottom:18px}
-        label{display:block;font-weight:700;margin-bottom:6px;color:#172554;font-size:14px}
-        input,select{width:100%;padding:11px 14px;border:1px solid #d1d5db;border-radius:10px;font-size:14px;box-sizing:border-box}
-        input:focus,select:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.15)}
-        .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-        .btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:12px;padding:12px 20px;font-weight:700;text-decoration:none;cursor:pointer;font-size:14px}
-        .btn-primary{background:#1e3a8a;color:#fff}
-        .btn-secondary{background:#e0e7ff;color:#1e3a8a}
-        .actions{display:flex;gap:12px;margin-top:8px}
-        .alert{padding:13px 14px;border-radius:14px;margin-bottom:18px;border:1px solid transparent}
-        .alert-error{background:#fef2f2;color:#991b1b;border-color:#fecaca}
-        @media(max-width:600px){.row{grid-template-columns:1fr}}
-    </style>
-</head>
-<body>
-<main class="container">
-    <h1>Editar proveedor</h1>
-    <p>Modifica los datos del proveedor #<?= e_prove((string) $proveedor['id']) ?>.</p>
+<style>
+.mf-title { font-size:20px; font-weight:800; color:#172554; margin:0 0 4px; }
+.mf-subtitle { font-size:13px; color:#6b7280; margin:0 0 20px; }
+.mf-alert { padding:11px 14px; border-radius:12px; margin-bottom:14px; font-size:14px; border:1px solid #fecaca; background:#fef2f2; color:#991b1b; }
+.mf-section { background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:18px; margin-bottom:16px; }
+.mf-section h3 { margin:0 0 14px; color:#172554; font-size:15px; }
+.mf-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.mf-group { display:flex; flex-direction:column; gap:6px; }
+.mf-group.span2 { grid-column:1/-1; }
+label { font-size:13px; font-weight:700; color:#374151; }
+input, textarea, select {
+    width:100%; border:1px solid #dbe3ef; border-radius:10px;
+    padding:10px 12px; font-size:14px; outline:none; background:#fff;
+    box-sizing:border-box; font-family:inherit;
+}
+textarea { min-height:80px; resize:vertical; }
+input:focus, textarea:focus, select:focus { border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.1); }
+.mf-actions { display:flex; gap:10px; margin-top:16px; }
+.btn { display:inline-flex; align-items:center; border:0; border-radius:10px; padding:11px 18px; font-weight:700; cursor:pointer; font-size:14px; font-family:inherit; transition:opacity .15s; }
+.btn:hover { opacity:.85; }
+.btn-primary   { background:#1e3a8a; color:#fff; }
+.btn-secondary { background:#e0e7ff; color:#1e3a8a; }
+@media(max-width:520px){.mf-grid{grid-template-columns:1fr;}}
+</style>
 
-    <?php if ($flash !== null && $flash['type'] === 'error'): ?>
-        <div class="alert alert-error"><?= e_prove($flash['message']) ?></div>
-    <?php endif; ?>
+<h2 class="mf-title">Editar proveedor</h2>
+<p class="mf-subtitle">Actualiza la información del proveedor.</p>
 
-    <section class="card">
-        <form action="index.php?route=proveedores.update" method="POST">
-            <input type="hidden" name="csrf_token" value="<?= e_prove($csrfToken) ?>">
-            <input type="hidden" name="id" value="<?= e_prove((string) $proveedor['id']) ?>">
+<?php if ($flash !== null): ?>
+    <div class="mf-alert"><?= e_eprov($flash['message']) ?></div>
+<?php endif; ?>
 
-            <div class="row">
-                <div class="form-group">
-                    <label for="nombre">Razon social / Nombre *</label>
-                    <input type="text" id="nombre" name="nombre" required maxlength="150"
-                           value="<?= e_prove($proveedor['nombre']) ?>">
-                </div>
-                <div class="form-group">
-                    <label for="ruc_nit">NIT / RUC *</label>
-                    <input type="text" id="ruc_nit" name="ruc_nit" required maxlength="30"
-                           value="<?= e_prove($proveedor['ruc_nit']) ?>">
-                </div>
+<form id="form-editar-proveedor" action="index.php?route=proveedores.update" method="POST">
+    <input type="hidden" name="csrf_token" value="<?= e_eprov($csrfToken) ?>">
+    <input type="hidden" name="id" value="<?= e_eprov((string) $proveedor['id']) ?>">
+
+    <div class="mf-section">
+        <h3>Información del proveedor</h3>
+        <div class="mf-grid">
+            <div class="mf-group">
+                <label for="ep-nombre">Nombre *</label>
+                <input type="text" id="ep-nombre" name="nombre" required maxlength="150"
+                       value="<?= e_eprov($proveedor['nombre']) ?>">
             </div>
-
-            <div class="row">
-                <div class="form-group">
-                    <label for="telefono">Telefono</label>
-                    <input type="text" id="telefono" name="telefono" maxlength="20"
-                           value="<?= e_prove($proveedor['telefono'] ?? '') ?>">
-                </div>
-                <div class="form-group">
-                    <label for="email">Correo electronico</label>
-                    <input type="email" id="email" name="email" maxlength="150"
-                           value="<?= e_prove($proveedor['email'] ?? '') ?>">
-                </div>
+            <div class="mf-group">
+                <label for="ep-nit">NIT/RUC *</label>
+                <input type="text" id="ep-nit" name="ruc_nit" required maxlength="30"
+                       value="<?= e_eprov($proveedor['ruc_nit'] ?? '') ?>">
             </div>
-
-            <div class="form-group">
-                <label for="direccion">Direccion</label>
-                <input type="text" id="direccion" name="direccion" maxlength="255"
-                       value="<?= e_prove($proveedor['direccion'] ?? '') ?>">
+            <div class="mf-group">
+                <label for="ep-contacto">Nombre de contacto</label>
+                <input type="text" id="ep-contacto" name="contacto_nombre" maxlength="100"
+                       value="<?= e_eprov($proveedor['contacto_nombre'] ?? '') ?>">
             </div>
-
-            <div class="form-group">
-                <label for="contacto_nombre">Nombre del contacto comercial</label>
-                <input type="text" id="contacto_nombre" name="contacto_nombre" maxlength="100"
-                       value="<?= e_prove($proveedor['contacto_nombre'] ?? '') ?>">
+            <div class="mf-group">
+                <label for="ep-tel">Teléfono</label>
+                <input type="text" id="ep-tel" name="telefono" maxlength="20"
+                       value="<?= e_eprov($proveedor['telefono'] ?? '') ?>">
             </div>
-
-            <div class="form-group">
-                <label for="estado">Estado</label>
-                <select id="estado" name="estado">
-                    <option value="1" <?= (int)$proveedor['estado'] === 1 ? 'selected' : '' ?>>Activo</option>
-                    <option value="0" <?= (int)$proveedor['estado'] === 0 ? 'selected' : '' ?>>Inactivo</option>
+            <div class="mf-group">
+                <label for="ep-email">Correo electrónico</label>
+                <input type="email" id="ep-email" name="email" maxlength="150"
+                       value="<?= e_eprov($proveedor['email'] ?? '') ?>">
+            </div>
+            <div class="mf-group">
+                <label for="ep-estado">Estado</label>
+                <select id="ep-estado" name="estado">
+                    <option value="1" <?= (int) ($proveedor['estado'] ?? 1) === 1 ? 'selected' : '' ?>>Activo</option>
+                    <option value="0" <?= (int) ($proveedor['estado'] ?? 1) === 0 ? 'selected' : '' ?>>Inactivo</option>
                 </select>
             </div>
-
-            <div class="actions">
-                <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                <a class="btn btn-secondary" href="index.php?route=proveedores.index">Cancelar</a>
+            <div class="mf-group span2">
+                <label for="ep-dir">Dirección</label>
+                <input type="text" id="ep-dir" name="direccion" maxlength="200"
+                       value="<?= e_eprov($proveedor['direccion'] ?? '') ?>">
             </div>
-        </form>
-    </section>
-</main>
-</body>
-</html>
+        </div>
+    </div>
+
+    <div class="mf-actions">
+        <button type="submit" class="btn btn-primary">Actualizar proveedor</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+    </div>
+</form>

@@ -1,88 +1,74 @@
 <?php
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
-function e_empe(string $v): string { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
+function e_eemp(string $v): string { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Empleado | Mega_Uni_Store</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f3f6fb;color:#111827}
-        .container{max-width:700px;margin:0 auto;padding:34px 20px}
-        h1{margin:0 0 6px;color:#172554} p{margin:0 0 24px;color:#6b7280}
-        .card{background:#fff;border:1px solid #dbe3ef;border-radius:22px;box-shadow:0 18px 48px rgba(15,23,42,.10);padding:28px}
-        .form-group{margin-bottom:18px}
-        label{display:block;font-weight:700;margin-bottom:6px;color:#172554;font-size:14px}
-        input,select{width:100%;padding:11px 14px;border:1px solid #d1d5db;border-radius:10px;font-size:14px;box-sizing:border-box}
-        input:focus,select:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.15)}
-        .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-        .btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:12px;padding:12px 20px;font-weight:700;text-decoration:none;cursor:pointer;font-size:14px}
-        .btn-primary{background:#1e3a8a;color:#fff}
-        .btn-secondary{background:#e0e7ff;color:#1e3a8a}
-        .actions{display:flex;gap:12px;margin-top:8px}
-        .alert{padding:13px 14px;border-radius:14px;margin-bottom:18px;border:1px solid transparent}
-        .alert-error{background:#fef2f2;color:#991b1b;border-color:#fecaca}
-        .info-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:14px;margin-bottom:18px;font-size:14px;color:#1e3a8a}
-        @media(max-width:600px){.row{grid-template-columns:1fr}}
-    </style>
-</head>
-<body>
-<main class="container">
-    <h1>Editar empleado</h1>
-    <p>Modifica los datos del empleado #<?= e_empe((string) $empleado['id']) ?>.</p>
+<style>
+.mf-title { font-size:20px; font-weight:800; color:#172554; margin:0 0 4px; }
+.mf-subtitle { font-size:13px; color:#6b7280; margin:0 0 20px; }
+.mf-alert { padding:11px 14px; border-radius:12px; margin-bottom:14px; font-size:14px; border:1px solid #fecaca; background:#fef2f2; color:#991b1b; }
+.mf-section { background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:18px; margin-bottom:16px; }
+.mf-section h3 { margin:0 0 14px; color:#172554; font-size:15px; }
+.mf-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.mf-group { display:flex; flex-direction:column; gap:6px; }
+.mf-group.span2 { grid-column:1/-1; }
+label { font-size:13px; font-weight:700; color:#374151; }
+input, textarea, select {
+    width:100%; border:1px solid #dbe3ef; border-radius:10px;
+    padding:10px 12px; font-size:14px; outline:none; background:#fff;
+    box-sizing:border-box; font-family:inherit;
+}
+textarea { min-height:80px; resize:vertical; }
+input:focus, textarea:focus, select:focus { border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.1); }
+.mf-actions { display:flex; gap:10px; margin-top:16px; }
+.btn { display:inline-flex; align-items:center; border:0; border-radius:10px; padding:11px 18px; font-weight:700; cursor:pointer; font-size:14px; font-family:inherit; transition:opacity .15s; }
+.btn:hover { opacity:.85; }
+.btn-primary   { background:#1e3a8a; color:#fff; }
+.btn-secondary { background:#e0e7ff; color:#1e3a8a; }
+@media(max-width:520px){.mf-grid{grid-template-columns:1fr;}}
+</style>
 
-    <?php if ($flash !== null && $flash['type'] === 'error'): ?>
-        <div class="alert alert-error"><?= e_empe($flash['message']) ?></div>
-    <?php endif; ?>
+<h2 class="mf-title">Editar empleado</h2>
+<p class="mf-subtitle">Actualiza los datos laborales del empleado.</p>
 
-    <div class="info-box">
-        <strong><?= e_empe(trim($empleado['usuario_nombre'] . ' ' . $empleado['usuario_apellido'])) ?></strong>
-        — <?= e_empe($empleado['usuario_email']) ?><br>
-        Tienda: <strong><?= e_empe($empleado['tienda_nombre']) ?></strong>
+<?php if ($flash !== null): ?>
+    <div class="mf-alert"><?= e_eemp($flash['message']) ?></div>
+<?php endif; ?>
+
+<form id="form-editar-empleado" action="index.php?route=empleados.update" method="POST">
+    <input type="hidden" name="csrf_token" value="<?= e_eemp($csrfToken) ?>">
+    <input type="hidden" name="id" value="<?= e_eemp((string) $empleado['id']) ?>">
+
+    <div class="mf-section">
+        <h3>Datos laborales</h3>
+        <div class="mf-grid">
+            <div class="mf-group">
+                <label for="ee-codigo">Código de empleado *</label>
+                <input type="text" id="ee-codigo" name="codigo_empleado" required maxlength="30"
+                       value="<?= e_eemp($empleado['codigo_empleado'] ?? '') ?>">
+            </div>
+            <div class="mf-group">
+                <label for="ee-ingreso">Fecha de ingreso *</label>
+                <input type="date" id="ee-ingreso" name="fecha_ingreso" required
+                       value="<?= e_eemp($empleado['fecha_ingreso'] ?? '') ?>">
+            </div>
+            <div class="mf-group">
+                <label for="ee-salario">Salario base *</label>
+                <input type="number" id="ee-salario" name="salario_base" required min="0" step="0.01"
+                       value="<?= e_eemp($empleado['salario_base'] ?? '') ?>">
+            </div>
+            <div class="mf-group">
+                <label for="ee-estado">Estado</label>
+                <select id="ee-estado" name="estado">
+                    <option value="activo" <?= ($empleado['estado'] ?? 'activo') === 'activo' ? 'selected' : '' ?>>Activo</option>
+                    <option value="inactivo" <?= ($empleado['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
+                </select>
+            </div>
+        </div>
     </div>
 
-    <section class="card">
-        <form action="index.php?route=empleados.update" method="POST">
-            <input type="hidden" name="csrf_token" value="<?= e_empe($csrfToken) ?>">
-            <input type="hidden" name="id" value="<?= e_empe((string) $empleado['id']) ?>">
-
-            <div class="row">
-                <div class="form-group">
-                    <label for="codigo_empleado">Codigo de empleado *</label>
-                    <input type="text" id="codigo_empleado" name="codigo_empleado" required maxlength="20"
-                           value="<?= e_empe($empleado['codigo_empleado']) ?>">
-                </div>
-                <div class="form-group">
-                    <label for="fecha_ingreso">Fecha de ingreso *</label>
-                    <input type="date" id="fecha_ingreso" name="fecha_ingreso" required
-                           value="<?= e_empe($empleado['fecha_ingreso'] ?? '') ?>">
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="form-group">
-                    <label for="salario_base">Salario base (COP) *</label>
-                    <input type="number" id="salario_base" name="salario_base" required min="0" step="1000"
-                           value="<?= e_empe((string) ($empleado['salario_base'] ?? '')) ?>">
-                </div>
-                <div class="form-group">
-                    <label for="estado">Estado</label>
-                    <select id="estado" name="estado">
-                        <option value="activo" <?= ($empleado['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
-                        <option value="inactivo" <?= ($empleado['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="actions">
-                <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                <a class="btn btn-secondary" href="index.php?route=empleados.index">Cancelar</a>
-            </div>
-        </form>
-    </section>
-</main>
-</body>
-</html>
+    <div class="mf-actions">
+        <button type="submit" class="btn btn-primary">Actualizar empleado</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+    </div>
+</form>

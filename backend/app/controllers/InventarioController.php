@@ -60,20 +60,18 @@ final class InventarioController
         $datos = $this->validarDatosInventario($_POST);
 
         if ($datos === null) {
-            $this->redireccionar('index.php?route=inventario.create');
+            $this->jsonError('Datos de inventario inválidos. Verifica los campos requeridos.', 'inventario.create');
         }
 
         $this->validarAccesoATienda((int) $datos['tienda_id']);
 
         if (!$this->inventarioModel->productoPerteneceATienda((int) $datos['producto_id'], (int) $datos['tienda_id'])) {
-            $this->guardarMensaje('error', 'El producto seleccionado no está asociado a la tienda.');
-            $this->redireccionar('index.php?route=inventario.create');
+            $this->jsonError('El producto seleccionado no está asociado a la tienda.', 'inventario.create');
         }
 
         $this->inventarioModel->crearOActualizar($datos);
 
-        $this->guardarMensaje('success', 'Inventario registrado correctamente.');
-        $this->redireccionar('index.php?route=inventario.index');
+        $this->jsonExito('inventario.index', 'Inventario registrado correctamente.');
     }
 
     public function movimiento(): void
@@ -94,7 +92,17 @@ final class InventarioController
 
         $this->validarAccesoATienda((int) $inventario['tienda_id']);
 
-        $movimientos = $this->inventarioModel->listarMovimientos($id);
+        $filtroTipo  = trim((string) ($_GET['tipo']  ?? ''));
+        $filtroDesde = trim((string) ($_GET['desde'] ?? ''));
+        $filtroHasta = trim((string) ($_GET['hasta'] ?? ''));
+
+        $movimientos = $this->inventarioModel->listarMovimientos(
+            $id,
+            null,
+            $filtroTipo  !== '' ? $filtroTipo  : null,
+            $filtroDesde !== '' ? $filtroDesde : null,
+            $filtroHasta !== '' ? $filtroHasta : null
+        );
         $csrfToken = $this->generarCsrfToken();
 
         require __DIR__ . '/../../resources/views/inventario/movimiento.php';
@@ -166,7 +174,18 @@ final class InventarioController
     public function movimientos(): void
     {
         $tiendaIdPermitida = $this->tiendaIdPermitida();
-        $movimientos = $this->inventarioModel->listarMovimientos(null, $tiendaIdPermitida);
+
+        $filtroTipo  = trim((string) ($_GET['tipo']  ?? ''));
+        $filtroDesde = trim((string) ($_GET['desde'] ?? ''));
+        $filtroHasta = trim((string) ($_GET['hasta'] ?? ''));
+
+        $movimientos = $this->inventarioModel->listarMovimientos(
+            null,
+            $tiendaIdPermitida,
+            $filtroTipo  !== '' ? $filtroTipo  : null,
+            $filtroDesde !== '' ? $filtroDesde : null,
+            $filtroHasta !== '' ? $filtroHasta : null
+        );
 
         require __DIR__ . '/../../resources/views/inventario/movimientos.php';
     }

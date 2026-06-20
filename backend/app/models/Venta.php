@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/Cupon.php';
 
 final class Venta
 {
@@ -94,6 +95,7 @@ final class Venta
                 v.cliente_id,
                 v.empleado_id,
                 v.caja_id,
+                v.cupon_id,
                 v.fecha,
                 v.subtotal,
                 v.descuento,
@@ -105,15 +107,17 @@ final class Venta
                 v.updated_at,
                 v.created_by,
                 v.updated_by,
-                t.nombre  AS tienda_nombre,
-                cj.nombre AS caja_nombre,
-                c.nombre  AS cliente_nombre,
+                t.nombre   AS tienda_nombre,
+                cj.nombre  AS caja_nombre,
+                c.nombre   AS cliente_nombre,
                 c.apellido AS cliente_apellido,
-                c.email   AS cliente_email
+                c.email    AS cliente_email,
+                cu.codigo  AS cupon_codigo
             FROM ventas v
             INNER JOIN tiendas t  ON t.id  = v.tienda_id
             LEFT  JOIN cajas  cj  ON cj.id = v.caja_id
             LEFT  JOIN clientes c ON c.id  = v.cliente_id
+            LEFT  JOIN cupones cu ON cu.id = v.cupon_id
             WHERE v.id = :id
               AND v.deleted_at IS NULL
             LIMIT 1
@@ -213,8 +217,13 @@ final class Venta
         $this->db->beginTransaction();
 
         try {
-            $tiendaId    = (int) $venta['tienda_id'];
-            $usuarioId   = (int) $venta['created_by'];
+            $tiendaId       = (int) $venta['tienda_id'];
+            $usuarioId      = (int) $venta['created_by'];
+            $cuponId        = isset($venta['cupon_id']) && (int) $venta['cupon_id'] > 0
+                                ? (int) $venta['cupon_id']
+                                : null;
+            $descuentoCupon = max(0.0, (float) ($venta['descuento_cupon'] ?? 0.0));
+
             $cajaAbierta = $this->buscarCajaAbiertaPorTienda($tiendaId);
 
             if ($cajaAbierta === null) {
@@ -225,17 +234,22 @@ final class Venta
 
             $calculo = $this->calcularTotalesYValidarStock($tiendaId, $items);
 
+            // Aplicar descuento del cupón al total (el subtotal e impuesto no cambian)
+            $subtotalFinal  = (float) $calculo['subtotal'];
+            $impuestoFinal  = (float) $calculo['impuesto'];
+            $totalFinal     = max(0.0, $subtotalFinal + $impuestoFinal - $descuentoCupon);
+
             // Intentar resolver el empleado_id del usuario autenticado
             $empleadoId = $this->buscarEmpleadoPorUsuario($usuarioId, $tiendaId);
 
             $stmtVenta = $this->db->prepare("
                 INSERT INTO ventas (
                     tienda_id, cliente_id, empleado_id, caja_id,
-                    subtotal, descuento, impuesto, total,
+                    cupon_id, subtotal, descuento, impuesto, total,
                     estado, created_by, updated_by
                 ) VALUES (
                     :tienda_id, :cliente_id, :empleado_id, :caja_id,
-                    :subtotal, :descuento, :impuesto, :total,
+                    :cupon_id, :subtotal, :descuento, :impuesto, :total,
                     'completada', :created_by, :updated_by
                 )
             ");
@@ -245,10 +259,11 @@ final class Venta
                 ':cliente_id'  => $venta['cliente_id'],
                 ':empleado_id' => $empleadoId,
                 ':caja_id'     => (int) $cajaAbierta['id'],
+                ':cupon_id'    => $cuponId,
                 ':subtotal'    => $calculo['subtotal'],
-                ':descuento'   => $calculo['descuento'],
+                ':descuento'   => number_format($descuentoCupon, 2, '.', ''),
                 ':impuesto'    => $calculo['impuesto'],
-                ':total'       => $calculo['total'],
+                ':total'       => number_format($totalFinal, 2, '.', ''),
                 ':created_by'  => $usuarioId,
                 ':updated_by'  => $usuarioId,
             ]);
@@ -259,16 +274,21 @@ final class Venta
             $this->registrarPago(
                 $ventaId,
                 (int) $pago['metodo_pago_id'],
-                (string) $calculo['total'],
+                number_format($totalFinal, 2, '.', ''),
                 $pago['referencia'] ?? null
             );
             $this->registrarMovimientoCaja(
                 (int) $cajaAbierta['id'],
                 'ingreso',
-                (float) $calculo['total'],
+                $totalFinal,
                 'Ingreso por venta #' . $ventaId,
                 $ventaId
             );
+
+            // Marcar uso del cupón (dentro de la transacción para mantener consistencia)
+            if ($cuponId !== null) {
+                (new Cupon())->incrementarUsos($cuponId);
+            }
 
             $this->db->commit();
 
@@ -348,6 +368,11 @@ final class Venta
                 UPDATE pagos SET estado = 'rechazado' WHERE venta_id = :venta_id
             ");
             $stmtPagos->execute([':venta_id' => $ventaId]);
+
+            // Devolver uso del cupón si la venta lo tenía
+            if (!empty($venta['cupon_id'])) {
+                (new Cupon())->decrementarUsos((int) $venta['cupon_id']);
+            }
 
             $this->db->commit();
 
@@ -672,4 +697,75 @@ final class Venta
 
         return $empleado ? (int) $empleado['id'] : null;
     }
+
+    // =========================================================================
+    // Portal: crear venta sin caja (pedido online — caja_id NULL)
+    // =========================================================================
+
+    public function crearVentaPortal(array $venta, array $items): int
+    {
+        $this->db->beginTransaction();
+
+        try {
+            $tiendaId       = (int) $venta['tienda_id'];
+            $clienteId      = isset($venta['cliente_id']) ? (int) $venta['cliente_id'] : null;
+            $cuponId        = isset($venta['cupon_id']) && (int) $venta['cupon_id'] > 0
+                                ? (int) $venta['cupon_id'] : null;
+            $descuentoCupon = max(0.0, (float) ($venta['descuento_cupon'] ?? 0.0));
+
+            $calculo       = $this->calcularTotalesYValidarStock($tiendaId, $items);
+            $subtotalFinal = (float) $calculo['subtotal'];
+            $impuestoFinal = (float) $calculo['impuesto'];
+            $totalFinal    = max(0.0, $subtotalFinal + $impuestoFinal - $descuentoCupon);
+
+            $stmt = $this->db->prepare("
+                INSERT INTO ventas
+                    (tienda_id, cliente_id, empleado_id, caja_id,
+                     cupon_id, subtotal, descuento, impuesto, total, estado)
+                VALUES
+                    (:tienda_id, :cliente_id, NULL, NULL,
+                     :cupon_id, :subtotal, :descuento, :impuesto, :total, 'pendiente')
+            ");
+
+            $stmt->execute([
+                ':tienda_id'  => $tiendaId,
+                ':cliente_id' => $clienteId,
+                ':cupon_id'   => $cuponId,
+                ':subtotal'   => number_format($subtotalFinal, 2, '.', ''),
+                ':descuento'  => number_format($descuentoCupon, 2, '.', ''),
+                ':impuesto'   => number_format($impuestoFinal, 2, '.', ''),
+                ':total'      => number_format($totalFinal, 2, '.', ''),
+            ]);
+
+            $ventaId = (int) $this->db->lastInsertId();
+
+            $this->insertarDetalleVenta($ventaId, $calculo['items']);
+
+            // Descontar stock
+            foreach ($calculo['items'] as $item) {
+                $inv = $this->buscarInventario($tiendaId, (int) $item['producto_id']);
+                if ($inv !== null) {
+                    $this->actualizarCantidadInventario(
+                        (int) $inv['id'],
+                        (float) $inv['cantidad'] - (float) $item['cantidad']
+                    );
+                    $this->registrarMovimientoInventario(
+                        (int) $inv['id'],
+                        (int) $item['producto_id'],
+                        $tiendaId,
+                        'salida',
+                        (float) $item['cantidad'],
+                        'Venta portal web #' . $ventaId
+                    );
+                }
+            }
+
+            $this->db->commit();
+            return $ventaId;
+        } catch (Throwable $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
+    }
+
 }

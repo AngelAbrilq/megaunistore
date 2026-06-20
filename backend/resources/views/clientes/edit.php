@@ -1,105 +1,93 @@
 <?php
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
-function e_clie(string $v): string { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
+function e_ecli(string $v): string { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Cliente | Mega_Uni_Store</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f3f6fb;color:#111827}
-        .container{max-width:700px;margin:0 auto;padding:34px 20px}
-        h1{margin:0 0 6px;color:#172554} p{margin:0 0 24px;color:#6b7280}
-        .card{background:#fff;border:1px solid #dbe3ef;border-radius:22px;box-shadow:0 18px 48px rgba(15,23,42,.10);padding:28px}
-        .form-group{margin-bottom:18px}
-        label{display:block;font-weight:700;margin-bottom:6px;color:#172554;font-size:14px}
-        input,select{width:100%;padding:11px 14px;border:1px solid #d1d5db;border-radius:10px;font-size:14px;box-sizing:border-box}
-        input:focus,select:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.15)}
-        .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-        .btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:12px;padding:12px 20px;font-weight:700;text-decoration:none;cursor:pointer;font-size:14px}
-        .btn-primary{background:#1e3a8a;color:#fff}
-        .btn-secondary{background:#e0e7ff;color:#1e3a8a}
-        .actions{display:flex;gap:12px;margin-top:8px}
-        .alert{padding:13px 14px;border-radius:14px;margin-bottom:18px;border:1px solid transparent}
-        .alert-error{background:#fef2f2;color:#991b1b;border-color:#fecaca}
-        @media(max-width:600px){.row{grid-template-columns:1fr}}
-    </style>
-</head>
-<body>
-<main class="container">
-    <h1>Editar cliente</h1>
-    <p>Modifica los datos del cliente #<?= e_clie((string) $cliente['id']) ?>.</p>
+<style>
+.mf-title { font-size:20px; font-weight:800; color:#172554; margin:0 0 4px; }
+.mf-subtitle { font-size:13px; color:#6b7280; margin:0 0 20px; }
+.mf-alert { padding:11px 14px; border-radius:12px; margin-bottom:14px; font-size:14px; border:1px solid #fecaca; background:#fef2f2; color:#991b1b; }
+.mf-section { background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:18px; margin-bottom:16px; }
+.mf-section h3 { margin:0 0 14px; color:#172554; font-size:15px; }
+.mf-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.mf-group { display:flex; flex-direction:column; gap:6px; }
+.mf-group.span2 { grid-column:1/-1; }
+label { font-size:13px; font-weight:700; color:#374151; }
+input, textarea, select {
+    width:100%; border:1px solid #dbe3ef; border-radius:10px;
+    padding:10px 12px; font-size:14px; outline:none; background:#fff;
+    box-sizing:border-box; font-family:inherit;
+}
+textarea { min-height:80px; resize:vertical; }
+input:focus, textarea:focus, select:focus { border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.1); }
+.mf-actions { display:flex; gap:10px; margin-top:16px; }
+.btn { display:inline-flex; align-items:center; border:0; border-radius:10px; padding:11px 18px; font-weight:700; cursor:pointer; font-size:14px; font-family:inherit; transition:opacity .15s; }
+.btn:hover { opacity:.85; }
+.btn-primary   { background:#1e3a8a; color:#fff; }
+.btn-secondary { background:#e0e7ff; color:#1e3a8a; }
+@media(max-width:520px){.mf-grid{grid-template-columns:1fr;}}
+</style>
 
-    <?php if ($flash !== null && $flash['type'] === 'error'): ?>
-        <div class="alert alert-error"><?= e_clie($flash['message']) ?></div>
-    <?php endif; ?>
+<h2 class="mf-title">Editar cliente</h2>
+<p class="mf-subtitle">Actualiza la información del cliente.</p>
 
-    <section class="card">
-        <form action="index.php?route=clientes.update" method="POST">
-            <input type="hidden" name="csrf_token" value="<?= e_clie($csrfToken) ?>">
-            <input type="hidden" name="id" value="<?= e_clie((string) $cliente['id']) ?>">
+<?php if ($flash !== null): ?>
+    <div class="mf-alert"><?= e_ecli($flash['message']) ?></div>
+<?php endif; ?>
 
-            <div class="row">
-                <div class="form-group">
-                    <label for="nombre">Nombre *</label>
-                    <input type="text" id="nombre" name="nombre" required maxlength="100"
-                           value="<?= e_clie($cliente['nombre']) ?>">
-                </div>
-                <div class="form-group">
-                    <label for="apellido">Apellido</label>
-                    <input type="text" id="apellido" name="apellido" maxlength="100"
-                           value="<?= e_clie($cliente['apellido'] ?? '') ?>">
-                </div>
+<form id="form-editar-cliente" action="index.php?route=clientes.update" method="POST">
+    <input type="hidden" name="csrf_token" value="<?= e_ecli($csrfToken) ?>">
+    <input type="hidden" name="id" value="<?= e_ecli((string) $cliente['id']) ?>">
+
+    <div class="mf-section">
+        <h3>Información personal</h3>
+        <div class="mf-grid">
+            <div class="mf-group">
+                <label for="ec-nombre">Nombre *</label>
+                <input type="text" id="ec-nombre" name="nombre" required maxlength="100"
+                       value="<?= e_ecli($cliente['nombre']) ?>">
             </div>
-
-            <div class="row">
-                <div class="form-group">
-                    <label for="tipo_documento">Tipo de documento</label>
-                    <select id="tipo_documento" name="tipo_documento">
-                        <option value="">-- Seleccionar --</option>
-                        <?php foreach (['CC','CE','NIT','TI','PP'] as $tipo): ?>
-                            <option value="<?= e_clie($tipo) ?>"
-                                <?= ($cliente['tipo_documento'] ?? '') === $tipo ? 'selected' : '' ?>>
-                                <?= e_clie($tipo) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="numero_documento">Numero de documento</label>
-                    <input type="text" id="numero_documento" name="numero_documento" maxlength="30"
-                           value="<?= e_clie($cliente['numero_documento'] ?? '') ?>">
-                </div>
+            <div class="mf-group">
+                <label for="ec-apellido">Apellido</label>
+                <input type="text" id="ec-apellido" name="apellido" maxlength="100"
+                       value="<?= e_ecli($cliente['apellido'] ?? '') ?>">
             </div>
-
-            <div class="row">
-                <div class="form-group">
-                    <label for="email">Correo electronico</label>
-                    <input type="email" id="email" name="email" maxlength="150"
-                           value="<?= e_clie($cliente['email'] ?? '') ?>">
-                </div>
-                <div class="form-group">
-                    <label for="telefono">Telefono</label>
-                    <input type="text" id="telefono" name="telefono" maxlength="20"
-                           value="<?= e_clie($cliente['telefono'] ?? '') ?>">
-                </div>
+            <div class="mf-group">
+                <label for="ec-tipo">Tipo de documento</label>
+                <select id="ec-tipo" name="tipo_documento">
+                    <option value="">Sin documento</option>
+                    <?php foreach (['CC'=>'Cédula de ciudadanía','CE'=>'Cédula de extranjería','NIT'=>'NIT','PAS'=>'Pasaporte'] as $val => $label): ?>
+                        <option value="<?= e_ecli($val) ?>" <?= ($cliente['tipo_documento'] ?? '') === $val ? 'selected' : '' ?>>
+                            <?= e_ecli($label) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
-
-            <div class="form-group">
-                <label for="direccion">Direccion</label>
-                <input type="text" id="direccion" name="direccion" maxlength="255"
-                       value="<?= e_clie($cliente['direccion'] ?? '') ?>">
+            <div class="mf-group">
+                <label for="ec-doc">Número de documento</label>
+                <input type="text" id="ec-doc" name="numero_documento" maxlength="30"
+                       value="<?= e_ecli($cliente['numero_documento'] ?? '') ?>">
             </div>
-
-            <div class="actions">
-                <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                <a class="btn btn-secondary" href="index.php?route=clientes.index">Cancelar</a>
+            <div class="mf-group">
+                <label for="ec-email">Correo electrónico</label>
+                <input type="email" id="ec-email" name="email" maxlength="150"
+                       value="<?= e_ecli($cliente['email'] ?? '') ?>">
             </div>
-        </form>
-    </section>
-</main>
-</body>
-</html>
+            <div class="mf-group">
+                <label for="ec-tel">Teléfono</label>
+                <input type="text" id="ec-tel" name="telefono" maxlength="20"
+                       value="<?= e_ecli($cliente['telefono'] ?? '') ?>">
+            </div>
+            <div class="mf-group span2">
+                <label for="ec-dir">Dirección</label>
+                <input type="text" id="ec-dir" name="direccion" maxlength="200"
+                       value="<?= e_ecli($cliente['direccion'] ?? '') ?>">
+            </div>
+        </div>
+    </div>
+
+    <div class="mf-actions">
+        <button type="submit" class="btn btn-primary">Actualizar cliente</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+    </div>
+</form>

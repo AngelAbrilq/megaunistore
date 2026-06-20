@@ -1,4 +1,9 @@
 <?php
+$isAjax = isset($_GET['ajax']) && $_GET['ajax'] === '1';
+if (!$isAjax) {
+    require __DIR__ . '/../layout/dashboard_layout.php';
+    return;
+}
 
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
@@ -9,196 +14,57 @@ function e_caja_apertura(string $value): string
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Abrir caja | Mega_Uni_Store</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+.summary-mini{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
+.summary-mini-item{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:14px}
+.summary-mini-item small{display:block;color:#6b7280;font-weight:800;text-transform:uppercase;font-size:11px;letter-spacing:.04em;margin-bottom:4px}
+.summary-mini-item strong{color:#172554;font-size:16px}
+.form-group{margin-bottom:18px}
+label{display:block;margin-bottom:8px;font-weight:800;color:#1f2937;font-size:14px}
+input,textarea{width:100%;border:1px solid #dbe3ef;border-radius:14px;padding:13px 14px;font-size:15px;outline:none;background:#fff;box-sizing:border-box;font-family:inherit}
+textarea{min-height:90px;resize:vertical}
+input:focus,textarea:focus{border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+.btn{display:inline-flex;border:0;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer;font-size:14px;font-family:inherit}
+.btn-primary{background:#1e3a8a;color:#fff}
+.btn-secondary{background:#e0e7ff;color:#1e3a8a}
+.modal-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.alert{padding:12px 14px;border-radius:12px;margin-bottom:16px;border:1px solid #fecaca;background:#fef2f2;color:#991b1b;font-size:14px}
+</style>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f3f6fb;
-            color: #111827;
-        }
+<h3 style="margin:0 0 4px;color:#172554;font-size:17px">Abrir caja</h3>
+<p style="margin:0 0 18px;color:#6b7280;font-size:13px">Registra el monto inicial para iniciar operación.</p>
 
-        .container {
-            max-width: 820px;
-            margin: 0 auto;
-            padding: 34px 20px;
-        }
+<?php if ($flash !== null): ?>
+    <div class="alert"><?= e_caja_apertura($flash['message']) ?></div>
+<?php endif; ?>
 
-        h1 {
-            margin: 0 0 8px;
-            color: #172554;
-        }
+<div class="summary-mini">
+    <div class="summary-mini-item">
+        <small>Caja</small>
+        <strong><?= e_caja_apertura($caja['nombre']) ?></strong>
+    </div>
+    <div class="summary-mini-item">
+        <small>Tienda</small>
+        <strong><?= e_caja_apertura($caja['tienda_nombre']) ?></strong>
+    </div>
+</div>
 
-        p {
-            margin: 0 0 24px;
-            color: #6b7280;
-        }
+<form action="index.php?route=caja.abrir" method="POST">
+    <input type="hidden" name="csrf_token" value="<?= e_caja_apertura($csrfToken) ?>">
+    <input type="hidden" name="caja_id" value="<?= e_caja_apertura((string)$caja['id']) ?>">
 
-        .card {
-            background: #ffffff;
-            border: 1px solid #dbe3ef;
-            border-radius: 22px;
-            padding: 26px;
-            box-shadow: 0 18px 48px rgba(15, 23, 42, 0.10);
-            margin-bottom: 20px;
-        }
+    <div class="form-group">
+        <label for="ap_monto_inicial">Monto inicial *</label>
+        <input type="number" id="ap_monto_inicial" name="monto_inicial" required min="0" step="0.01" value="0">
+    </div>
 
-        .summary {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 14px;
-        }
+    <div class="form-group">
+        <label for="ap_descripcion">Descripción</label>
+        <textarea id="ap_descripcion" name="descripcion" placeholder="Ej: Apertura de turno de la mañana."></textarea>
+    </div>
 
-        .summary-item {
-            background: #f8fafc;
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 14px;
-        }
-
-        .summary-item small {
-            display: block;
-            color: #6b7280;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin-bottom: 6px;
-            letter-spacing: 0.04em;
-        }
-
-        .summary-item strong {
-            color: #172554;
-            font-size: 18px;
-        }
-
-        .alert {
-            padding: 13px 14px;
-            border-radius: 14px;
-            margin-bottom: 18px;
-            border: 1px solid #fecaca;
-            background: #fef2f2;
-            color: #991b1b;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 800;
-            color: #1f2937;
-            font-size: 14px;
-        }
-
-        input,
-        textarea {
-            width: 100%;
-            border: 1px solid #dbe3ef;
-            border-radius: 14px;
-            padding: 13px 14px;
-            font-size: 15px;
-            outline: none;
-            background: #ffffff;
-        }
-
-        textarea {
-            min-height: 105px;
-            resize: vertical;
-        }
-
-        input:focus,
-        textarea:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-        }
-
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 8px;
-        }
-
-        .btn {
-            display: inline-flex;
-            border: 0;
-            border-radius: 12px;
-            padding: 12px 16px;
-            font-weight: 800;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background: #1e3a8a;
-            color: #ffffff;
-        }
-
-        .btn-secondary {
-            background: #e0e7ff;
-            color: #1e3a8a;
-        }
-
-        @media (max-width: 720px) {
-            .summary {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
-<body>
-    <main class="container">
-        <h1>Abrir caja</h1>
-        <p>Registra el monto inicial para iniciar operación de caja.</p>
-
-        <?php if ($flash !== null): ?>
-            <div class="alert">
-                <?= e_caja_apertura($flash['message']) ?>
-            </div>
-        <?php endif; ?>
-
-        <section class="card">
-            <div class="summary">
-                <div class="summary-item">
-                    <small>Caja</small>
-                    <strong><?= e_caja_apertura($caja['nombre']) ?></strong>
-                </div>
-
-                <div class="summary-item">
-                    <small>Tienda</small>
-                    <strong><?= e_caja_apertura($caja['tienda_nombre']) ?></strong>
-                </div>
-            </div>
-        </section>
-
-        <section class="card">
-            <form action="index.php?route=caja.abrir" method="POST">
-                <input type="hidden" name="csrf_token" value="<?= e_caja_apertura($csrfToken) ?>">
-                <input type="hidden" name="caja_id" value="<?= e_caja_apertura((string) $caja['id']) ?>">
-
-                <div class="form-group">
-                    <label for="monto_inicial">Monto inicial *</label>
-                    <input type="number" id="monto_inicial" name="monto_inicial" required min="0" step="0.01" value="0">
-                </div>
-
-                <div class="form-group">
-                    <label for="descripcion">Descripción</label>
-                    <textarea id="descripcion" name="descripcion" placeholder="Ej: Apertura de turno de la mañana."></textarea>
-                </div>
-
-                <div class="actions">
-                    <button type="submit" class="btn btn-primary">Abrir caja</button>
-                    <a href="index.php?route=caja.index" class="btn btn-secondary">Cancelar</a>
-                </div>
-            </form>
-        </section>
-    </main>
-</body>
-</html>
+    <div class="modal-actions">
+        <button type="submit" class="btn btn-primary">Abrir caja</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+    </div>
+</form>

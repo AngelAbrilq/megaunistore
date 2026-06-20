@@ -150,6 +150,14 @@ final class Devolucion
                 throw new RuntimeException('No se puede hacer devolución de una venta anulada.');
             }
 
+            // Validar que la venta no tenga más de 15 días de antigüedad
+            $diasDesdeVenta = (int) ceil((time() - strtotime($venta['created_at'])) / 86400);
+            if ($diasDesdeVenta > 15) {
+                throw new RuntimeException(
+                    'No se puede procesar la devolución: la venta tiene más de 15 días de antigüedad (' . $diasDesdeVenta . ' días).'
+                );
+            }
+
             $tiendaId = (int) $venta['tienda_id'];
             $cajaAbierta = $this->buscarCajaAbiertaPorTienda($tiendaId);
 
@@ -215,7 +223,7 @@ final class Devolucion
     private function buscarVenta(int $ventaId): ?array
     {
         $stmt = $this->db->prepare("
-            SELECT id, tienda_id, total, estado
+            SELECT id, tienda_id, total, estado, created_at
             FROM ventas
             WHERE id = :id AND deleted_at IS NULL
             LIMIT 1

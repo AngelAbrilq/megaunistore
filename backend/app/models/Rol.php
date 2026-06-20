@@ -32,10 +32,10 @@ final class Rol
         $stmt = $this->db->prepare($sql);
 
         $stmt->execute([
-            ':nombre' => trim($datos['nombre']),
+            ':nombre'      => trim($datos['nombre']),
             ':descripcion' => $datos['descripcion'] ?? null,
-            ':nivel' => $datos['nivel'] ?? 1,
-            ':activo' => $datos['activo'] ?? 1,
+            ':nivel'       => $datos['nivel'] ?? 1,
+            ':activo'      => $datos['activo'] ?? 1,
         ]);
 
         return (int) $this->db->lastInsertId();
@@ -112,59 +112,59 @@ final class Rol
     {
         $rolesBase = [
             [
-                'nombre' => 'Superadministrador',
+                'nombre'      => 'Superadministrador',
                 'descripcion' => 'Usuario raíz con control total sobre la plataforma, tiendas, usuarios, roles y configuración global.',
-                'nivel' => 1,
+                'nivel'       => 1,
             ],
             [
-                'nombre' => 'Administrador de Tienda',
+                'nombre'      => 'Administrador de Tienda',
                 'descripcion' => 'Gestiona una tienda específica, su personal, productos, inventario, ventas y reportes.',
-                'nivel' => 2,
+                'nivel'       => 2,
             ],
             [
-                'nombre' => 'Supervisor',
+                'nombre'      => 'Supervisor',
                 'descripcion' => 'Supervisa operación, cumplimiento de procesos, transacciones y actividades de la tienda.',
-                'nivel' => 3,
+                'nivel'       => 3,
             ],
             [
-                'nombre' => 'Nómina y RRHH',
+                'nombre'      => 'Nómina y RRHH',
                 'descripcion' => 'Gestiona personal, novedades laborales, pagos, liquidaciones y reportes de productividad.',
-                'nivel' => 3,
+                'nivel'       => 3,
             ],
             [
-                'nombre' => 'Vendedor',
+                'nombre'      => 'Vendedor',
                 'descripcion' => 'Registra ventas, atiende clientes, gestiona carrito, pagos y devoluciones operativas.',
-                'nivel' => 4,
+                'nivel'       => 4,
             ],
             [
-                'nombre' => 'Bodeguero',
+                'nombre'      => 'Bodeguero',
                 'descripcion' => 'Gestiona inventario, entradas, salidas, ajustes de stock y preparación de pedidos.',
-                'nivel' => 4,
+                'nivel'       => 4,
             ],
             [
-                'nombre' => 'Reportero',
+                'nombre'      => 'Reportero',
                 'descripcion' => 'Consulta, genera y exporta reportes de ventas, inventarios y desempeño operativo.',
-                'nivel' => 4,
+                'nivel'       => 4,
             ],
             [
-                'nombre' => 'Cliente',
+                'nombre'      => 'Cliente',
                 'descripcion' => 'Usuario final que navega, compra, paga, consulta historial y califica productos.',
-                'nivel' => 5,
+                'nivel'       => 5,
             ],
             [
-                'nombre' => 'Sistema',
+                'nombre'      => 'Sistema',
                 'descripcion' => 'Actor lógico para automatizaciones, alertas, respaldos, validaciones y eventos internos.',
-                'nivel' => 1,
+                'nivel'       => 1,
             ],
         ];
 
         foreach ($rolesBase as $rol) {
             if ($this->buscarPorNombre($rol['nombre']) === null) {
                 $this->crear([
-                    'nombre' => $rol['nombre'],
+                    'nombre'      => $rol['nombre'],
                     'descripcion' => $rol['descripcion'],
-                    'nivel' => $rol['nivel'],
-                    'activo' => 1,
+                    'nivel'       => $rol['nivel'],
+                    'activo'      => 1,
                 ]);
             }
         }
@@ -192,8 +192,8 @@ final class Rol
 
         return $stmt->execute([
             ':usuario_id' => $usuarioId,
-            ':rol_id' => $rolId,
-            ':tienda_id' => $tiendaId,
+            ':rol_id'     => $rolId,
+            ':tienda_id'  => $tiendaId,
         ]);
     }
 
@@ -211,7 +211,7 @@ final class Rol
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
                 ':usuario_id' => $usuarioId,
-                ':rol_id' => $rolId,
+                ':rol_id'     => $rolId,
             ]);
         } else {
             $sql = "
@@ -225,8 +225,8 @@ final class Rol
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
                 ':usuario_id' => $usuarioId,
-                ':rol_id' => $rolId,
-                ':tienda_id' => $tiendaId,
+                ':rol_id'     => $rolId,
+                ':tienda_id'  => $tiendaId,
             ]);
         }
 
@@ -260,6 +260,42 @@ final class Rol
         ]);
 
         return $stmt->fetchAll();
+    }
+
+    /**
+     * Devuelve todos los roles de un listado de usuarios en UNA sola query.
+     * Evita el N+1 en UsuarioController::index().
+     * Retorna array indexado por usuario_id: [ userId => [ ...roles ] ]
+     */
+    public function obtenerRolesDeUsuariosBatch(array $usuarioIds): array
+    {
+        if (empty($usuarioIds)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($usuarioIds), '?'));
+
+        $stmt = $this->db->prepare("
+            SELECT
+                ur.usuario_id,
+                ur.tienda_id,
+                r.id AS rol_id,
+                r.nombre AS rol_nombre,
+                r.nivel AS rol_nivel
+            FROM usuarios_roles ur
+            INNER JOIN roles r ON r.id = ur.rol_id
+            WHERE ur.usuario_id IN ($placeholders)
+              AND r.activo = 1
+            ORDER BY r.nivel ASC
+        ");
+        $stmt->execute(array_values($usuarioIds));
+        $rows = $stmt->fetchAll();
+
+        $resultado = [];
+        foreach ($rows as $row) {
+            $resultado[(int) $row['usuario_id']][] = $row;
+        }
+        return $resultado;
     }
 
     public function obtenerRolPrincipalDeUsuario(int $usuarioId): ?array

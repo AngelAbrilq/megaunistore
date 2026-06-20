@@ -149,6 +149,30 @@ final class Empleado
         return $stmt->execute([':id' => $id]);
     }
 
+    public function buscarPorUsuarioId(int $usuarioId, ?int $tiendaId = null): ?array
+    {
+        $sql = "
+            SELECT e.id, e.usuario_id, e.tienda_id, e.codigo_empleado
+            FROM empleados e
+            WHERE e.usuario_id = :usuario_id
+              AND e.deleted_at IS NULL
+        ";
+
+        $parametros = [':usuario_id' => $usuarioId];
+
+        if ($tiendaId !== null) {
+            $sql .= " AND e.tienda_id = :tienda_id";
+            $parametros[':tienda_id'] = $tiendaId;
+        }
+
+        $sql .= " LIMIT 1";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($parametros);
+
+        return $stmt->fetch() ?: null;
+    }
+
     public function listarParaSelect(?int $tiendaId = null): array
     {
         if ($tiendaId === null) {

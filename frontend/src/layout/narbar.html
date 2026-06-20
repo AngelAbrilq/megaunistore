@@ -4,16 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 
-<!-- Fuentes -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
-
-  <!-- Google Fonts -->
+<!-- Fuentes (carga única — antes estaba duplicada) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap"
     rel="stylesheet" />
 
   <!-- Tailwind CDN -->
@@ -282,7 +277,7 @@
             <div
               class="hidden xl:flex items-center gap-8 text-[15px] font-medium text-slate-600"
             >
-              <a href="quienes.php" class="hover:text-slate-950 transition"
+              <a href="index.php#quienes" class="hover:text-slate-950 transition"
                 >Quiénes Somos</a
               >
               <a
@@ -318,13 +313,13 @@
 
             <div class="hidden md:flex items-center gap-3">
               <a
-                href="#login"
+                href="/backend/public/"
                 class="px-5 py-2.5 rounded-full text-slate-800 font-semibold btn-outline transition hover:shadow-premium"
               >
                 Iniciar Sesión
               </a>
               <a
-                href="#registro"
+                href="/backend/public/index.php?route=register"
                 class="px-5 py-2.5 rounded-full text-white font-semibold btn-primary transition hover:shadow-premium"
               >
                 Unirse Ahora
@@ -358,20 +353,25 @@
             <div class="panel rounded-3xl p-4 mt-2">
               <div class="grid gap-2 text-slate-700 font-medium">
                 <a
-                  href="#quienes"
+                  href="index.php#quienes"
                   class="px-4 py-3 rounded-2xl hover:bg-slate-100 transition"
                   >Quiénes Somos</a
                 >
                 <a
                   href="caracteristicas.php"
                   class="px-4 py-3 rounded-2xl hover:bg-slate-100 transition"
-                  >caracteristicas</a
+                  >Caracteristicas</a
                 >
 
                 <a
                   href="modulos.php"
                   class="px-4 py-3 rounded-2xl hover:bg-slate-100 transition"
                   >Módulos</a
+                >
+                <a
+                  href="soluciones.php"
+                  class="px-4 py-3 rounded-2xl hover:bg-slate-100 transition"
+                  >Soluciones</a
                 >
                 <a
                   href="integraciones.php"
@@ -389,6 +389,11 @@
                   >Testimonios</a
                 >
                 <a
+                  href="planes.php"
+                  class="px-4 py-3 rounded-2xl hover:bg-slate-100 transition"
+                  >Planes</a
+                >
+                <a
                   href="contacto.php"
                   class="px-4 py-3 rounded-2xl hover:bg-slate-100 transition"
                   >Contacto</a
@@ -396,12 +401,12 @@
               </div>
               <div class="mt-4 flex gap-3">
                 <a
-                  href="#login"
+                  href="/backend/public/"
                   class="flex-1 px-5 py-3 rounded-2xl text-slate-800 font-semibold bg-slate-100 text-center"
                   >Iniciar Sesión</a
                 >
                 <a
-                  href="../../../backend/resources/views/auth/register.php"
+                  href="/backend/public/index.php?route=register"
                   class="flex-1 px-5 py-3 rounded-2xl text-white font-semibold btn-primary text-center"
                   >Unirse Ahora</a
                 >

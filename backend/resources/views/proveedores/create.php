@@ -1,91 +1,82 @@
 <?php
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
-function e_provc(string $v): string { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
+function e_cprov(string $v): string { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Nuevo Proveedor | Mega_Uni_Store</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f3f6fb;color:#111827}
-        .container{max-width:700px;margin:0 auto;padding:34px 20px}
-        h1{margin:0 0 6px;color:#172554} p{margin:0 0 24px;color:#6b7280}
-        .card{background:#fff;border:1px solid #dbe3ef;border-radius:22px;box-shadow:0 18px 48px rgba(15,23,42,.10);padding:28px}
-        .form-group{margin-bottom:18px}
-        label{display:block;font-weight:700;margin-bottom:6px;color:#172554;font-size:14px}
-        input{width:100%;padding:11px 14px;border:1px solid #d1d5db;border-radius:10px;font-size:14px;box-sizing:border-box}
-        input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.15)}
-        .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-        .btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:12px;padding:12px 20px;font-weight:700;text-decoration:none;cursor:pointer;font-size:14px}
-        .btn-primary{background:#1e3a8a;color:#fff}
-        .btn-secondary{background:#e0e7ff;color:#1e3a8a}
-        .actions{display:flex;gap:12px;margin-top:8px}
-        .alert{padding:13px 14px;border-radius:14px;margin-bottom:18px;border:1px solid transparent}
-        .alert-error{background:#fef2f2;color:#991b1b;border-color:#fecaca}
-        @media(max-width:600px){.row{grid-template-columns:1fr}}
-    </style>
-</head>
-<body>
-<main class="container">
-    <h1>Nuevo proveedor</h1>
-    <p>Registra un proveedor para abastecer las tiendas.</p>
+<style>
+.mf-title { font-size:20px; font-weight:800; color:#172554; margin:0 0 4px; }
+.mf-subtitle { font-size:13px; color:#6b7280; margin:0 0 20px; }
+.mf-alert { padding:11px 14px; border-radius:12px; margin-bottom:14px; font-size:14px; border:1px solid #fecaca; background:#fef2f2; color:#991b1b; }
+.mf-section { background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:18px; margin-bottom:16px; }
+.mf-section h3 { margin:0 0 14px; color:#172554; font-size:15px; }
+.mf-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.mf-group { display:flex; flex-direction:column; gap:6px; }
+.mf-group.span2 { grid-column:1/-1; }
+label { font-size:13px; font-weight:700; color:#374151; }
+input, textarea, select {
+    width:100%; border:1px solid #dbe3ef; border-radius:10px;
+    padding:10px 12px; font-size:14px; outline:none; background:#fff;
+    box-sizing:border-box; font-family:inherit;
+}
+textarea { min-height:80px; resize:vertical; }
+input:focus, textarea:focus, select:focus { border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.1); }
+.mf-actions { display:flex; gap:10px; margin-top:16px; }
+.btn { display:inline-flex; align-items:center; border:0; border-radius:10px; padding:11px 18px; font-weight:700; cursor:pointer; font-size:14px; font-family:inherit; transition:opacity .15s; }
+.btn:hover { opacity:.85; }
+.btn-primary   { background:#1e3a8a; color:#fff; }
+.btn-secondary { background:#e0e7ff; color:#1e3a8a; }
+@media(max-width:520px){.mf-grid{grid-template-columns:1fr;}}
+</style>
 
-    <?php if ($flash !== null && $flash['type'] === 'error'): ?>
-        <div class="alert alert-error"><?= e_provc($flash['message']) ?></div>
-    <?php endif; ?>
+<h2 class="mf-title">Nuevo proveedor</h2>
+<p class="mf-subtitle">Registra un proveedor en el sistema.</p>
 
-    <section class="card">
-        <form action="index.php?route=proveedores.store" method="POST">
-            <input type="hidden" name="csrf_token" value="<?= e_provc($csrfToken) ?>">
+<?php if ($flash !== null): ?>
+    <div class="mf-alert"><?= e_cprov($flash['message']) ?></div>
+<?php endif; ?>
 
-            <div class="row">
-                <div class="form-group">
-                    <label for="nombre">Razon social / Nombre *</label>
-                    <input type="text" id="nombre" name="nombre" required maxlength="150"
-                           value="<?= e_provc($_POST['nombre'] ?? '') ?>">
-                </div>
-                <div class="form-group">
-                    <label for="ruc_nit">NIT / RUC *</label>
-                    <input type="text" id="ruc_nit" name="ruc_nit" required maxlength="30"
-                           placeholder="900.123.456-1"
-                           value="<?= e_provc($_POST['ruc_nit'] ?? '') ?>">
-                </div>
+<form id="form-crear-proveedor" action="index.php?route=proveedores.store" method="POST">
+    <input type="hidden" name="csrf_token" value="<?= e_cprov($csrfToken) ?>">
+
+    <div class="mf-section">
+        <h3>Información del proveedor</h3>
+        <div class="mf-grid">
+            <div class="mf-group">
+                <label for="cp-nombre">Nombre *</label>
+                <input type="text" id="cp-nombre" name="nombre" required maxlength="150" placeholder="Nombre del proveedor">
             </div>
-
-            <div class="row">
-                <div class="form-group">
-                    <label for="telefono">Telefono</label>
-                    <input type="text" id="telefono" name="telefono" maxlength="20"
-                           value="<?= e_provc($_POST['telefono'] ?? '') ?>">
-                </div>
-                <div class="form-group">
-                    <label for="email">Correo electronico</label>
-                    <input type="email" id="email" name="email" maxlength="150"
-                           value="<?= e_provc($_POST['email'] ?? '') ?>">
-                </div>
+            <div class="mf-group">
+                <label for="cp-nit">NIT/RUC *</label>
+                <input type="text" id="cp-nit" name="ruc_nit" required maxlength="30" placeholder="Ej: 900123456-7">
             </div>
-
-            <div class="form-group">
-                <label for="direccion">Direccion</label>
-                <input type="text" id="direccion" name="direccion" maxlength="255"
-                       value="<?= e_provc($_POST['direccion'] ?? '') ?>">
+            <div class="mf-group">
+                <label for="cp-contacto">Nombre de contacto</label>
+                <input type="text" id="cp-contacto" name="contacto_nombre" maxlength="100" placeholder="Persona de contacto">
             </div>
-
-            <div class="form-group">
-                <label for="contacto_nombre">Nombre del contacto comercial</label>
-                <input type="text" id="contacto_nombre" name="contacto_nombre" maxlength="100"
-                       value="<?= e_provc($_POST['contacto_nombre'] ?? '') ?>">
+            <div class="mf-group">
+                <label for="cp-tel">Teléfono</label>
+                <input type="text" id="cp-tel" name="telefono" maxlength="20" placeholder="Ej: 6011234567">
             </div>
-
-            <div class="actions">
-                <button type="submit" class="btn btn-primary">Registrar proveedor</button>
-                <a class="btn btn-secondary" href="index.php?route=proveedores.index">Cancelar</a>
+            <div class="mf-group">
+                <label for="cp-email">Correo electrónico</label>
+                <input type="email" id="cp-email" name="email" maxlength="150" placeholder="proveedor@correo.com">
             </div>
-        </form>
-    </section>
-</main>
-</body>
-</html>
+            <div class="mf-group">
+                <label for="cp-estado">Estado</label>
+                <select id="cp-estado" name="estado">
+                    <option value="1">Activo</option>
+                    <option value="0">Inactivo</option>
+                </select>
+            </div>
+            <div class="mf-group span2">
+                <label for="cp-dir">Dirección</label>
+                <input type="text" id="cp-dir" name="direccion" maxlength="200" placeholder="Dirección del proveedor">
+            </div>
+        </div>
+    </div>
+
+    <div class="mf-actions">
+        <button type="submit" class="btn btn-primary">Guardar proveedor</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+    </div>
+</form>

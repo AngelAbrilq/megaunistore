@@ -46,11 +46,13 @@ final class CajaController
 
         $this->validarCsrfToken();
 
-        $tiendaId = (int) ($_POST['tienda_id'] ?? 0);
-        $nombre = trim((string) ($_POST['nombre'] ?? ''));
+        $esModal     = $this->isModalRequest();
+        $tiendaId    = (int) ($_POST['tienda_id'] ?? 0);
+        $nombre      = trim((string) ($_POST['nombre'] ?? ''));
         $descripcion = trim((string) ($_POST['descripcion'] ?? ''));
 
         if ($tiendaId <= 0) {
+            if ($esModal) { $this->jsonError('Debes seleccionar una tienda.'); }
             $this->guardarMensaje('error', 'Debes seleccionar una tienda.');
             $this->redireccionar('index.php?route=caja.create');
         }
@@ -58,22 +60,25 @@ final class CajaController
         $this->validarAccesoATienda($tiendaId);
 
         if ($nombre === '') {
+            if ($esModal) { $this->jsonError('El nombre de la caja es obligatorio.'); }
             $this->guardarMensaje('error', 'El nombre de la caja es obligatorio.');
             $this->redireccionar('index.php?route=caja.create');
         }
 
         if (strlen($nombre) > 100) {
+            if ($esModal) { $this->jsonError('El nombre no puede superar 100 caracteres.'); }
             $this->guardarMensaje('error', 'El nombre de la caja no puede superar 100 caracteres.');
             $this->redireccionar('index.php?route=caja.create');
         }
 
         $this->cajaModel->crear([
-            'tienda_id' => $tiendaId,
-            'nombre' => $nombre,
+            'tienda_id'   => $tiendaId,
+            'nombre'      => $nombre,
             'descripcion' => $descripcion !== '' ? $descripcion : null,
-            'estado' => 1,
+            'estado'      => 1,
         ]);
 
+        if ($esModal) { $this->jsonSuccess('Caja creada correctamente.'); }
         $this->guardarMensaje('success', 'Caja creada correctamente.');
         $this->redireccionar('index.php?route=caja.index');
     }
@@ -96,6 +101,8 @@ final class CajaController
 
         $this->validarCsrfToken();
 
+        $esModal = $this->isModalRequest();
+
         $cajaId = (int) ($_POST['caja_id'] ?? 0);
         $montoInicialRaw = trim((string) ($_POST['monto_inicial'] ?? ''));
         $descripcion = trim((string) ($_POST['descripcion'] ?? ''));
@@ -104,6 +111,7 @@ final class CajaController
         $this->validarAccesoATienda((int) $caja['tienda_id']);
 
         if ($montoInicialRaw === '' || !is_numeric($montoInicialRaw)) {
+            if ($esModal) { $this->jsonError('El monto inicial debe ser numérico.'); }
             $this->guardarMensaje('error', 'El monto inicial debe ser numérico.');
             $this->redireccionar('index.php?route=caja.apertura&id=' . $cajaId);
         }
@@ -111,6 +119,7 @@ final class CajaController
         $montoInicial = (float) $montoInicialRaw;
 
         if ($montoInicial < 0) {
+            if ($esModal) { $this->jsonError('El monto inicial no puede ser negativo.'); }
             $this->guardarMensaje('error', 'El monto inicial no puede ser negativo.');
             $this->redireccionar('index.php?route=caja.apertura&id=' . $cajaId);
         }
@@ -122,8 +131,10 @@ final class CajaController
                 $descripcion !== '' ? $descripcion : null
             );
 
+            if ($esModal) { $this->jsonSuccess('Caja abierta correctamente.'); }
             $this->guardarMensaje('success', 'Caja abierta correctamente.');
         } catch (Throwable $error) {
+            if ($esModal) { $this->jsonError($error->getMessage()); }
             $this->guardarMensaje('error', $error->getMessage());
         }
 
@@ -148,6 +159,8 @@ final class CajaController
 
         $this->validarCsrfToken();
 
+        $esModal = $this->isModalRequest();
+
         $cajaId = (int) ($_POST['caja_id'] ?? 0);
         $montoRealRaw = trim((string) ($_POST['monto_real'] ?? ''));
         $descripcion = trim((string) ($_POST['descripcion'] ?? ''));
@@ -156,6 +169,7 @@ final class CajaController
         $this->validarAccesoATienda((int) $caja['tienda_id']);
 
         if ($montoRealRaw === '' || !is_numeric($montoRealRaw)) {
+            if ($esModal) { $this->jsonError('El monto real debe ser numérico.'); }
             $this->guardarMensaje('error', 'El monto real debe ser numérico.');
             $this->redireccionar('index.php?route=caja.cierre&id=' . $cajaId);
         }
@@ -163,6 +177,7 @@ final class CajaController
         $montoReal = (float) $montoRealRaw;
 
         if ($montoReal < 0) {
+            if ($esModal) { $this->jsonError('El monto real no puede ser negativo.'); }
             $this->guardarMensaje('error', 'El monto real no puede ser negativo.');
             $this->redireccionar('index.php?route=caja.cierre&id=' . $cajaId);
         }
@@ -174,8 +189,10 @@ final class CajaController
                 $descripcion !== '' ? $descripcion : null
             );
 
+            if ($esModal) { $this->jsonSuccess('Caja cerrada correctamente.'); }
             $this->guardarMensaje('success', 'Caja cerrada correctamente.');
         } catch (Throwable $error) {
+            if ($esModal) { $this->jsonError($error->getMessage()); }
             $this->guardarMensaje('error', $error->getMessage());
         }
 
@@ -200,6 +217,8 @@ final class CajaController
 
         $this->validarCsrfToken();
 
+        $esModal = $this->isModalRequest();
+
         $cajaId = (int) ($_POST['caja_id'] ?? 0);
         $tipo = trim((string) ($_POST['tipo'] ?? ''));
         $montoRaw = trim((string) ($_POST['monto'] ?? ''));
@@ -209,11 +228,13 @@ final class CajaController
         $this->validarAccesoATienda((int) $caja['tienda_id']);
 
         if (!in_array($tipo, ['ingreso', 'egreso'], true)) {
+            if ($esModal) { $this->jsonError('Tipo de movimiento inválido.'); }
             $this->guardarMensaje('error', 'Tipo de movimiento inválido.');
             $this->redireccionar('index.php?route=caja.movimiento&id=' . $cajaId);
         }
 
         if ($montoRaw === '' || !is_numeric($montoRaw)) {
+            if ($esModal) { $this->jsonError('El monto debe ser numérico.'); }
             $this->guardarMensaje('error', 'El monto debe ser numérico.');
             $this->redireccionar('index.php?route=caja.movimiento&id=' . $cajaId);
         }
@@ -221,6 +242,7 @@ final class CajaController
         $monto = (float) $montoRaw;
 
         if ($monto <= 0) {
+            if ($esModal) { $this->jsonError('El monto debe ser mayor que cero.'); }
             $this->guardarMensaje('error', 'El monto debe ser mayor que cero.');
             $this->redireccionar('index.php?route=caja.movimiento&id=' . $cajaId);
         }
@@ -240,8 +262,10 @@ final class CajaController
                 );
             }
 
+            if ($esModal) { $this->jsonSuccess('Movimiento de caja registrado correctamente.'); }
             $this->guardarMensaje('success', 'Movimiento de caja registrado correctamente.');
         } catch (Throwable $error) {
+            if ($esModal) { $this->jsonError($error->getMessage()); }
             $this->guardarMensaje('error', $error->getMessage());
         }
 
@@ -251,7 +275,26 @@ final class CajaController
     public function movimientos(): void
     {
         $tiendaIdPermitida = $this->tiendaIdPermitida();
-        $movimientos = $this->cajaModel->listarMovimientos(null, $tiendaIdPermitida);
+
+        // Filtros opcionales desde GET
+        $filtroTienda = $tiendaIdPermitida !== null
+            ? $tiendaIdPermitida
+            : (($_GET['tienda_id'] ?? '') !== '' ? (int) $_GET['tienda_id'] : null);
+
+        $filtroTipo  = trim((string) ($_GET['tipo']  ?? ''));
+        $filtroDesde = trim((string) ($_GET['desde'] ?? ''));
+        $filtroHasta = trim((string) ($_GET['hasta'] ?? ''));
+
+        $movimientos = $this->cajaModel->listarMovimientos(
+            null,
+            $filtroTienda,
+            $filtroTipo  !== '' ? $filtroTipo  : null,
+            $filtroDesde !== '' ? $filtroDesde : null,
+            $filtroHasta !== '' ? $filtroHasta : null
+        );
+
+        // Lista de tiendas para el selector (sólo roles globales)
+        $tiendas = $tiendaIdPermitida === null ? $this->tiendaModel->listar() : [];
 
         require __DIR__ . '/../../resources/views/caja/movimientos.php';
     }
@@ -334,6 +377,25 @@ final class CajaController
             'type' => $tipo,
             'message' => $mensaje,
         ];
+    }
+
+    private function isModalRequest(): bool
+    {
+        return ($_SERVER['HTTP_X_MODAL_REQUEST'] ?? '') === '1';
+    }
+
+    private function jsonSuccess(string $mensaje, string $ruta = 'caja.index'): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['ok' => true, 'ruta' => $ruta, 'mensaje' => $mensaje]);
+        exit;
+    }
+
+    private function jsonError(string $mensaje): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['ok' => false, 'error' => $mensaje]);
+        exit;
     }
 
     private function redireccionar(string $ruta): void

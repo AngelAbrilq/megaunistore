@@ -32,7 +32,7 @@ final class SetupController
         $claveEnv       = getenv('SETUP_KEY') ?: '';
         $claveRecibida  = $_GET['key'] ?? '';
 
-        if ($claveEnv === '' || $claveRecibida !== $claveEnv) {
+        if ($claveEnv === '' || !hash_equals($claveEnv, (string) $claveRecibida)) {
             http_response_code(403);
             echo '<h2>Acceso denegado.</h2><p>Clave de setup incorrecta o no configurada.</p>';
             exit;

@@ -1,202 +1,78 @@
 <?php
-
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
-
-function e_edit_impuesto(string $value): string
-{
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-}
-
-$tipos = ['Ventas', 'Compras', 'Consumo', 'Retención', 'Otro'];
+function e_eimp(string $v): string { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
 ?>
+<style>
+.mf-title { font-size:20px; font-weight:800; color:#172554; margin:0 0 4px; }
+.mf-subtitle { font-size:13px; color:#6b7280; margin:0 0 20px; }
+.mf-alert { padding:11px 14px; border-radius:12px; margin-bottom:14px; font-size:14px; border:1px solid #fecaca; background:#fef2f2; color:#991b1b; }
+.mf-section { background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:18px; margin-bottom:16px; }
+.mf-section h3 { margin:0 0 14px; color:#172554; font-size:15px; }
+.mf-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.mf-group { display:flex; flex-direction:column; gap:6px; }
+.mf-group.span2 { grid-column:1/-1; }
+label { font-size:13px; font-weight:700; color:#374151; }
+input, textarea, select {
+    width:100%; border:1px solid #dbe3ef; border-radius:10px;
+    padding:10px 12px; font-size:14px; outline:none; background:#fff;
+    box-sizing:border-box; font-family:inherit;
+}
+textarea { min-height:80px; resize:vertical; }
+input:focus, textarea:focus, select:focus { border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.1); }
+.mf-actions { display:flex; gap:10px; margin-top:16px; }
+.btn { display:inline-flex; align-items:center; border:0; border-radius:10px; padding:11px 18px; font-weight:700; cursor:pointer; font-size:14px; font-family:inherit; transition:opacity .15s; }
+.btn:hover { opacity:.85; }
+.btn-primary   { background:#1e3a8a; color:#fff; }
+.btn-secondary { background:#e0e7ff; color:#1e3a8a; }
+@media(max-width:520px){.mf-grid{grid-template-columns:1fr;}}
+</style>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar impuesto | Mega_Uni_Store</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<h2 class="mf-title">Editar impuesto</h2>
+<p class="mf-subtitle">Actualiza la configuración del impuesto.</p>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f3f6fb;
-            color: #111827;
-        }
+<?php if ($flash !== null): ?>
+    <div class="mf-alert"><?= e_eimp($flash['message']) ?></div>
+<?php endif; ?>
 
-        .container {
-            max-width: 780px;
-            margin: 0 auto;
-            padding: 34px 20px;
-        }
+<form id="form-editar-impuesto" action="index.php?route=impuestos.update" method="POST">
+    <input type="hidden" name="csrf_token" value="<?= e_eimp($csrfToken) ?>">
+    <input type="hidden" name="id" value="<?= e_eimp((string) $impuesto['id']) ?>">
 
-        h1 {
-            margin: 0 0 8px;
-            color: #172554;
-        }
-
-        p {
-            margin: 0 0 24px;
-            color: #6b7280;
-        }
-
-        .card {
-            background: #ffffff;
-            border: 1px solid #dbe3ef;
-            border-radius: 22px;
-            padding: 26px;
-            box-shadow: 0 18px 48px rgba(15, 23, 42, 0.10);
-        }
-
-        .alert {
-            padding: 13px 14px;
-            border-radius: 14px;
-            margin-bottom: 18px;
-            border: 1px solid #fecaca;
-            background: #fef2f2;
-            color: #991b1b;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 800;
-            color: #1f2937;
-            font-size: 14px;
-        }
-
-        input,
-        textarea,
-        select {
-            width: 100%;
-            border: 1px solid #dbe3ef;
-            border-radius: 14px;
-            padding: 13px 14px;
-            font-size: 15px;
-            outline: none;
-            background: #ffffff;
-        }
-
-        textarea {
-            min-height: 105px;
-            resize: vertical;
-        }
-
-        input:focus,
-        textarea:focus,
-        select:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-        }
-
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 8px;
-        }
-
-        .btn {
-            display: inline-flex;
-            border: 0;
-            border-radius: 12px;
-            padding: 12px 16px;
-            font-weight: 800;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background: #1e3a8a;
-            color: #ffffff;
-        }
-
-        .btn-secondary {
-            background: #e0e7ff;
-            color: #1e3a8a;
-        }
-    </style>
-</head>
-<body>
-    <main class="container">
-        <h1>Editar impuesto</h1>
-        <p>Actualiza la tarifa tributaria seleccionada.</p>
-
-        <?php if ($flash !== null): ?>
-            <div class="alert">
-                <?= e_edit_impuesto($flash['message']) ?>
+    <div class="mf-section">
+        <h3>Datos del impuesto</h3>
+        <div class="mf-grid">
+            <div class="mf-group">
+                <label for="ei-nombre">Nombre *</label>
+                <input type="text" id="ei-nombre" name="nombre" required maxlength="80"
+                       value="<?= e_eimp($impuesto['nombre']) ?>">
             </div>
-        <?php endif; ?>
+            <div class="mf-group">
+                <label for="ei-tipo">Tipo *</label>
+                <input type="text" id="ei-tipo" name="tipo" required maxlength="50"
+                       value="<?= e_eimp($impuesto['tipo'] ?? '') ?>">
+            </div>
+            <div class="mf-group">
+                <label for="ei-porcentaje">Porcentaje *</label>
+                <input type="number" id="ei-porcentaje" name="porcentaje" required min="0" max="100" step="0.01"
+                       value="<?= e_eimp((string) $impuesto['porcentaje']) ?>">
+            </div>
+            <div class="mf-group">
+                <label for="ei-activo">Estado</label>
+                <select id="ei-activo" name="activo">
+                    <option value="1" <?= (int) ($impuesto['activo'] ?? 1) === 1 ? 'selected' : '' ?>>Activo</option>
+                    <option value="0" <?= (int) ($impuesto['activo'] ?? 1) === 0 ? 'selected' : '' ?>>Inactivo</option>
+                </select>
+            </div>
+            <div class="mf-group span2">
+                <label for="ei-desc">Descripción</label>
+                <textarea id="ei-desc" name="descripcion"><?= e_eimp($impuesto['descripcion'] ?? '') ?></textarea>
+            </div>
+        </div>
+    </div>
 
-        <section class="card">
-            <form action="index.php?route=impuestos.update" method="POST">
-                <input type="hidden" name="csrf_token" value="<?= e_edit_impuesto($csrfToken) ?>">
-                <input type="hidden" name="id" value="<?= e_edit_impuesto((string) $impuesto['id']) ?>">
-
-                <div class="form-group">
-                    <label for="nombre">Nombre *</label>
-                    <input
-                        type="text"
-                        id="nombre"
-                        name="nombre"
-                        required
-                        maxlength="80"
-                        value="<?= e_edit_impuesto($impuesto['nombre']) ?>"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="porcentaje">Porcentaje *</label>
-                    <input
-                        type="number"
-                        id="porcentaje"
-                        name="porcentaje"
-                        required
-                        min="0"
-                        max="100"
-                        step="0.01"
-                        value="<?= e_edit_impuesto((string) $impuesto['porcentaje']) ?>"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="tipo">Tipo *</label>
-                    <select id="tipo" name="tipo" required>
-                        <option value="">Seleccionar tipo</option>
-
-                        <?php foreach ($tipos as $tipo): ?>
-                            <option value="<?= e_edit_impuesto($tipo) ?>" <?= $impuesto['tipo'] === $tipo ? 'selected' : '' ?>>
-                                <?= e_edit_impuesto($tipo) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="activo">Estado</label>
-                    <select id="activo" name="activo">
-                        <option value="1" <?= (int) $impuesto['activo'] === 1 ? 'selected' : '' ?>>Activo</option>
-                        <option value="0" <?= (int) $impuesto['activo'] === 0 ? 'selected' : '' ?>>Inactivo</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="descripcion">Descripción</label>
-                    <textarea id="descripcion" name="descripcion"><?= e_edit_impuesto($impuesto['descripcion'] ?? '') ?></textarea>
-                </div>
-
-                <div class="actions">
-                    <button type="submit" class="btn btn-primary">Actualizar impuesto</button>
-                    <a href="index.php?route=impuestos.index" class="btn btn-secondary">Cancelar</a>
-                </div>
-            </form>
-        </section>
-    </main>
-</body>
-</html>
+    <div class="mf-actions">
+        <button type="submit" class="btn btn-primary">Actualizar impuesto</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+    </div>
+</form>

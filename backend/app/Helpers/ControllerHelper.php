@@ -81,6 +81,51 @@ trait ControllerHelper
     }
 
     // -------------------------------------------------------------------------
+    // Modal / AJAX JSON responses
+    // Detecta si la petición viene de un formulario dentro del modal global
+    // (el JS del layout envía el header X-Modal-Request: 1)
+    // -------------------------------------------------------------------------
+
+    private function esPeticionModal(): bool
+    {
+        return ($_SERVER['HTTP_X_MODAL_REQUEST'] ?? '') === '1';
+    }
+
+    /**
+     * En peticiones normales: guarda flash y redirige.
+     * En peticiones de modal: devuelve JSON { ok: true, ruta, mensaje }.
+     */
+    private function jsonExito(string $ruta, string $mensaje = 'Operación exitosa'): never
+    {
+        $this->guardarMensaje('success', $mensaje);
+
+        if ($this->esPeticionModal()) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['ok' => true, 'ruta' => $ruta, 'mensaje' => $mensaje]);
+            exit;
+        }
+
+        $this->redireccionar('index.php?route=' . $ruta);
+    }
+
+    /**
+     * En peticiones normales: guarda flash de error y redirige.
+     * En peticiones de modal: devuelve JSON { ok: false, error }.
+     */
+    private function jsonError(string $mensaje, string $rutaRedireccion): never
+    {
+        $this->guardarMensaje('error', $mensaje);
+
+        if ($this->esPeticionModal()) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['ok' => false, 'error' => $mensaje]);
+            exit;
+        }
+
+        $this->redireccionar('index.php?route=' . $rutaRedireccion);
+    }
+
+    // -------------------------------------------------------------------------
     // Acceso denegado
     // -------------------------------------------------------------------------
 

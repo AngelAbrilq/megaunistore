@@ -177,12 +177,12 @@ final class Reporte
                 p.nombre AS producto,
                 p.codigo_barras,
                 i.cantidad AS stock_actual,
-                i.stock_minimo,
-                i.stock_maximo,
+                i.cantidad_minima AS stock_minimo,
+                i.cantidad_maxima AS stock_maximo,
                 um.simbolo AS unidad,
                 CASE
-                    WHEN i.cantidad <= i.stock_minimo THEN 'Bajo'
-                    WHEN i.cantidad >= i.stock_maximo THEN 'Alto'
+                    WHEN i.cantidad <= i.cantidad_minima THEN 'Bajo'
+                    WHEN i.cantidad_maxima IS NOT NULL AND i.cantidad >= i.cantidad_maxima THEN 'Alto'
                     ELSE 'Normal'
                 END AS estado_stock
             FROM inventario i
@@ -218,7 +218,7 @@ final class Reporte
                 p.nombre AS producto,
                 p.codigo_barras,
                 i.cantidad AS stock_actual,
-                i.stock_minimo,
+                i.cantidad_minima AS stock_minimo,
                 um.simbolo AS unidad
             FROM inventario i
             INNER JOIN tiendas t ON t.id = i.tienda_id
@@ -226,7 +226,7 @@ final class Reporte
             LEFT JOIN unidades_medida um ON um.id = p.unidad_medida_id
             WHERE t.deleted_at IS NULL
               AND p.deleted_at IS NULL
-              AND i.cantidad <= i.stock_minimo
+              AND i.cantidad <= i.cantidad_minima
         ";
 
         if ($tiendaId !== null) {

@@ -14,11 +14,11 @@ final class Database
             return self::$connection;
         }
 
-        $host     = getenv('DB_HOST')     ?: '127.0.0.1';
-        $port     = getenv('DB_PORT')     ?: '3306';
-        $name     = getenv('DB_NAME')     ?: 'mega_uni_store';
-        $user     = getenv('DB_USER')     ?: 'root';
-        $password = getenv('DB_PASSWORD') ?: '';
+        $host     = getenv('DB_HOST')     ?: ($_ENV['DB_HOST']     ?? '127.0.0.1');
+        $port     = getenv('DB_PORT')     ?: ($_ENV['DB_PORT']     ?? '3306');
+        $name     = getenv('DB_NAME')     ?: ($_ENV['DB_NAME']     ?? 'mega_uni_store');
+        $user     = getenv('DB_USER')     ?: ($_ENV['DB_USER']     ?? 'root');
+        $password = getenv('DB_PASSWORD') ?: ($_ENV['DB_PASSWORD'] ?? '');
 
         $dsn = sprintf(
             'mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',

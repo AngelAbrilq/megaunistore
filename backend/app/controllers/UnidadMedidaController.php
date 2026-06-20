@@ -44,8 +44,7 @@ final class UnidadMedidaController
 
         $this->unidadModel->crear($datos);
 
-        $this->guardarMensaje('success', 'Unidad de medida creada correctamente.');
-        $this->redireccionar('index.php?route=unidades.index');
+        $this->jsonExito('unidades.index', 'Unidad de medida creada correctamente.');
     }
 
     public function edit(): void
@@ -99,8 +98,7 @@ final class UnidadMedidaController
 
         $this->unidadModel->actualizar($id, $datos);
 
-        $this->guardarMensaje('success', 'Unidad de medida actualizada correctamente.');
-        $this->redireccionar('index.php?route=unidades.index');
+        $this->jsonExito('unidades.index', 'Unidad de medida actualizada correctamente.');
     }
 
     public function destroy(): void
@@ -202,5 +200,21 @@ final class UnidadMedidaController
     {
         header('Location: ' . $ruta);
         exit;
+    }
+
+    private function esPeticionModal(): bool
+    {
+        return ($_SERVER['HTTP_X_MODAL_REQUEST'] ?? '') === '1';
+    }
+
+    private function jsonExito(string $ruta, string $mensaje = 'Operación exitosa'): never
+    {
+        $this->guardarMensaje('success', $mensaje);
+        if ($this->esPeticionModal()) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['ok' => true, 'ruta' => $ruta, 'mensaje' => $mensaje]);
+            exit;
+        }
+        $this->redireccionar('index.php?route=' . $ruta);
     }
 }

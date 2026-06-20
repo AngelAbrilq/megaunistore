@@ -143,26 +143,42 @@ final class Caja
         ]);
     }
 
-    public function listarMovimientos(?int $cajaId = null, ?int $tiendaId = null): array
-    {
-        $where = [];
+    public function listarMovimientos(
+        ?int    $cajaId   = null,
+        ?int    $tiendaId = null,
+        ?string $tipo     = null,
+        ?string $desde    = null,
+        ?string $hasta    = null
+    ): array {
+        $where  = [];
         $params = [];
 
         if ($cajaId !== null) {
-            $where[] = 'cm.caja_id = :caja_id';
-            $params[':caja_id'] = $cajaId;
+            $where[]             = 'cm.caja_id = :caja_id';
+            $params[':caja_id']  = $cajaId;
         }
 
         if ($tiendaId !== null) {
-            $where[] = 'c.tienda_id = :tienda_id';
+            $where[]              = 'c.tienda_id = :tienda_id';
             $params[':tienda_id'] = $tiendaId;
         }
 
-        $whereSql = '';
-
-        if (!empty($where)) {
-            $whereSql = 'WHERE ' . implode(' AND ', $where);
+        if ($tipo !== null && $tipo !== '') {
+            $where[]        = 'cm.tipo = :tipo';
+            $params[':tipo'] = $tipo;
         }
+
+        if ($desde !== null && $desde !== '') {
+            $where[]          = 'DATE(cm.created_at) >= :desde';
+            $params[':desde'] = $desde;
+        }
+
+        if ($hasta !== null && $hasta !== '') {
+            $where[]          = 'DATE(cm.created_at) <= :hasta';
+            $params[':hasta'] = $hasta;
+        }
+
+        $whereSql = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
 
         $sql = "
             SELECT
@@ -184,7 +200,7 @@ final class Caja
             INNER JOIN tiendas t ON t.id = c.tienda_id
             $whereSql
             ORDER BY cm.created_at DESC, cm.id DESC
-            LIMIT 300
+            LIMIT 500
         ";
 
         $stmt = $this->db->prepare($sql);

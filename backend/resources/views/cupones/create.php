@@ -1,233 +1,110 @@
 <?php
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
-
-function e_create_cupon(string $value): string
-{
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-}
+function e_ccup(string $v): string { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
 ?>
+<style>
+.mf-title { font-size:20px; font-weight:800; color:#172554; margin:0 0 4px; }
+.mf-subtitle { font-size:13px; color:#6b7280; margin:0 0 20px; }
+.mf-alert { padding:11px 14px; border-radius:12px; margin-bottom:14px; font-size:14px; border:1px solid #fecaca; background:#fef2f2; color:#991b1b; }
+.mf-section { background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:18px; margin-bottom:16px; }
+.mf-section h3 { margin:0 0 14px; color:#172554; font-size:15px; }
+.mf-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.mf-group { display:flex; flex-direction:column; gap:6px; }
+.mf-group.span2 { grid-column:1/-1; }
+label { font-size:13px; font-weight:700; color:#374151; }
+input, textarea, select {
+    width:100%; border:1px solid #dbe3ef; border-radius:10px;
+    padding:10px 12px; font-size:14px; outline:none; background:#fff;
+    box-sizing:border-box; font-family:inherit;
+}
+textarea { min-height:80px; resize:vertical; }
+input:focus, textarea:focus, select:focus { border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.1); }
+.mf-actions { display:flex; gap:10px; margin-top:16px; }
+.btn { display:inline-flex; align-items:center; border:0; border-radius:10px; padding:11px 18px; font-weight:700; cursor:pointer; font-size:14px; font-family:inherit; transition:opacity .15s; }
+.btn:hover { opacity:.85; }
+.btn-primary   { background:#1e3a8a; color:#fff; }
+.btn-secondary { background:#e0e7ff; color:#1e3a8a; }
+@media(max-width:520px){.mf-grid{grid-template-columns:1fr;}}
+</style>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Crear cupón | Mega_Uni_Store</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f3f6fb;
-            color: #111827;
-        }
+<h2 class="mf-title">Nuevo cupón</h2>
+<p class="mf-subtitle">Crea un cupón de descuento.</p>
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 34px 20px;
-        }
+<?php if ($flash !== null): ?>
+    <div class="mf-alert"><?= e_ccup($flash['message']) ?></div>
+<?php endif; ?>
 
-        h1 {
-            margin: 0 0 8px;
-            color: #172554;
-        }
+<form id="form-crear-cupon" action="index.php?route=cupones.store" method="POST">
+    <input type="hidden" name="csrf_token" value="<?= e_ccup($csrfToken) ?>">
 
-        p {
-            margin: 0 0 24px;
-            color: #6b7280;
-        }
-
-        .card {
-            background: #ffffff;
-            border: 1px solid #dbe3ef;
-            border-radius: 22px;
-            padding: 26px;
-            box-shadow: 0 18px 48px rgba(15, 23, 42, 0.10);
-            margin-bottom: 20px;
-        }
-
-        .alert {
-            padding: 13px 14px;
-            border-radius: 14px;
-            margin-bottom: 18px;
-            border: 1px solid #fecaca;
-            background: #fef2f2;
-            color: #991b1b;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group.full {
-            grid-column: 1 / -1;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 800;
-            color: #1f2937;
-            font-size: 14px;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            border: 1px solid #dbe3ef;
-            border-radius: 14px;
-            padding: 13px 14px;
-            font-size: 15px;
-            outline: none;
-            background: #ffffff;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-        }
-
-        .help {
-            display: block;
-            color: #6b7280;
-            font-size: 12px;
-            margin-top: 6px;
-        }
-
-        .btn {
-            display: inline-flex;
-            border: 0;
-            border-radius: 12px;
-            padding: 12px 16px;
-            font-weight: 800;
-            text-decoration: none;
-            cursor: pointer;
-            font-size: 14px;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .btn-primary {
-            background: #1e3a8a;
-            color: #ffffff;
-        }
-
-        .btn-secondary {
-            background: #e0e7ff;
-            color: #1e3a8a;
-        }
-
-        .actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 8px;
-        }
-    </style>
-</head>
-<body>
-    <main class="container">
-        <h1>Crear cupón</h1>
-        <p>Crea un nuevo cupón de descuento para aplicar en ventas.</p>
-
-        <?php if ($flash !== null): ?>
-            <div class="alert">
-                <?= e_create_cupon($flash['message']) ?>
+    <div class="mf-section">
+        <h3>Datos del cupón</h3>
+        <div class="mf-grid">
+            <div class="mf-group">
+                <label for="cc-codigo">Código *</label>
+                <input type="text" id="cc-codigo" name="codigo" required maxlength="50" placeholder="Ej: DESCUENTO20"
+                       style="text-transform:uppercase">
             </div>
-        <?php endif; ?>
-
-        <form action="index.php?route=cupones.store" method="POST">
-            <input type="hidden" name="csrf_token" value="<?= e_create_cupon($csrfToken) ?>">
-
-            <section class="card">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="codigo">Código del cupón *</label>
-                        <input type="text" id="codigo" name="codigo" required maxlength="50" placeholder="Ej: VERANO2026">
-                        <span class="help">Código único que los clientes usarán.</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="tienda_id">Tienda</label>
-                        <select id="tienda_id" name="tienda_id">
-                            <option value="">Todas las tiendas</option>
-                            <?php foreach ($tiendas as $tienda): ?>
-                                <?php if ($tienda === null) { continue; } ?>
-                                <option value="<?= e_create_cupon((string) $tienda['id']) ?>">
-                                    <?= e_create_cupon($tienda['nombre']) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                        <span class="help">Deja vacío para aplicar a todas las tiendas.</span>
-                    </div>
-
-                    <div class="form-group full">
-                        <label for="descripcion">Descripción</label>
-                        <textarea id="descripcion" name="descripcion" rows="3" placeholder="Descripción del cupón"></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="tipo_descuento">Tipo de descuento *</label>
-                        <select id="tipo_descuento" name="tipo_descuento" required>
-                            <option value="porcentaje">Porcentaje (%)</option>
-                            <option value="fijo">Monto fijo ($)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="valor_descuento">Valor del descuento *</label>
-                        <input type="number" id="valor_descuento" name="valor_descuento" step="0.01" min="0.01" required placeholder="10.00">
-                        <span class="help">Porcentaje o monto fijo según el tipo.</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="descuento_maximo">Descuento máximo</label>
-                        <input type="number" id="descuento_maximo" name="descuento_maximo" step="0.01" min="0" placeholder="50.00">
-                        <span class="help">Solo para porcentaje. Deja vacío si no aplica.</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="monto_minimo">Monto mínimo de compra</label>
-                        <input type="number" id="monto_minimo" name="monto_minimo" step="0.01" min="0" placeholder="100.00">
-                        <span class="help">Monto mínimo para aplicar el cupón.</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="fecha_inicio">Fecha de inicio</label>
-                        <input type="datetime-local" id="fecha_inicio" name="fecha_inicio">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="fecha_fin">Fecha de fin</label>
-                        <input type="datetime-local" id="fecha_fin" name="fecha_fin">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="usos_maximos">Usos máximos</label>
-                        <input type="number" id="usos_maximos" name="usos_maximos" min="1" placeholder="100">
-                        <span class="help">Deja vacío para usos ilimitados.</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="activo">Estado</label>
-                        <select id="activo" name="activo">
-                            <option value="1">Activo</option>
-                            <option value="0">Inactivo</option>
-                        </select>
-                    </div>
-                </div>
-            </section>
-
-            <div class="actions">
-                <button type="submit" class="btn btn-primary">Crear cupón</button>
-                <a href="index.php?route=cupones.index" class="btn btn-secondary">Cancelar</a>
+            <div class="mf-group">
+                <label for="cc-tienda">Tienda</label>
+                <select id="cc-tienda" name="tienda_id">
+                    <option value="">Global (todas las tiendas)</option>
+                    <?php foreach ($tiendas as $t): ?>
+                        <?php if ($t !== null): ?>
+                        <option value="<?= e_ccup((string) $t['id']) ?>"><?= e_ccup($t['nombre']) ?></option>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </select>
             </div>
-        </form>
-    </main>
-</body>
-</html>
+            <div class="mf-group">
+                <label for="cc-tipo">Tipo de descuento *</label>
+                <select id="cc-tipo" name="tipo_descuento" required>
+                    <option value="">Seleccionar tipo</option>
+                    <option value="porcentaje">Porcentaje (%)</option>
+                    <option value="fijo">Valor fijo ($)</option>
+                </select>
+            </div>
+            <div class="mf-group">
+                <label for="cc-valor">Valor del descuento *</label>
+                <input type="number" id="cc-valor" name="valor_descuento" required min="0.01" step="0.01" placeholder="Ej: 20">
+            </div>
+            <div class="mf-group">
+                <label for="cc-minimo">Monto mínimo de compra</label>
+                <input type="number" id="cc-minimo" name="monto_minimo" min="0" step="0.01" placeholder="Ej: 50000">
+            </div>
+            <div class="mf-group">
+                <label for="cc-max">Descuento máximo</label>
+                <input type="number" id="cc-max" name="descuento_maximo" min="0" step="0.01" placeholder="Opcional">
+            </div>
+            <div class="mf-group">
+                <label for="cc-inicio">Fecha inicio</label>
+                <input type="date" id="cc-inicio" name="fecha_inicio">
+            </div>
+            <div class="mf-group">
+                <label for="cc-fin">Fecha fin</label>
+                <input type="date" id="cc-fin" name="fecha_fin">
+            </div>
+            <div class="mf-group">
+                <label for="cc-usos">Usos máximos</label>
+                <input type="number" id="cc-usos" name="usos_maximos" min="1" placeholder="Sin límite">
+            </div>
+            <div class="mf-group">
+                <label for="cc-activo">Estado</label>
+                <select id="cc-activo" name="activo">
+                    <option value="1">Activo</option>
+                    <option value="0">Inactivo</option>
+                </select>
+            </div>
+            <div class="mf-group span2">
+                <label for="cc-desc">Descripción</label>
+                <textarea id="cc-desc" name="descripcion" placeholder="Descripción del cupón"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="mf-actions">
+        <button type="submit" class="btn btn-primary">Crear cupón</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+    </div>
+</form>

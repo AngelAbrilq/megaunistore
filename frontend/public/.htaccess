@@ -1,0 +1,8 @@
+# Mega_Uni_Store - Frontend root
+Options -Indexes
+
+# Proteger archivos sensibles
+<FilesMatch "\.(env|json|lock|md|sql|py)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

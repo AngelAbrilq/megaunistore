@@ -1,9 +1,6 @@
 <?php
-// backend/resources/views/layouts/footer_scripts.php /assets/js/main.js
+// Scripts globales del frontend
 ?>
-  <!-- Scripts globales -->
-  <script src=""></script>
-
   <script>
     // Script del botón de menú (extraído de index.php)
     const menuBtn = document.getElementById("menuBtn");

@@ -1,4 +1,9 @@
 <?php
+$isAjax = isset($_GET['ajax']) && $_GET['ajax'] === '1';
+if (!$isAjax) {
+    require __DIR__ . '/../layout/dashboard_layout.php';
+    return;
+}
 
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
@@ -12,23 +17,14 @@ $productosJson = json_encode(
     $productosPorTienda,
     JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
 );
+
+$clientesJson = json_encode(
+    $clientesPorTienda,
+    JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
+);
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Nueva venta | Mega_Uni_Store</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f3f6fb;
-            color: #111827;
-        }
-
+<style>
         .container {
             max-width: 1180px;
             margin: 0 auto;
@@ -213,6 +209,48 @@ $productosJson = json_encode(
             font-size: 20px;
         }
 
+        /* ── Cupón ─────────────────────────────────────────── */
+        .cupon-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .cupon-row input[type="text"] {
+            flex: 1;
+            min-width: 160px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .cupon-resultado {
+            margin-top: 14px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            display: none;
+        }
+
+        .cupon-resultado.ok {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+            display: block;
+        }
+
+        .cupon-resultado.error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            display: block;
+        }
+
+        .summary-item.descuento strong {
+            color: #166534;
+        }
+
         @media (max-width: 900px) {
             .form-grid,
             .summary-grid {
@@ -228,9 +266,8 @@ $productosJson = json_encode(
             }
         }
     </style>
-</head>
-<body>
-    <main class="container">
+
+<div class="container">
         <h1>Nueva venta</h1>
         <p>Registra una venta y descuenta automáticamente el inventario disponible.</p>
 
@@ -276,6 +313,14 @@ $productosJson = json_encode(
                     </div>
 
                     <div class="form-group full">
+                        <label for="cliente_id">Cliente</label>
+                        <select id="cliente_id" name="cliente_id">
+                            <option value="">— Cliente general (sin cuenta) —</option>
+                        </select>
+                        <span class="help">Opcional. Los clientes disponibles dependen de la tienda seleccionada.</span>
+                    </div>
+
+                    <div class="form-group full">
                         <label for="referencia">Referencia de pago</label>
                         <input type="text" id="referencia" name="referencia" maxlength="100" placeholder="Opcional. Ej: comprobante, transferencia, voucher.">
                     </div>
@@ -300,6 +345,24 @@ $productosJson = json_encode(
                 </button>
             </section>
 
+            <!-- ── Cupón de descuento ──────────────────────────────────────── -->
+            <section class="card">
+                <h2>Cupón de descuento</h2>
+
+                <div class="cupon-row">
+                    <input type="text" id="cuponCodigo" placeholder="Ej: VERANO10" maxlength="50" autocomplete="off">
+                    <button type="button" class="btn btn-secondary" id="cuponAplicarBtn">Validar cupón</button>
+                    <button type="button" class="btn btn-danger" id="cuponQuitarBtn" style="display:none">Quitar cupón</button>
+                </div>
+
+                <div class="cupon-resultado" id="cuponResultado"></div>
+
+                <!-- Valores que se envían con el formulario -->
+                <input type="hidden" name="cupon_id"        id="cuponIdInput"        value="">
+                <input type="hidden" name="descuento_cupon" id="descuentoCuponInput" value="0">
+            </section>
+
+            <!-- ── Resumen estimado ────────────────────────────────────────── -->
             <section class="card">
                 <h2>Resumen estimado</h2>
 
@@ -309,14 +372,19 @@ $productosJson = json_encode(
                         <strong id="subtotalPreview">$0.00</strong>
                     </div>
 
+                    <div class="summary-item descuento" id="descuentoItem" style="display:none">
+                        <small>Descuento cupón</small>
+                        <strong id="descuentoPreview">-$0.00</strong>
+                    </div>
+
                     <div class="summary-item">
                         <small>Impuesto</small>
                         <strong>Calculado al guardar</strong>
                     </div>
 
                     <div class="summary-item">
-                        <small>Total final</small>
-                        <strong>Calculado al guardar</strong>
+                        <small>Total estimado</small>
+                        <strong id="totalPreview">$0.00</strong>
                     </div>
 
                     <div class="summary-item">
@@ -328,19 +396,34 @@ $productosJson = json_encode(
 
             <div class="actions">
                 <button type="submit" class="btn btn-primary">Registrar venta</button>
-                <a href="index.php?route=ventas.index" class="btn btn-secondary">Cancelar</a>
+                <button type="button" class="btn btn-secondary" onclick="loadContent('ventas.index', true)">Cancelar</button>
             </div>
         </form>
     </main>
 
     <script>
         const productosPorTienda = <?= $productosJson ?: '{}' ?>;
+        const clientesPorTienda  = <?= $clientesJson  ?: '{}' ?>;
 
-        const tiendaSelect = document.getElementById('tienda_id');
-        const itemsContainer = document.getElementById('itemsContainer');
-        const addItemBtn = document.getElementById('addItemBtn');
-        const subtotalPreview = document.getElementById('subtotalPreview');
-        const stockPreview = document.getElementById('stockPreview');
+        const tiendaSelect      = document.getElementById('tienda_id');
+        const clienteSelect     = document.getElementById('cliente_id');
+        const itemsContainer    = document.getElementById('itemsContainer');
+        const addItemBtn        = document.getElementById('addItemBtn');
+        const subtotalPreview   = document.getElementById('subtotalPreview');
+        const totalPreview      = document.getElementById('totalPreview');
+        const stockPreview      = document.getElementById('stockPreview');
+
+        // Cupón
+        const cuponCodigo       = document.getElementById('cuponCodigo');
+        const cuponAplicarBtn   = document.getElementById('cuponAplicarBtn');
+        const cuponQuitarBtn    = document.getElementById('cuponQuitarBtn');
+        const cuponResultado    = document.getElementById('cuponResultado');
+        const cuponIdInput      = document.getElementById('cuponIdInput');
+        const descuentoCuponInput = document.getElementById('descuentoCuponInput');
+        const descuentoItem     = document.getElementById('descuentoItem');
+        const descuentoPreview  = document.getElementById('descuentoPreview');
+
+        let descuentoCuponActual = 0; // valor numérico del descuento activo
 
         function money(value) {
             const number = Number(value || 0);
@@ -429,6 +512,22 @@ $productosJson = json_encode(
             });
         }
 
+        function refrescarClientes() {
+            const tiendaId = tiendaSelect.value;
+            const clientes = clientesPorTienda[tiendaId] || [];
+
+            clienteSelect.innerHTML = '<option value="">— Cliente general (sin cuenta) —</option>';
+
+            clientes.forEach(function (c) {
+                const apellido = c.apellido ? ' ' + c.apellido : '';
+                const doc      = c.numero_documento ? ' (' + c.numero_documento + ')' : '';
+                const opt      = document.createElement('option');
+                opt.value      = c.id;
+                opt.textContent = c.nombre + apellido + doc;
+                clienteSelect.appendChild(opt);
+            });
+        }
+
         function refrescarOpcionesProductos() {
             const rows = itemsContainer.querySelectorAll('.item-row');
 
@@ -486,12 +585,17 @@ $productosJson = json_encode(
             });
 
             subtotalPreview.textContent = money(subtotalGeneral);
+
+            const totalEstimado = Math.max(0, subtotalGeneral - descuentoCuponActual);
+            totalPreview.textContent = money(totalEstimado);
+
             stockPreview.textContent = stockOk ? 'Validado' : 'Revisar';
             stockPreview.style.color = stockOk ? '#166534' : '#991b1b';
         }
 
         tiendaSelect.addEventListener('change', function () {
             refrescarOpcionesProductos();
+            refrescarClientes();
 
             if (itemsContainer.children.length === 0 && tiendaSelect.value) {
                 crearFila();
@@ -506,6 +610,114 @@ $productosJson = json_encode(
 
             crearFila();
         });
+
+        // ── Cupón ──────────────────────────────────────────────────────────────
+
+        function mostrarResultadoCupon(texto, tipo) {
+            cuponResultado.textContent = texto;
+            cuponResultado.className = 'cupon-resultado ' + tipo;
+        }
+
+        function aplicarCupon(cuponIdVal, descuentoVal, codigoVal) {
+            descuentoCuponActual     = descuentoVal;
+            cuponIdInput.value       = cuponIdVal;
+            descuentoCuponInput.value = descuentoVal.toFixed(2);
+
+            descuentoPreview.textContent = '-' + money(descuentoVal);
+            descuentoItem.style.display  = '';
+
+            cuponCodigo.disabled    = true;
+            cuponAplicarBtn.style.display = 'none';
+            cuponQuitarBtn.style.display  = '';
+
+            mostrarResultadoCupon(
+                '✅ Cupón "' + codigoVal + '" aplicado — descuento: ' + money(descuentoVal),
+                'ok'
+            );
+
+            recalcular();
+        }
+
+        function quitarCupon() {
+            descuentoCuponActual      = 0;
+            cuponIdInput.value        = '';
+            descuentoCuponInput.value = '0';
+            cuponCodigo.value         = '';
+            cuponCodigo.disabled      = false;
+
+            descuentoItem.style.display   = 'none';
+            cuponResultado.className      = 'cupon-resultado';
+            cuponResultado.textContent    = '';
+
+            cuponAplicarBtn.style.display = '';
+            cuponQuitarBtn.style.display  = 'none';
+
+            recalcular();
+        }
+
+        cuponAplicarBtn.addEventListener('click', function () {
+            const codigo = cuponCodigo.value.trim();
+
+            if (codigo === '') {
+                mostrarResultadoCupon('Ingresa un código de cupón.', 'error');
+                return;
+            }
+
+            if (!tiendaSelect.value) {
+                mostrarResultadoCupon('Primero selecciona una tienda.', 'error');
+                return;
+            }
+
+            // Calcular subtotal actual
+            let subtotalActual = 0;
+            itemsContainer.querySelectorAll('.item-row').forEach(function (row) {
+                const select   = row.querySelector('.producto-select');
+                const selected = select.options[select.selectedIndex];
+                const precio   = Number(selected?.dataset?.precio || 0);
+                const cantidad = Number(row.querySelector('.cantidad-input').value || 0);
+                subtotalActual += precio * cantidad;
+            });
+
+            if (subtotalActual <= 0) {
+                mostrarResultadoCupon('Agrega productos antes de aplicar el cupón.', 'error');
+                return;
+            }
+
+            cuponAplicarBtn.disabled = true;
+            cuponAplicarBtn.textContent = 'Validando…';
+
+            const formData = new FormData();
+            formData.append('codigo',    codigo.toUpperCase());
+            formData.append('subtotal',  subtotalActual.toFixed(2));
+            formData.append('tienda_id', tiendaSelect.value);
+
+            fetch('index.php?route=cupones.validar', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+                if (data.valido) {
+                    aplicarCupon(data.cupon_id, Number(data.descuento), codigo.toUpperCase());
+                } else {
+                    mostrarResultadoCupon('❌ ' + data.mensaje, 'error');
+                }
+            })
+            .catch(function () {
+                mostrarResultadoCupon('Error al comunicarse con el servidor.', 'error');
+            })
+            .finally(function () {
+                cuponAplicarBtn.disabled    = false;
+                cuponAplicarBtn.textContent = 'Validar cupón';
+            });
+        });
+
+        cuponQuitarBtn.addEventListener('click', quitarCupon);
+
+        // Si el vendedor cambia la tienda después de aplicar un cupón, lo quitamos
+        tiendaSelect.addEventListener('change', function () {
+            if (cuponIdInput.value !== '') {
+                quitarCupon();
+            }
+        });
     </script>
-</body>
-</html>

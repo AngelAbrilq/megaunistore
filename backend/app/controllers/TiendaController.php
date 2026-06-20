@@ -15,7 +15,8 @@ final class TiendaController
 
     public function index(): void
     {
-        $tiendas = $this->tiendaModel->listar();
+        $tiendas   = $this->tiendaModel->listar();
+        $csrfToken = $this->generarCsrfToken();
 
         require __DIR__ . '/../../resources/views/tiendas/index.php';
     }
@@ -56,8 +57,7 @@ final class TiendaController
             'updated_by' => $usuarioId,
         ]);
 
-        $this->guardarMensaje('success', 'Tienda creada correctamente.');
-        $this->redireccionar('index.php?route=tiendas.index');
+        $this->jsonExito('tiendas.index', 'Tienda creada correctamente.');
     }
 
     public function edit(): void
@@ -120,8 +120,7 @@ final class TiendaController
             'updated_by' => $this->usuarioIdActual(),
         ]);
 
-        $this->guardarMensaje('success', 'Tienda actualizada correctamente.');
-        $this->redireccionar('index.php?route=tiendas.index');
+        $this->jsonExito('tiendas.index', 'Tienda actualizada correctamente.');
     }
 
     public function toggleEstado(): void
@@ -245,5 +244,21 @@ final class TiendaController
     {
         header('Location: ' . $ruta);
         exit;
+    }
+
+    private function esPeticionModal(): bool
+    {
+        return ($_SERVER['HTTP_X_MODAL_REQUEST'] ?? '') === '1';
+    }
+
+    private function jsonExito(string $ruta, string $mensaje = 'Operación exitosa'): never
+    {
+        $this->guardarMensaje('success', $mensaje);
+        if ($this->esPeticionModal()) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['ok' => true, 'ruta' => $ruta, 'mensaje' => $mensaje]);
+            exit;
+        }
+        $this->redireccionar('index.php?route=' . $ruta);
     }
 }

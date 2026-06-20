@@ -62,8 +62,7 @@ final class ClienteController
                 if ($tiendaId > 0) {
                     $this->clienteModel->asociarATienda((int) $existente['id'], $tiendaId);
                 }
-                $this->guardarMensaje('success', 'Cliente ya registrado. Fue asociado a la tienda seleccionada.');
-                $this->redireccionar('index.php?route=clientes.index');
+                $this->jsonExito('clientes.index', 'Cliente ya registrado. Asociado a la tienda.');
             }
         }
 
@@ -81,8 +80,7 @@ final class ClienteController
             $this->clienteModel->crear($datos);
         }
 
-        $this->guardarMensaje('success', 'Cliente registrado correctamente.');
-        $this->redireccionar('index.php?route=clientes.index');
+        $this->jsonExito('clientes.index', 'Cliente registrado correctamente.');
     }
 
     public function edit(): void
@@ -136,8 +134,7 @@ final class ClienteController
 
         $this->clienteModel->actualizar($id, $datos);
 
-        $this->guardarMensaje('success', 'Cliente actualizado correctamente.');
-        $this->redireccionar('index.php?route=clientes.index');
+        $this->jsonExito('clientes.index', 'Cliente actualizado correctamente.');
     }
 
     public function destroy(): void

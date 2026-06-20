@@ -1,30 +1,55 @@
 <?php
+$isAjax = isset($_GET['ajax']) && $_GET['ajax'] === '1';
+if (!$isAjax) return;
 
-$pageTitle = 'Panel Nómina y RRHH';
-$pageSubtitle = 'Gestión de personal, contratos, novedades laborales, liquidaciones y reportes de productividad.';
+$pageTitle    = 'Panel Nómina y RRHH';
+$pageSubtitle = 'Gestión de contratos, nóminas y personal.';
+?>
 
-$cards = [
-    ['label' => 'Rol activo', 'value' => 'Nómina y RRHH'],
-    ['label' => 'Alcance', 'value' => 'Talento humano'],
-    ['label' => 'Módulo inicial', 'value' => 'Empleados y contratos'],
-];
+<div style="margin-bottom:24px;">
+    <h2 style="font-size:22px; font-weight:700;">👔 Panel Nómina y RRHH</h2>
+    <p style="color:var(--text-secondary); font-size:14px; margin-top:4px;">Bienvenido, <?= htmlspecialchars($_SESSION['auth']['nombre'] ?? '') ?></p>
+</div>
 
-$actions = [
-    [
-        'title' => 'Empleados',
-        'description' => 'Gestionar información laboral del personal.',
-        'url' => 'index.php?route=empleados.index',
-    ],
-    [
-        'title' => 'Contratos',
-        'description' => 'Consultar y administrar contratos laborales.',
-        'url' => 'index.php?route=contratos.index',
-    ],
-    [
-        'title' => 'Liquidaciones',
-        'description' => 'Procesar nómina, deducciones, devengados y pagos.',
-        'url' => 'index.php?route=nomina.index',
-    ],
-];
+<!-- Acciones rápidas -->
+<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px; margin-bottom:28px;">
+    <button onclick="loadContent('nomina.index')" style="padding:20px; background:var(--card-bg); border:1px solid var(--border-color); border-radius:12px; cursor:pointer; text-align:left; transition:all .15s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'">
+        <div style="font-size:28px; margin-bottom:8px;">💼</div>
+        <div style="font-weight:700; font-size:15px;">Nóminas</div>
+        <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Períodos y liquidaciones</div>
+    </button>
+    <button onclick="loadContent('contratos.index')" style="padding:20px; background:var(--card-bg); border:1px solid var(--border-color); border-radius:12px; cursor:pointer; text-align:left; transition:all .15s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'">
+        <div style="font-size:28px; margin-bottom:8px;">📄</div>
+        <div style="font-weight:700; font-size:15px;">Contratos</div>
+        <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Gestión contractual</div>
+    </button>
+    <button onclick="loadContent('empleados.index')" style="padding:20px; background:var(--card-bg); border:1px solid var(--border-color); border-radius:12px; cursor:pointer; text-align:left; transition:all .15s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'">
+        <div style="font-size:28px; margin-bottom:8px;">👥</div>
+        <div style="font-weight:700; font-size:15px;">Empleados</div>
+        <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Personal activo</div>
+    </button>
+    <button onclick="loadContent('reportes.ventas')" style="padding:20px; background:var(--card-bg); border:1px solid var(--border-color); border-radius:12px; cursor:pointer; text-align:left; transition:all .15s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'">
+        <div style="font-size:28px; margin-bottom:8px;">📊</div>
+        <div style="font-weight:700; font-size:15px;">Reportes</div>
+        <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Productividad del equipo</div>
+    </button>
+</div>
 
-require __DIR__ . '/layout.php';
+<!-- Indicaciones -->
+<div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:12px; padding:20px;">
+    <h3 style="font-size:15px; font-weight:700; margin-bottom:12px;">📋 Flujo de nómina</h3>
+    <div style="display:flex; gap:8px; align-items:flex-start; flex-wrap:wrap;">
+        <?php foreach ([
+            ['1', 'Crear período', 'Define el rango de fechas y tipo (mensual/quincenal)'],
+            ['2', 'Calcular', 'El sistema procesa automáticamente salarios y deducciones'],
+            ['3', 'Aprobar', 'Revisión y aprobación del total a pagar'],
+            ['4', 'Pagar', 'Confirmación de pago y registro definitivo'],
+        ] as [$num, $titulo, $desc]): ?>
+        <div style="flex:1; min-width:150px; background:var(--bg-secondary); border-radius:8px; padding:14px;">
+            <div style="width:28px; height:28px; background:var(--primary); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; margin-bottom:8px;"><?= $num ?></div>
+            <div style="font-weight:700; font-size:14px; margin-bottom:4px;"><?= $titulo ?></div>
+            <div style="font-size:12px; color:var(--text-secondary);"><?= $desc ?></div>
+        </div>
+        <?php endforeach; ?>
+    </div>
+</div>

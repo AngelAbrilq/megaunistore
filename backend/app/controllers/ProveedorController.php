@@ -51,8 +51,7 @@ final class ProveedorController
 
         $this->proveedorModel->crear($datos);
 
-        $this->guardarMensaje('success', 'Proveedor registrado correctamente.');
-        $this->redireccionar('index.php?route=proveedores.index');
+        $this->jsonExito('proveedores.index', 'Proveedor registrado correctamente.');
     }
 
     public function edit(): void
@@ -106,8 +105,7 @@ final class ProveedorController
 
         $this->proveedorModel->actualizar($id, $datos);
 
-        $this->guardarMensaje('success', 'Proveedor actualizado correctamente.');
-        $this->redireccionar('index.php?route=proveedores.index');
+        $this->jsonExito('proveedores.index', 'Proveedor actualizado correctamente.');
     }
 
     public function toggleEstado(): void

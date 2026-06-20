@@ -78,6 +78,52 @@ final class Usuario
         return $usuario ?: null;
     }
 
+    /**
+     * Como buscarPorId() pero incluye rol principal y tienda_id.
+     * Usado por PasswordController para validar jerarquía en cambios directos.
+     */
+    public function buscarPorIdConRol(int $id): ?array
+    {
+        $rolPrincipalSql = $this->sqlUsuarioRolPrincipal();
+
+        $stmt = $this->db->prepare("
+            SELECT
+                u.id, u.nombre, u.apellido, u.email, u.estado,
+                r.nombre AS rol_nombre,
+                ur.tienda_id
+            FROM usuarios u
+            LEFT JOIN ($rolPrincipalSql) ur ON ur.usuario_id = u.id
+            LEFT JOIN roles r ON r.id = ur.rol_id
+            WHERE u.id = :id AND u.deleted_at IS NULL
+            LIMIT 1
+        ");
+        $stmt->execute([':id' => $id]);
+        $row = $stmt->fetch();
+        return $row ?: null;
+    }
+
+    private function sqlUsuarioRolPrincipal(): string
+    {
+        return "
+            SELECT ur1.usuario_id, ur1.rol_id, ur1.tienda_id
+            FROM usuarios_roles ur1
+            INNER JOIN roles r1 ON r1.id = ur1.rol_id
+            WHERE r1.activo = 1
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM usuarios_roles ur2
+                  INNER JOIN roles r2 ON r2.id = ur2.rol_id
+                  WHERE ur2.usuario_id = ur1.usuario_id
+                    AND r2.activo = 1
+                    AND (
+                        r2.nivel < r1.nivel
+                        OR (r2.nivel = r1.nivel AND r2.id < r1.id)
+                        OR (r2.nivel = r1.nivel AND r2.id = r1.id AND ur2.id < ur1.id)
+                    )
+              )
+        ";
+    }
+
     public function buscarPorEmail(string $email): ?array
     {
         $sql = "

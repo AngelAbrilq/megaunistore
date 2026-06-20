@@ -1,237 +1,88 @@
 <?php
-
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
-
-function e_edit_tienda(string $value): string
-{
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-}
+function e_etnd(string $v): string { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
 ?>
+<style>
+.mf-title { font-size:20px; font-weight:800; color:#172554; margin:0 0 4px; }
+.mf-subtitle { font-size:13px; color:#6b7280; margin:0 0 20px; }
+.mf-alert { padding:11px 14px; border-radius:12px; margin-bottom:14px; font-size:14px; border:1px solid #fecaca; background:#fef2f2; color:#991b1b; }
+.mf-section { background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:18px; margin-bottom:16px; }
+.mf-section h3 { margin:0 0 14px; color:#172554; font-size:15px; }
+.mf-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.mf-group { display:flex; flex-direction:column; gap:6px; }
+.mf-group.span2 { grid-column:1/-1; }
+label { font-size:13px; font-weight:700; color:#374151; }
+input, textarea, select {
+    width:100%; border:1px solid #dbe3ef; border-radius:10px;
+    padding:10px 12px; font-size:14px; outline:none; background:#fff;
+    box-sizing:border-box; font-family:inherit;
+}
+textarea { min-height:80px; resize:vertical; }
+input:focus, textarea:focus, select:focus { border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.1); }
+.mf-actions { display:flex; gap:10px; margin-top:16px; }
+.btn { display:inline-flex; align-items:center; border:0; border-radius:10px; padding:11px 18px; font-weight:700; cursor:pointer; font-size:14px; font-family:inherit; transition:opacity .15s; }
+.btn:hover { opacity:.85; }
+.btn-primary   { background:#1e3a8a; color:#fff; }
+.btn-secondary { background:#e0e7ff; color:#1e3a8a; }
+@media(max-width:520px){.mf-grid{grid-template-columns:1fr;}}
+</style>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar tienda | Mega_Uni_Store</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<h2 class="mf-title">Editar tienda</h2>
+<p class="mf-subtitle">Actualiza la información de la tienda.</p>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f3f6fb;
-            color: #111827;
-        }
+<?php if ($flash !== null): ?>
+    <div class="mf-alert"><?= e_etnd($flash['message']) ?></div>
+<?php endif; ?>
 
-        .container {
-            max-width: 820px;
-            margin: 0 auto;
-            padding: 34px 20px;
-        }
+<form id="form-editar-tienda" action="index.php?route=tiendas.update" method="POST">
+    <input type="hidden" name="csrf_token" value="<?= e_etnd($csrfToken) ?>">
+    <input type="hidden" name="id" value="<?= e_etnd((string) $tienda['id']) ?>">
 
-        h1 {
-            margin: 0 0 8px;
-            color: #172554;
-        }
-
-        p {
-            margin: 0 0 24px;
-            color: #6b7280;
-        }
-
-        .card {
-            background: #ffffff;
-            border: 1px solid #dbe3ef;
-            border-radius: 22px;
-            padding: 26px;
-            box-shadow: 0 18px 48px rgba(15, 23, 42, 0.10);
-        }
-
-        .alert {
-            padding: 13px 14px;
-            border-radius: 14px;
-            margin-bottom: 18px;
-            border: 1px solid #fecaca;
-            background: #fef2f2;
-            color: #991b1b;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group.full {
-            grid-column: 1 / -1;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 800;
-            color: #1f2937;
-            font-size: 14px;
-        }
-
-        input,
-        textarea,
-        select {
-            width: 100%;
-            border: 1px solid #dbe3ef;
-            border-radius: 14px;
-            padding: 13px 14px;
-            font-size: 15px;
-            outline: none;
-            background: #ffffff;
-        }
-
-        textarea {
-            min-height: 110px;
-            resize: vertical;
-        }
-
-        input:focus,
-        textarea:focus,
-        select:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-        }
-
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 8px;
-        }
-
-        .btn {
-            display: inline-flex;
-            border: 0;
-            border-radius: 12px;
-            padding: 12px 16px;
-            font-weight: 800;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background: #1e3a8a;
-            color: #ffffff;
-        }
-
-        .btn-secondary {
-            background: #e0e7ff;
-            color: #1e3a8a;
-        }
-
-        @media (max-width: 680px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-                gap: 0;
-            }
-        }
-    </style>
-</head>
-<body>
-    <main class="container">
-        <h1>Editar tienda</h1>
-        <p>Actualiza la información operativa y de contacto de la tienda.</p>
-
-        <?php if ($flash !== null): ?>
-            <div class="alert">
-                <?= e_edit_tienda($flash['message']) ?>
+    <div class="mf-section">
+        <h3>Información de la tienda</h3>
+        <div class="mf-grid">
+            <div class="mf-group span2">
+                <label for="et-nombre">Nombre *</label>
+                <input type="text" id="et-nombre" name="nombre" required maxlength="100"
+                       value="<?= e_etnd($tienda['nombre']) ?>">
             </div>
-        <?php endif; ?>
+            <div class="mf-group span2">
+                <label for="et-dir">Dirección *</label>
+                <input type="text" id="et-dir" name="direccion" required maxlength="200"
+                       value="<?= e_etnd($tienda['direccion'] ?? '') ?>">
+            </div>
+            <div class="mf-group">
+                <label for="et-email">Correo electrónico</label>
+                <input type="email" id="et-email" name="email" maxlength="150"
+                       value="<?= e_etnd($tienda['email'] ?? '') ?>">
+            </div>
+            <div class="mf-group">
+                <label for="et-tel">Teléfono</label>
+                <input type="text" id="et-tel" name="telefono" maxlength="20"
+                       value="<?= e_etnd($tienda['telefono'] ?? '') ?>">
+            </div>
+            <div class="mf-group">
+                <label for="et-logo">URL del logo</label>
+                <input type="text" id="et-logo" name="logo_url" maxlength="255"
+                       value="<?= e_etnd($tienda['logo_url'] ?? '') ?>">
+            </div>
+            <div class="mf-group">
+                <label for="et-estado">Estado</label>
+                <select id="et-estado" name="estado">
+                    <option value="1" <?= (int) ($tienda['estado'] ?? 1) === 1 ? 'selected' : '' ?>>Activa</option>
+                    <option value="0" <?= (int) ($tienda['estado'] ?? 1) === 0 ? 'selected' : '' ?>>Inactiva</option>
+                </select>
+            </div>
+            <div class="mf-group span2">
+                <label for="et-desc">Descripción</label>
+                <textarea id="et-desc" name="descripcion"><?= e_etnd($tienda['descripcion'] ?? '') ?></textarea>
+            </div>
+        </div>
+    </div>
 
-        <section class="card">
-            <form action="index.php?route=tiendas.update" method="POST">
-                <input type="hidden" name="csrf_token" value="<?= e_edit_tienda($csrfToken) ?>">
-                <input type="hidden" name="id" value="<?= e_edit_tienda((string) $tienda['id']) ?>">
-
-                <div class="form-grid">
-                    <div class="form-group full">
-                        <label for="nombre">Nombre de la tienda *</label>
-                        <input
-                            type="text"
-                            id="nombre"
-                            name="nombre"
-                            required
-                            maxlength="150"
-                            value="<?= e_edit_tienda($tienda['nombre']) ?>"
-                        >
-                    </div>
-
-                    <div class="form-group full">
-                        <label for="direccion">Dirección *</label>
-                        <input
-                            type="text"
-                            id="direccion"
-                            name="direccion"
-                            required
-                            maxlength="255"
-                            value="<?= e_edit_tienda($tienda['direccion'] ?? '') ?>"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="telefono">Teléfono</label>
-                        <input
-                            type="text"
-                            id="telefono"
-                            name="telefono"
-                            maxlength="20"
-                            value="<?= e_edit_tienda($tienda['telefono'] ?? '') ?>"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email">Correo de contacto</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            maxlength="150"
-                            value="<?= e_edit_tienda($tienda['email'] ?? '') ?>"
-                        >
-                    </div>
-
-                    <div class="form-group full">
-                        <label for="logo_url">URL del logo</label>
-                        <input
-                            type="text"
-                            id="logo_url"
-                            name="logo_url"
-                            maxlength="255"
-                            value="<?= e_edit_tienda($tienda['logo_url'] ?? '') ?>"
-                        >
-                    </div>
-
-                    <div class="form-group full">
-                        <label for="descripcion">Descripción</label>
-                        <textarea id="descripcion" name="descripcion"><?= e_edit_tienda($tienda['descripcion'] ?? '') ?></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="estado">Estado</label>
-                        <select id="estado" name="estado">
-                            <option value="1" <?= (int) $tienda['estado'] === 1 ? 'selected' : '' ?>>Activa</option>
-                            <option value="0" <?= (int) $tienda['estado'] === 0 ? 'selected' : '' ?>>Inactiva</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="actions">
-                    <button type="submit" class="btn btn-primary">Actualizar tienda</button>
-                    <a href="index.php?route=tiendas.index" class="btn btn-secondary">Cancelar</a>
-                </div>
-            </form>
-        </section>
-    </main>
-</body>
-</html>
+    <div class="mf-actions">
+        <button type="submit" class="btn btn-primary">Actualizar tienda</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+    </div>
+</form>

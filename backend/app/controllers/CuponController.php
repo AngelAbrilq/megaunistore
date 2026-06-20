@@ -56,8 +56,7 @@ final class CuponController
 
         try {
             $cuponId = $this->cuponModel->crear($datos);
-            $this->guardarMensaje('success', 'Cupón creado correctamente.');
-            $this->redireccionar('index.php?route=cupones.index');
+            $this->jsonExito('cupones.index', 'Cupón creado correctamente.');
         } catch (Throwable $error) {
             $this->guardarMensaje('error', $error->getMessage());
             $this->redireccionar('index.php?route=cupones.create');
@@ -129,8 +128,7 @@ final class CuponController
 
         try {
             $this->cuponModel->actualizar($id, $datos);
-            $this->guardarMensaje('success', 'Cupón actualizado correctamente.');
-            $this->redireccionar('index.php?route=cupones.index');
+            $this->jsonExito('cupones.index', 'Cupón actualizado correctamente.');
         } catch (Throwable $error) {
             $this->guardarMensaje('error', $error->getMessage());
             $this->redireccionar('index.php?route=cupones.edit&id=' . $id);

@@ -420,8 +420,13 @@ public function productosAsociadosATiendas(?int $tiendaId = null): array
         }
     }
 
-    public function listarMovimientos(?int $inventarioId = null, ?int $tiendaId = null): array
-    {
+    public function listarMovimientos(
+        ?int $inventarioId = null,
+        ?int $tiendaId = null,
+        ?string $tipo = null,
+        ?string $desde = null,
+        ?string $hasta = null
+    ): array {
         $where = [];
         $params = [];
 
@@ -433,6 +438,21 @@ public function productosAsociadosATiendas(?int $tiendaId = null): array
         if ($tiendaId !== null) {
             $where[] = 'i.tienda_id = :tienda_id';
             $params[':tienda_id'] = $tiendaId;
+        }
+
+        if ($tipo !== null && in_array($tipo, ['entrada', 'salida', 'ajuste'], true)) {
+            $where[] = 'mi.tipo = :tipo';
+            $params[':tipo'] = $tipo;
+        }
+
+        if ($desde !== null && $desde !== '') {
+            $where[] = 'DATE(mi.created_at) >= :desde';
+            $params[':desde'] = $desde;
+        }
+
+        if ($hasta !== null && $hasta !== '') {
+            $where[] = 'DATE(mi.created_at) <= :hasta';
+            $params[':hasta'] = $hasta;
         }
 
         $whereSql = '';

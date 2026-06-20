@@ -44,8 +44,7 @@ final class ImpuestoController
 
         $this->impuestoModel->crear($datos);
 
-        $this->guardarMensaje('success', 'Impuesto creado correctamente.');
-        $this->redireccionar('index.php?route=impuestos.index');
+        $this->jsonExito('impuestos.index', 'Impuesto creado correctamente.');
     }
 
     public function edit(): void
@@ -99,8 +98,7 @@ final class ImpuestoController
 
         $this->impuestoModel->actualizar($id, $datos);
 
-        $this->guardarMensaje('success', 'Impuesto actualizado correctamente.');
-        $this->redireccionar('index.php?route=impuestos.index');
+        $this->jsonExito('impuestos.index', 'Impuesto actualizado correctamente.');
     }
 
     public function toggleEstado(): void
@@ -241,5 +239,21 @@ final class ImpuestoController
     {
         header('Location: ' . $ruta);
         exit;
+    }
+
+    private function esPeticionModal(): bool
+    {
+        return ($_SERVER['HTTP_X_MODAL_REQUEST'] ?? '') === '1';
+    }
+
+    private function jsonExito(string $ruta, string $mensaje = 'Operación exitosa'): never
+    {
+        $this->guardarMensaje('success', $mensaje);
+        if ($this->esPeticionModal()) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['ok' => true, 'ruta' => $ruta, 'mensaje' => $mensaje]);
+            exit;
+        }
+        $this->redireccionar('index.php?route=' . $ruta);
     }
 }

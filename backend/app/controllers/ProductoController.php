@@ -94,8 +94,7 @@ final class ProductoController
             $tiendasProductos
         );
 
-        $this->guardarMensaje('success', 'Producto creado correctamente.');
-        $this->redireccionar('index.php?route=productos.index');
+        $this->jsonExito('productos.index', 'Producto creado correctamente.');
     }
 
     public function edit(): void
@@ -188,8 +187,7 @@ final class ProductoController
             $tiendasProductos
         );
 
-        $this->guardarMensaje('success', 'Producto actualizado correctamente.');
-        $this->redireccionar('index.php?route=productos.index');
+        $this->jsonExito('productos.index', 'Producto actualizado correctamente.');
     }
 
     public function toggleEstado(): void

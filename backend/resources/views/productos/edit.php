@@ -1,424 +1,193 @@
 <?php
+/**
+ * Vista: productos/edit.php
+ * Solo se usa como partial dentro del modal global.
+ */
+function e_eprod(string $v): string
+{
+    return htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
+}
 
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
-
-function e_edit_producto(string $value): string
-{
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-}
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar producto | Mega_Uni_Store</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+.mf-title { font-size:20px; font-weight:800; color:#172554; margin:0 0 4px; }
+.mf-subtitle { font-size:13px; color:#6b7280; margin:0 0 20px; }
+.mf-alert { padding:11px 14px; border-radius:12px; margin-bottom:14px; font-size:14px; border:1px solid #fecaca; background:#fef2f2; color:#991b1b; }
+.mf-section { background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:18px; margin-bottom:16px; }
+.mf-section h3 { margin:0 0 14px; color:#172554; font-size:15px; }
+.mf-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.mf-group { display:flex; flex-direction:column; gap:6px; }
+.mf-group.span2 { grid-column:1/-1; }
+label { font-size:13px; font-weight:700; color:#374151; }
+input, textarea, select {
+    width:100%; border:1px solid #dbe3ef; border-radius:10px;
+    padding:10px 12px; font-size:14px; outline:none; background:#fff;
+    box-sizing:border-box; font-family:inherit;
+}
+textarea { min-height:80px; resize:vertical; }
+input:focus, textarea:focus, select:focus { border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.1); }
+.checkbox-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; }
+.check-card { border:1px solid #dbe3ef; border-radius:12px; padding:12px; background:#fff; }
+.check-card label { display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:600; }
+.check-card input[type="checkbox"] { width:auto; }
+.store-card { border:1px solid #dbe3ef; border-radius:14px; padding:14px; background:#fff; margin-bottom:10px; }
+.store-card-header { display:flex; align-items:center; gap:8px; margin-bottom:12px; font-weight:700; }
+.store-card-header input { width:auto; }
+.price-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.mf-actions { display:flex; gap:10px; margin-top:16px; }
+.btn { display:inline-flex; align-items:center; border:0; border-radius:10px; padding:11px 18px; font-weight:700; cursor:pointer; font-size:14px; font-family:inherit; transition:opacity .15s; }
+.btn:hover { opacity:.85; }
+.btn-primary   { background:#1e3a8a; color:#fff; }
+.btn-secondary { background:#e0e7ff; color:#1e3a8a; }
+@media(max-width:520px){.mf-grid,.price-grid{grid-template-columns:1fr;}}
+</style>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f3f6fb;
-            color: #111827;
-        }
+<h2 class="mf-title">Editar producto</h2>
+<p class="mf-subtitle">Actualiza información, tiendas, precios e impuestos.</p>
 
-        .container {
-            max-width: 1040px;
-            margin: 0 auto;
-            padding: 34px 20px;
-        }
+<?php if ($flash !== null): ?>
+    <div class="mf-alert"><?= e_eprod($flash['message']) ?></div>
+<?php endif; ?>
 
-        h1 {
-            margin: 0 0 8px;
-            color: #172554;
-        }
+<form id="form-editar-producto" action="index.php?route=productos.update" method="POST">
+    <input type="hidden" name="csrf_token" value="<?= e_eprod($csrfToken) ?>">
+    <input type="hidden" name="id" value="<?= e_eprod((string) $producto['id']) ?>">
 
-        p {
-            margin: 0 0 24px;
-            color: #6b7280;
-        }
-
-        .card {
-            background: #ffffff;
-            border: 1px solid #dbe3ef;
-            border-radius: 22px;
-            padding: 26px;
-            box-shadow: 0 18px 48px rgba(15, 23, 42, 0.10);
-            margin-bottom: 20px;
-        }
-
-        .card h2 {
-            margin: 0 0 14px;
-            color: #172554;
-            font-size: 20px;
-        }
-
-        .alert {
-            padding: 13px 14px;
-            border-radius: 14px;
-            margin-bottom: 18px;
-            border: 1px solid #fecaca;
-            background: #fef2f2;
-            color: #991b1b;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group.full {
-            grid-column: 1 / -1;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 800;
-            color: #1f2937;
-            font-size: 14px;
-        }
-
-        input,
-        textarea,
-        select {
-            width: 100%;
-            border: 1px solid #dbe3ef;
-            border-radius: 14px;
-            padding: 13px 14px;
-            font-size: 15px;
-            outline: none;
-            background: #ffffff;
-        }
-
-        textarea {
-            min-height: 105px;
-            resize: vertical;
-        }
-
-        input:focus,
-        textarea:focus,
-        select:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-        }
-
-        .checkbox-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 12px;
-        }
-
-        .check-card {
-            border: 1px solid #dbe3ef;
-            border-radius: 16px;
-            padding: 14px;
-            background: #fbfdff;
-        }
-
-        .check-card label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 0;
-            cursor: pointer;
-        }
-
-        .check-card input[type="checkbox"] {
-            width: auto;
-        }
-
-        .store-card {
-            border: 1px solid #dbe3ef;
-            border-radius: 18px;
-            padding: 16px;
-            background: #fbfdff;
-            margin-bottom: 14px;
-        }
-
-        .store-card-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 14px;
-        }
-
-        .store-card-header input {
-            width: auto;
-        }
-
-        .price-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-
-        .help {
-            display: block;
-            color: #6b7280;
-            font-size: 12px;
-            margin-top: 6px;
-            line-height: 1.4;
-        }
-
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 8px;
-        }
-
-        .btn {
-            display: inline-flex;
-            border: 0;
-            border-radius: 12px;
-            padding: 12px 16px;
-            font-weight: 800;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background: #1e3a8a;
-            color: #ffffff;
-        }
-
-        .btn-secondary {
-            background: #e0e7ff;
-            color: #1e3a8a;
-        }
-
-        @media (max-width: 760px) {
-            .form-grid,
-            .price-grid,
-            .checkbox-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
-<body>
-    <main class="container">
-        <h1>Editar producto</h1>
-        <p>Actualiza la información del producto, impuestos, tiendas y precios.</p>
-
-        <?php if ($flash !== null): ?>
-            <div class="alert">
-                <?= e_edit_producto($flash['message']) ?>
+    <div class="mf-section">
+        <h3>Información general</h3>
+        <div class="mf-grid">
+            <div class="mf-group span2">
+                <label for="ep-nombre">Nombre *</label>
+                <input type="text" id="ep-nombre" name="nombre" required maxlength="200"
+                       value="<?= e_eprod($producto['nombre']) ?>">
             </div>
-        <?php endif; ?>
+            <div class="mf-group">
+                <label for="ep-codigo">Código de barras</label>
+                <input type="text" id="ep-codigo" name="codigo_barras" maxlength="50"
+                       value="<?= e_eprod($producto['codigo_barras'] ?? '') ?>">
+            </div>
+            <div class="mf-group">
+                <label for="ep-imagen">URL de imagen</label>
+                <input type="text" id="ep-imagen" name="imagen_url" maxlength="255"
+                       value="<?= e_eprod($producto['imagen_url'] ?? '') ?>">
+            </div>
+            <div class="mf-group">
+                <label for="ep-categoria">Categoría</label>
+                <select id="ep-categoria" name="categoria_id">
+                    <option value="">Sin categoría</option>
+                    <?php foreach ($categorias as $cat): ?>
+                        <option value="<?= e_eprod((string) $cat['id']) ?>"
+                            <?= (int) ($producto['categoria_id'] ?? 0) === (int) $cat['id'] ? 'selected' : '' ?>>
+                            <?= e_eprod($cat['nombre']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="mf-group">
+                <label for="ep-unidad">Unidad de medida</label>
+                <select id="ep-unidad" name="unidad_medida_id">
+                    <option value="">Sin unidad</option>
+                    <?php foreach ($unidades as $u): ?>
+                        <option value="<?= e_eprod((string) $u['id']) ?>"
+                            <?= (int) ($producto['unidad_medida_id'] ?? 0) === (int) $u['id'] ? 'selected' : '' ?>>
+                            <?= e_eprod($u['nombre'] . ' (' . $u['simbolo'] . ')') ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="mf-group">
+                <label for="ep-estado">Estado</label>
+                <select id="ep-estado" name="estado">
+                    <option value="1" <?= (int) $producto['estado'] === 1 ? 'selected' : '' ?>>Activo</option>
+                    <option value="0" <?= (int) $producto['estado'] === 0 ? 'selected' : '' ?>>Inactivo</option>
+                </select>
+            </div>
+            <div class="mf-group span2">
+                <label for="ep-desc">Descripción</label>
+                <textarea id="ep-desc" name="descripcion"><?= e_eprod($producto['descripcion'] ?? '') ?></textarea>
+            </div>
+        </div>
+    </div>
 
-        <form action="index.php?route=productos.update" method="POST">
-            <input type="hidden" name="csrf_token" value="<?= e_edit_producto($csrfToken) ?>">
-            <input type="hidden" name="id" value="<?= e_edit_producto((string) $producto['id']) ?>">
+    <?php if (!empty($impuestos)): ?>
+    <div class="mf-section">
+        <h3>Impuestos</h3>
+        <div class="checkbox-grid">
+            <?php foreach ($impuestos as $imp): ?>
+                <div class="check-card">
+                    <label>
+                        <input type="checkbox" name="impuestos[]"
+                               value="<?= e_eprod((string) $imp['id']) ?>"
+                               <?= in_array((int) $imp['id'], $impuestosProducto, true) ? 'checked' : '' ?>>
+                        <?= e_eprod($imp['nombre']) ?> — <?= e_eprod((string) $imp['porcentaje']) ?>%
+                    </label>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 
-            <section class="card">
-                <h2>Información general</h2>
-
-                <div class="form-grid">
-                    <div class="form-group full">
-                        <label for="nombre">Nombre *</label>
-                        <input
-                            type="text"
-                            id="nombre"
-                            name="nombre"
-                            required
-                            maxlength="200"
-                            value="<?= e_edit_producto($producto['nombre']) ?>"
-                        >
+    <?php if (!empty($tiendas)): ?>
+    <div class="mf-section">
+        <h3>Tiendas y precios</h3>
+        <?php foreach ($tiendas as $tienda): ?>
+            <?php
+                $tid       = (int) $tienda['id'];
+                $asoc      = $tiendasProducto[$tid] ?? null;
+                $asociada  = $asoc !== null && (int) ($asoc['estado'] ?? 0) === 1;
+                $pventa    = $asoc['precio_venta']  ?? '';
+                $pcompra   = $asoc['precio_compra'] ?? '';
+            ?>
+            <div class="store-card">
+                <div class="store-card-header">
+                    <input type="checkbox" class="ep-store-check"
+                           id="ep-tienda-<?= e_eprod((string) $tid) ?>"
+                           name="tiendas[]"
+                           value="<?= e_eprod((string) $tid) ?>"
+                           data-store-id="<?= e_eprod((string) $tid) ?>"
+                           <?= $asociada ? 'checked' : '' ?>>
+                    <label for="ep-tienda-<?= e_eprod((string) $tid) ?>" style="margin:0;cursor:pointer;">
+                        <?= e_eprod($tienda['nombre']) ?>
+                    </label>
+                </div>
+                <div class="price-grid">
+                    <div class="mf-group">
+                        <label>Precio de venta *</label>
+                        <input type="number"
+                               id="ep-pventa-<?= e_eprod((string) $tid) ?>"
+                               name="precio_venta[<?= e_eprod((string) $tid) ?>]"
+                               min="0" step="0.01" placeholder="Ej: 15000"
+                               value="<?= e_eprod((string) $pventa) ?>"
+                               <?= $asociada ? 'required' : '' ?>>
                     </div>
-
-                    <div class="form-group">
-                        <label for="codigo_barras">Código de barras</label>
-                        <input
-                            type="text"
-                            id="codigo_barras"
-                            name="codigo_barras"
-                            maxlength="50"
-                            value="<?= e_edit_producto($producto['codigo_barras'] ?? '') ?>"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="imagen_url">URL de imagen</label>
-                        <input
-                            type="text"
-                            id="imagen_url"
-                            name="imagen_url"
-                            maxlength="255"
-                            value="<?= e_edit_producto($producto['imagen_url'] ?? '') ?>"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="categoria_id">Categoría</label>
-                        <select id="categoria_id" name="categoria_id">
-                            <option value="">Sin categoría</option>
-
-                            <?php foreach ($categorias as $categoria): ?>
-                                <option
-                                    value="<?= e_edit_producto((string) $categoria['id']) ?>"
-                                    <?= (int) ($producto['categoria_id'] ?? 0) === (int) $categoria['id'] ? 'selected' : '' ?>
-                                >
-                                    <?= e_edit_producto($categoria['nombre']) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="unidad_medida_id">Unidad de medida</label>
-                        <select id="unidad_medida_id" name="unidad_medida_id">
-                            <option value="">Sin unidad</option>
-
-                            <?php foreach ($unidades as $unidad): ?>
-                                <option
-                                    value="<?= e_edit_producto((string) $unidad['id']) ?>"
-                                    <?= (int) ($producto['unidad_medida_id'] ?? 0) === (int) $unidad['id'] ? 'selected' : '' ?>
-                                >
-                                    <?= e_edit_producto($unidad['nombre'] . ' (' . $unidad['simbolo'] . ')') ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="estado">Estado</label>
-                        <select id="estado" name="estado">
-                            <option value="1" <?= (int) $producto['estado'] === 1 ? 'selected' : '' ?>>Activo</option>
-                            <option value="0" <?= (int) $producto['estado'] === 0 ? 'selected' : '' ?>>Inactivo</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group full">
-                        <label for="descripcion">Descripción</label>
-                        <textarea id="descripcion" name="descripcion"><?= e_edit_producto($producto['descripcion'] ?? '') ?></textarea>
+                    <div class="mf-group">
+                        <label>Precio de compra</label>
+                        <input type="number"
+                               name="precio_compra[<?= e_eprod((string) $tid) ?>]"
+                               min="0" step="0.01" placeholder="Ej: 10000"
+                               value="<?= e_eprod((string) $pcompra) ?>">
                     </div>
                 </div>
-            </section>
-
-            <section class="card">
-                <h2>Impuestos</h2>
-
-                <?php if (empty($impuestos)): ?>
-                    <p>No hay impuestos activos registrados.</p>
-                <?php else: ?>
-                    <div class="checkbox-grid">
-                        <?php foreach ($impuestos as $impuesto): ?>
-                            <div class="check-card">
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        name="impuestos[]"
-                                        value="<?= e_edit_producto((string) $impuesto['id']) ?>"
-                                        <?= in_array((int) $impuesto['id'], $impuestosProducto, true) ? 'checked' : '' ?>
-                                    >
-                                    <span>
-                                        <?= e_edit_producto($impuesto['nombre']) ?>
-                                        — <?= e_edit_producto((string) $impuesto['porcentaje']) ?>%
-                                    </span>
-                                </label>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-            </section>
-
-            <section class="card">
-                <h2>Tiendas y precios</h2>
-
-                <?php if (empty($tiendas)): ?>
-                    <p>No hay tiendas registradas. Primero crea una tienda.</p>
-                <?php else: ?>
-                    <?php foreach ($tiendas as $tienda): ?>
-                        <?php
-                            $tiendaId = (int) $tienda['id'];
-                            $asociacion = $tiendasProducto[$tiendaId] ?? null;
-                            $estaAsociada = $asociacion !== null && (int) $asociacion['estado'] === 1;
-                            $precioVenta = $asociacion['precio_venta'] ?? '';
-                            $precioCompra = $asociacion['precio_compra'] ?? '';
-                        ?>
-
-                        <div class="store-card">
-                            <div class="store-card-header">
-                                <input
-                                    type="checkbox"
-                                    class="store-check"
-                                    id="tienda_<?= e_edit_producto((string) $tiendaId) ?>"
-                                    name="tiendas[]"
-                                    value="<?= e_edit_producto((string) $tiendaId) ?>"
-                                    data-store-id="<?= e_edit_producto((string) $tiendaId) ?>"
-                                    <?= $estaAsociada ? 'checked' : '' ?>
-                                >
-
-                                <label for="tienda_<?= e_edit_producto((string) $tiendaId) ?>">
-                                    <?= e_edit_producto($tienda['nombre']) ?>
-                                </label>
-                            </div>
-
-                            <div class="price-grid">
-                                <div class="form-group">
-                                    <label for="precio_venta_<?= e_edit_producto((string) $tiendaId) ?>">Precio de venta *</label>
-                                    <input
-                                        type="number"
-                                        id="precio_venta_<?= e_edit_producto((string) $tiendaId) ?>"
-                                        name="precio_venta[<?= e_edit_producto((string) $tiendaId) ?>]"
-                                        min="0"
-                                        step="0.01"
-                                        placeholder="Ej: 15000"
-                                        value="<?= e_edit_producto((string) $precioVenta) ?>"
-                                        class="precio-venta"
-                                        <?= $estaAsociada ? 'required' : '' ?>
-                                    >
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="precio_compra_<?= e_edit_producto((string) $tiendaId) ?>">Precio de compra</label>
-                                    <input
-                                        type="number"
-                                        id="precio_compra_<?= e_edit_producto((string) $tiendaId) ?>"
-                                        name="precio_compra[<?= e_edit_producto((string) $tiendaId) ?>]"
-                                        min="0"
-                                        step="0.01"
-                                        placeholder="Ej: 10000"
-                                        value="<?= e_edit_producto((string) $precioCompra) ?>"
-                                    >
-                                </div>
-                            </div>
-
-                            <span class="help">
-                                Marca la tienda para asociar el producto. El precio de venta es obligatorio por cada tienda seleccionada.
-                            </span>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </section>
-
-            <div class="actions">
-                <button type="submit" class="btn btn-primary">Actualizar producto</button>
-                <a href="index.php?route=productos.index" class="btn btn-secondary">Cancelar</a>
             </div>
-        </form>
-    </main>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
 
-    <script>
-        document.querySelectorAll('.store-check').forEach(function (checkbox) {
-            checkbox.addEventListener('change', function () {
-                const storeId = this.dataset.storeId;
-                const priceInput = document.getElementById('precio_venta_' + storeId);
+    <div class="mf-actions">
+        <button type="submit" class="btn btn-primary">Actualizar producto</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+    </div>
+</form>
 
-                if (priceInput) {
-                    priceInput.required = this.checked;
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+<script>
+document.querySelectorAll('.ep-store-check').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+        var id = this.dataset.storeId;
+        var pv = document.getElementById('ep-pventa-' + id);
+        if (pv) pv.required = this.checked;
+    });
+});
+</script>

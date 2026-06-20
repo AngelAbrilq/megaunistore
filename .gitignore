@@ -1,5 +1,8 @@
 # Variables de entorno — NUNCA subir al repositorio
 backend/.env
+backend/.env.production
+backend/.env.local
+backend/.env.staging
 
 # Dependencias y caché
 vendor/
@@ -8,6 +11,14 @@ node_modules/
 # Logs
 *.log
 backend/storage/logs/
+
+# Backups con datos reales — nunca subir
+backup_deploy.sql
+backup.sql
+*.sql.bak
+
+# Scripts sueltos / archivos temporales
+felipe.php
 
 # Archivos del sistema operativo
 .DS_Store

@@ -45,8 +45,7 @@ final class CategoriaController
 
         $this->categoriaModel->crear($datos);
 
-        $this->guardarMensaje('success', 'Categoría creada correctamente.');
-        $this->redireccionar('index.php?route=categorias.index');
+        $this->jsonExito('categorias.index', 'Categoría creada correctamente.');
     }
 
     public function edit(): void
@@ -101,8 +100,7 @@ final class CategoriaController
 
         $this->categoriaModel->actualizar($id, $datos);
 
-        $this->guardarMensaje('success', 'Categoría actualizada correctamente.');
-        $this->redireccionar('index.php?route=categorias.index');
+        $this->jsonExito('categorias.index', 'Categoría actualizada correctamente.');
     }
 
     public function toggleEstado(): void

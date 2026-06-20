@@ -137,18 +137,20 @@ final class DevolucionController
         $productos = $input['producto_id'] ?? [];
         $cantidades = $input['cantidad'] ?? [];
 
-        if (!is_array($productos) || !is_array($cantidades) || empty($productos)) {
-            $this->guardarMensaje('error', 'Debes agregar al menos un producto a la devolución.');
+        if (!is_array($productos) || !is_array($cantidades)) {
+            $this->guardarMensaje('error', 'Datos de la devolución inválidos.');
             return null;
         }
 
         $items = [];
 
         foreach ($productos as $index => $productoIdRaw) {
-            $productoId = (int) $productoIdRaw;
+            $productoId  = (int) $productoIdRaw;
             $cantidadRaw = trim((string) ($cantidades[$index] ?? ''));
+            $cantidad    = is_numeric($cantidadRaw) ? (float) $cantidadRaw : 0.0;
 
-            if ($productoId <= 0 && $cantidadRaw === '') {
+            // Saltar ítems que el usuario no quiere devolver (cantidad = 0 o vacío)
+            if ($cantidad <= 0) {
                 continue;
             }
 
@@ -157,26 +159,14 @@ final class DevolucionController
                 return null;
             }
 
-            if ($cantidadRaw === '' || !is_numeric($cantidadRaw)) {
-                $this->guardarMensaje('error', 'La cantidad debe ser numérica.');
-                return null;
-            }
-
-            $cantidad = (float) $cantidadRaw;
-
-            if ($cantidad <= 0) {
-                $this->guardarMensaje('error', 'La cantidad debe ser mayor que cero.');
-                return null;
-            }
-
             $items[] = [
                 'producto_id' => $productoId,
-                'cantidad' => $cantidad,
+                'cantidad'    => $cantidad,
             ];
         }
 
         if (empty($items)) {
-            $this->guardarMensaje('error', 'Debes agregar al menos un producto válido.');
+            $this->guardarMensaje('error', 'Debes ingresar una cantidad mayor a 0 en al menos un producto.');
             return null;
         }
 

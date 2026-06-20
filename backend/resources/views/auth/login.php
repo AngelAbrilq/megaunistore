@@ -357,6 +357,7 @@ function e(string $value): string
                 <?php endif; ?>
 
                 <form action="index.php?route=login.post" method="POST" autocomplete="on">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                     <div class="form-group">
                         <label for="email">Correo electrónico</label>
                         <input
@@ -395,7 +396,7 @@ function e(string $value): string
                     <a href="index.php?route=register">Crear cuenta como cliente</a>
                 </div>
 
-                <a class="back-home" href="../../../frontend/public/index.php">← Volver al inicio</a>
+                <a class="back-home" href="/index.php">← Volver al inicio</a>
             </div>
         </section>
     </main>

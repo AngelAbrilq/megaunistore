@@ -1,393 +1,163 @@
 <?php
+/**
+ * Vista: productos/index.php
+ * - Con ?ajax=1  → devuelve partial HTML (para loadContent del SPA)
+ * - Sin ?ajax=1  → carga el shell SPA que auto-carga esta ruta
+ */
+$isAjax = isset($_GET['ajax']) && $_GET['ajax'] === '1';
 
+if (!$isAjax) {
+    require __DIR__ . '/../layout/dashboard_layout.php';
+    return;
+}
+
+// --- Partial AJAX desde aquí ---
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
-function e_producto(string $value): string
+function e_prod(string $v): string
 {
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Productos | Mega_Uni_Store</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<?php
-
-
-?>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f3f6fb;
-            color: #111827;
-        }
-
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 34px 20px;
-        }
-
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        h1 {
-            margin: 0 0 6px;
-            color: #172554;
-        }
-
-        p {
-            margin: 0;
-            color: #6b7280;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border: 0;
-            border-radius: 12px;
-            padding: 11px 14px;
-            font-weight: 700;
-            text-decoration: none;
-            cursor: pointer;
-            font-size: 14px;
-            white-space: nowrap;
-        }
-
-        .btn-primary {
-            background: #1e3a8a;
-            color: #ffffff;
-        }
-
-        .btn-secondary {
-            background: #e0e7ff;
-            color: #1e3a8a;
-        }
-
-        .btn-warning {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .btn-danger {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .alert {
-            padding: 13px 14px;
-            border-radius: 14px;
-            margin-bottom: 18px;
-            border: 1px solid transparent;
-        }
-
-        .alert-success {
-            background: #f0fdf4;
-            color: #166534;
-            border-color: #bbf7d0;
-        }
-
-        .alert-error {
-            background: #fef2f2;
-            color: #991b1b;
-            border-color: #fecaca;
-        }
-
-        .card {
-            background: #ffffff;
-            border: 1px solid #dbe3ef;
-            border-radius: 22px;
-            box-shadow: 0 18px 48px rgba(15, 23, 42, 0.10);
-            overflow: hidden;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th:nth-child(2),
-        td:nth-child(2) {
-            min-width: 210px;
-        }
-
-        th:nth-child(6),
-        td:nth-child(6) {
-            min-width: 240px;
-        }
-
-        th:nth-child(7),
-        td:nth-child(7) {
-            min-width: 100px;
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        th,
-        td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-            vertical-align: top;
-            font-size: 14px;
-        }
-
-        th {
-            background: #eff6ff;
-            color: #172554;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-        }
-
-        .muted {
-            color: #6b7280;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .pill {
-            display: inline-flex;
-            padding: 6px 10px;
-            border-radius: 999px;
-            background: #eef2ff;
-            color: #1e3a8a;
-            font-size: 12px;
-            font-weight: 800;
-            margin: 2px 0;
-        }
-
-        .status {
-            display: inline-flex;
-            padding: 6px 10px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 800;
-        }
-
-        .status-active {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .status-inactive {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .actions {
-            display: flex;
-            flex-wrap: nowrap;
-            gap: 8px;
-        }
-
-        td[data-label="Acciones"],
-        th:last-child {
-            min-width: 290px;
-        }
-
-        form {
-            margin: 0;
-        }
-
-        .empty {
-            padding: 34px;
-            text-align: center;
-            color: #6b7280;
-        }
-
-        .back {
-            margin-top: 20px;
-        }
-
-        @media (max-width: 980px) {
-            .topbar {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
-            table,
-            thead,
-            tbody,
-            th,
-            td,
-            tr {
-                display: block;
-            }
-
-            thead {
-                display: none;
-            }
-
-            tr {
-                border-bottom: 1px solid #e5e7eb;
-                padding: 14px;
-            }
-
-            td {
-                border: 0;
-                padding: 7px 0;
-            }
-
-            td::before {
-                content: attr(data-label);
-                display: block;
-                font-weight: 800;
-                color: #172554;
-                margin-bottom: 3px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-    <main class="container">
-        <div class="topbar">
-            <div>
-                <h1>Productos</h1>
-                <p>Administra el catálogo, impuestos, unidades, tiendas y precios por tienda.</p>
-            </div>
-
-            <a class="btn btn-primary" href="index.php?route=productos.create">Nuevo producto</a>
-        </div>
-
-        <?php if ($flash !== null): ?>
-            <div class="alert alert-<?= e_producto($flash['type'] === 'success' ? 'success' : 'error') ?>">
-                <?= e_producto($flash['message']) ?>
-            </div>
-        <?php endif; ?>
-
-        <section class="card">
-            <?php if (empty($productos)): ?>
-                <div class="empty">
-                    No hay productos registrados todavía.
-                </div>
-            <?php else: ?>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Producto</th>
-                            <th>Categoría</th>
-                            <th>Unidad</th>
-                            <th>Impuestos</th>
-                            <th>Tiendas / precios</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <?php foreach ($productos as $producto): ?>
-                            <tr>
-                                <td data-label="ID"><?= e_producto((string) $producto['id']) ?></td>
-
-                                <td data-label="Producto">
-                                    <strong><?= e_producto($producto['nombre']) ?></strong><br>
-
-                                    <?php if (!empty($producto['codigo_barras'])): ?>
-                                        <span class="muted">Código: <?= e_producto($producto['codigo_barras']) ?></span><br>
-                                    <?php endif; ?>
-
-                                    <span class="muted">
-                                        <?= e_producto($producto['descripcion'] ?? 'Sin descripción') ?>
-                                    </span>
-                                </td>
-
-                                <td data-label="Categoría">
-                                    <?= e_producto($producto['categoria_nombre'] ?? 'Sin categoría') ?>
-                                </td>
-
-                                <td data-label="Unidad">
-                                    <?php if (!empty($producto['unidad_nombre'])): ?>
-                                        <?= e_producto($producto['unidad_nombre']) ?>
-                                        <span class="pill"><?= e_producto($producto['unidad_simbolo'] ?? '') ?></span>
-                                    <?php else: ?>
-                                        Sin unidad
-                                    <?php endif; ?>
-                                </td>
-
-                                <td data-label="Impuestos">
-                                    <?= e_producto($producto['impuestos'] ?? 'Sin impuestos') ?>
-                                </td>
-
-                                <td data-label="Tiendas / precios">
-                                    <?= e_producto($producto['tiendas_precios'] ?? 'Sin tiendas asociadas') ?>
-                                </td>
-
-                                <td data-label="Estado">
-                                    <?php if ((int) $producto['estado'] === 1): ?>
-                                        <span class="status status-active">Activo</span>
-                                    <?php else: ?>
-                                        <span class="status status-inactive">Inactivo</span>
-                                    <?php endif; ?>
-                                </td>
-
-                                <td data-label="Acciones">
-                                    <div class="actions">
-                                        <a class="btn btn-secondary" href="index.php?route=productos.edit&id=<?= e_producto((string) $producto['id']) ?>">
-                                            Editar
-                                        </a>
-
-                                        <form action="index.php?route=productos.toggle" method="POST">
-                                            <input type="hidden" name="csrf_token" value="<?= e_producto($csrfToken) ?>">
-                                            <input type="hidden" name="id" value="<?= e_producto((string) $producto['id']) ?>">
-                                            <input type="hidden" name="estado_actual" value="<?= e_producto((string) $producto['estado']) ?>">
-
-                                            <button type="submit" class="btn btn-warning">
-                                                <?= (int) $producto['estado'] === 1 ? 'Desactivar' : 'Activar' ?>
-                                            </button>
-                                        </form>
-
-                                        <form action="index.php?route=productos.destroy" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar este producto?');">
-                                            <input type="hidden" name="csrf_token" value="<?= e_producto($csrfToken) ?>">
-                                            <input type="hidden" name="id" value="<?= e_producto((string) $producto['id']) ?>">
-
-                                            <button type="submit" class="btn btn-danger">
-                                                Eliminar
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            <?php endif; ?>
-        </section>
-
-        <div class="back">
-            <a class="btn btn-secondary" href="index.php?route=dashboard">Volver al dashboard</a>
-        </div>
-    </main>
-</body>
-
-</html>
+<style>
+.mod-topbar { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:24px; flex-wrap:wrap; }
+.mod-topbar h2 { margin:0 0 4px; color:#172554; font-size:22px; }
+.mod-topbar p  { margin:0; color:#6b7280; font-size:14px; }
+.btn { display:inline-flex; align-items:center; border:0; border-radius:12px; padding:10px 16px; font-weight:700; text-decoration:none; cursor:pointer; font-size:14px; white-space:nowrap; font-family:inherit; transition:opacity .15s; }
+.btn:hover { opacity:.85; }
+.btn-primary   { background:#1e3a8a; color:#fff; }
+.btn-secondary { background:#e0e7ff; color:#1e3a8a; }
+.btn-warning   { background:#fef3c7; color:#92400e; }
+.btn-danger    { background:#fee2e2; color:#991b1b; }
+.btn-sm { padding:7px 12px; font-size:13px; }
+.alert { padding:13px 16px; border-radius:14px; margin-bottom:16px; border:1px solid transparent; font-size:14px; }
+.alert-success { background:#f0fdf4; color:#166534; border-color:#bbf7d0; }
+.alert-error   { background:#fef2f2; color:#991b1b; border-color:#fecaca; }
+.card { background:#fff; border:1px solid #dbe3ef; border-radius:20px; box-shadow:0 4px 24px rgba(15,23,42,.08); overflow:hidden; }
+table { width:100%; border-collapse:collapse; }
+th, td { padding:13px 15px; text-align:left; border-bottom:1px solid #e5e7eb; font-size:14px; vertical-align:middle; }
+th { background:#eff6ff; color:#172554; font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+tr:last-child td { border-bottom:none; }
+.pill { display:inline-flex; padding:4px 10px; border-radius:999px; background:#eef2ff; color:#1e3a8a; font-size:12px; font-weight:800; margin:2px 0; }
+.status { display:inline-flex; padding:5px 10px; border-radius:999px; font-size:12px; font-weight:800; }
+.status-active   { background:#dcfce7; color:#166534; }
+.status-inactive { background:#fee2e2; color:#991b1b; }
+.actions { display:flex; flex-wrap:nowrap; gap:8px; align-items:center; }
+.empty { padding:40px; text-align:center; color:#6b7280; }
+</style>
+
+<div class="mod-topbar">
+    <div>
+        <h2>📦 Productos</h2>
+        <p>Administra el catálogo, impuestos, unidades y precios por tienda.</p>
+    </div>
+    <button class="btn btn-primary"
+            onclick="openModal('index.php?route=productos.create&ajax=1')">
+        + Nuevo producto
+    </button>
+</div>
+
+<?php if ($flash !== null): ?>
+    <div class="alert alert-<?= $flash['type'] === 'success' ? 'success' : 'error' ?>">
+        <?= e_prod($flash['message']) ?>
+    </div>
+<?php endif; ?>
+
+<div class="card">
+    <?php if (empty($productos)): ?>
+        <div class="empty">No hay productos registrados todavía.</div>
+    <?php else: ?>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Producto</th>
+                    <th>Categoría</th>
+                    <th>Unidad</th>
+                    <th>Impuestos</th>
+                    <th>Tiendas / precios</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($productos as $p): ?>
+                    <tr>
+                        <td><?= e_prod((string) $p['id']) ?></td>
+                        <td>
+                            <strong><?= e_prod($p['nombre']) ?></strong>
+                            <?php if (!empty($p['codigo_barras'])): ?>
+                                <br><span style="color:#6b7280;font-size:12px;">Código: <?= e_prod($p['codigo_barras']) ?></span>
+                            <?php endif; ?>
+                        </td>
+                        <td><?= e_prod($p['categoria_nombre'] ?? 'Sin categoría') ?></td>
+                        <td>
+                            <?php if (!empty($p['unidad_nombre'])): ?>
+                                <?= e_prod($p['unidad_nombre']) ?>
+                                <span class="pill"><?= e_prod($p['unidad_simbolo'] ?? '') ?></span>
+                            <?php else: ?>—<?php endif; ?>
+                        </td>
+                        <td style="font-size:13px;"><?= e_prod($p['impuestos'] ?? '—') ?></td>
+                        <td style="font-size:13px;"><?= e_prod($p['tiendas_precios'] ?? '—') ?></td>
+                        <td>
+                            <?php if ((int) $p['estado'] === 1): ?>
+                                <span class="status status-active">Activo</span>
+                            <?php else: ?>
+                                <span class="status status-inactive">Inactivo</span>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <button class="btn btn-secondary btn-sm"
+                                        onclick="openModal('index.php?route=productos.edit&id=<?= e_prod((string) $p['id']) ?>&ajax=1')">
+                                    Editar
+                                </button>
+
+                                <form action="index.php?route=productos.toggle" method="POST" class="form-ajax-action">
+                                    <input type="hidden" name="csrf_token" value="<?= e_prod($csrfToken) ?>">
+                                    <input type="hidden" name="id" value="<?= e_prod((string) $p['id']) ?>">
+                                    <input type="hidden" name="estado_actual" value="<?= e_prod((string) $p['estado']) ?>">
+                                    <button type="submit" class="btn btn-warning btn-sm">
+                                        <?= (int) $p['estado'] === 1 ? 'Desactivar' : 'Activar' ?>
+                                    </button>
+                                </form>
+
+                                <form action="index.php?route=productos.destroy" method="POST" class="form-ajax-action"
+                                      data-confirm="¿Seguro que deseas eliminar este producto?">
+                                    <input type="hidden" name="csrf_token" value="<?= e_prod($csrfToken) ?>">
+                                    <input type="hidden" name="id" value="<?= e_prod((string) $p['id']) ?>">
+                                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
+</div>
+
+<script>
+// Formularios de acción rápida (toggle, destroy) dentro del contenido AJAX
+// Se envían via fetch y recargan el módulo al terminar
+document.querySelectorAll('.form-ajax-action').forEach(function(form) {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var confirm_msg = form.dataset.confirm;
+        if (confirm_msg && !confirm(confirm_msg)) return;
+
+        var formData = new FormData(form);
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        }).then(function() {
+            // Recargar el módulo actual
+            loadContent('productos.index', false);
+        }).catch(function(err) {
+            console.error('Error en acción:', err);
+        });
+    });
+});
+</script>

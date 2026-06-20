@@ -1,0 +1,11 @@
+# Mega_Uni_Store - Backend root protection
+Options -Indexes
+
+# Bloquear acceso directo a archivos sensibles
+<FilesMatch "\.(env|json|lock|md|sql)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Solo permitir acceso público a /public/
+RedirectMatch 403 ^/backend/(?!public/).*$

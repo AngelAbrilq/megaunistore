@@ -1,220 +1,101 @@
 <?php
-
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
-
-function e_create_user(string $value): string
-{
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-}
+function e_cusr(string $v): string { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
 ?>
+<style>
+.mf-title { font-size:20px; font-weight:800; color:#172554; margin:0 0 4px; }
+.mf-subtitle { font-size:13px; color:#6b7280; margin:0 0 20px; }
+.mf-alert { padding:11px 14px; border-radius:12px; margin-bottom:14px; font-size:14px; border:1px solid #fecaca; background:#fef2f2; color:#991b1b; }
+.mf-section { background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:18px; margin-bottom:16px; }
+.mf-section h3 { margin:0 0 14px; color:#172554; font-size:15px; }
+.mf-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.mf-group { display:flex; flex-direction:column; gap:6px; }
+.mf-group.span2 { grid-column:1/-1; }
+label { font-size:13px; font-weight:700; color:#374151; }
+input, textarea, select {
+    width:100%; border:1px solid #dbe3ef; border-radius:10px;
+    padding:10px 12px; font-size:14px; outline:none; background:#fff;
+    box-sizing:border-box; font-family:inherit;
+}
+textarea { min-height:80px; resize:vertical; }
+input:focus, textarea:focus, select:focus { border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.1); }
+.mf-actions { display:flex; gap:10px; margin-top:16px; }
+.btn { display:inline-flex; align-items:center; border:0; border-radius:10px; padding:11px 18px; font-weight:700; cursor:pointer; font-size:14px; font-family:inherit; transition:opacity .15s; }
+.btn:hover { opacity:.85; }
+.btn-primary   { background:#1e3a8a; color:#fff; }
+.btn-secondary { background:#e0e7ff; color:#1e3a8a; }
+@media(max-width:520px){.mf-grid{grid-template-columns:1fr;}}
+</style>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Nuevo usuario | Mega_Uni_Store</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<h2 class="mf-title">Nuevo usuario</h2>
+<p class="mf-subtitle">Crea una cuenta de acceso al sistema.</p>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f3f6fb;
-            color: #111827;
-        }
+<?php if ($flash !== null): ?>
+    <div class="mf-alert"><?= e_cusr($flash['message']) ?></div>
+<?php endif; ?>
 
-        .container {
-            max-width: 860px;
-            margin: 0 auto;
-            padding: 34px 20px;
-        }
+<form id="form-crear-usuario" action="index.php?route=usuarios.store" method="POST">
+    <input type="hidden" name="csrf_token" value="<?= e_cusr($csrfToken) ?>">
 
-        h1 {
-            margin: 0 0 8px;
-            color: #172554;
-        }
+    <div class="mf-section">
+        <h3>Datos personales</h3>
+        <div class="mf-grid">
+            <div class="mf-group">
+                <label for="cu-nombre">Nombre *</label>
+                <input type="text" id="cu-nombre" name="nombre" required maxlength="100" placeholder="Nombre">
+            </div>
+            <div class="mf-group">
+                <label for="cu-apellido">Apellido</label>
+                <input type="text" id="cu-apellido" name="apellido" maxlength="100" placeholder="Apellido">
+            </div>
+            <div class="mf-group">
+                <label for="cu-email">Correo electrónico *</label>
+                <input type="email" id="cu-email" name="email" required maxlength="150" placeholder="usuario@correo.com">
+            </div>
+            <div class="mf-group">
+                <label for="cu-tel">Teléfono</label>
+                <input type="text" id="cu-tel" name="telefono" maxlength="20" placeholder="Opcional">
+            </div>
+            <div class="mf-group">
+                <label for="cu-pass">Contraseña *</label>
+                <input type="password" id="cu-pass" name="password" required minlength="8" placeholder="Mínimo 8 caracteres">
+            </div>
+            <div class="mf-group">
+                <label for="cu-pass2">Confirmar contraseña *</label>
+                <input type="password" id="cu-pass2" name="password_confirmation" required placeholder="Repetir contraseña">
+            </div>
+        </div>
+    </div>
 
-        p {
-            margin: 0 0 24px;
-            color: #6b7280;
-        }
+    <?php if (!empty($roles)): ?>
+    <div class="mf-section">
+        <h3>Rol inicial</h3>
+        <div class="mf-grid">
+            <div class="mf-group">
+                <label for="cu-rol">Rol</label>
+                <select id="cu-rol" name="rol_id">
+                    <option value="">Sin rol inicial</option>
+                    <?php foreach ($roles as $r): ?>
+                        <option value="<?= e_cusr((string) $r['id']) ?>"><?= e_cusr($r['nombre']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="mf-group">
+                <label for="cu-tienda">Tienda (si aplica)</label>
+                <select id="cu-tienda" name="tienda_id">
+                    <option value="">Sin tienda</option>
+                    <?php foreach ($tiendas as $t): ?>
+                        <option value="<?= e_cusr((string) $t['id']) ?>"><?= e_cusr($t['nombre']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 
-        .card {
-            background: #ffffff;
-            border: 1px solid #dbe3ef;
-            border-radius: 22px;
-            padding: 26px;
-            box-shadow: 0 18px 48px rgba(15, 23, 42, 0.10);
-        }
-
-        .alert {
-            padding: 13px 14px;
-            border-radius: 14px;
-            margin-bottom: 18px;
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #991b1b;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group.full {
-            grid-column: 1 / -1;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 800;
-            color: #1f2937;
-            font-size: 14px;
-        }
-
-        input,
-        select {
-            width: 100%;
-            border: 1px solid #dbe3ef;
-            border-radius: 14px;
-            padding: 13px 14px;
-            font-size: 15px;
-            outline: none;
-            background: #ffffff;
-        }
-
-        input:focus,
-        select:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-        }
-
-        .help {
-            display: block;
-            margin-top: 6px;
-            font-size: 12px;
-            color: #6b7280;
-            line-height: 1.4;
-        }
-
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 8px;
-        }
-
-        .btn {
-            display: inline-flex;
-            border: 0;
-            border-radius: 12px;
-            padding: 12px 16px;
-            font-weight: 800;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background: #1e3a8a;
-            color: #ffffff;
-        }
-
-        .btn-secondary {
-            background: #e0e7ff;
-            color: #1e3a8a;
-        }
-
-        @media (max-width: 680px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-                gap: 0;
-            }
-        }
-    </style>
-</head>
-<body>
-    <main class="container">
-        <h1>Nuevo usuario administrativo</h1>
-        <p>Crea un usuario interno y asígnale un rol global o por tienda.</p>
-
-        <?php if ($flash !== null): ?>
-            <div class="alert"><?= e_create_user($flash['message']) ?></div>
-        <?php endif; ?>
-
-        <section class="card">
-            <form action="index.php?route=usuarios.store" method="POST">
-                <input type="hidden" name="csrf_token" value="<?= e_create_user($csrfToken) ?>">
-
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="nombre">Nombre *</label>
-                        <input type="text" id="nombre" name="nombre" required maxlength="80">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="apellido">Apellido *</label>
-                        <input type="text" id="apellido" name="apellido" required maxlength="80">
-                    </div>
-
-                    <div class="form-group full">
-                        <label for="email">Correo electrónico *</label>
-                        <input type="email" id="email" name="email" required maxlength="150">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="telefono">Teléfono</label>
-                        <input type="text" id="telefono" name="telefono" maxlength="20">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="password">Contraseña *</label>
-                        <input type="password" id="password" name="password" required minlength="8">
-                        <span class="help">Mínimo 8 caracteres.</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="rol_id">Rol *</label>
-                        <select id="rol_id" name="rol_id" required>
-                            <option value="">Seleccionar rol</option>
-                            <?php foreach ($roles as $rol): ?>
-                                <option value="<?= e_create_user((string) $rol['id']) ?>">
-                                    <?= e_create_user($rol['nombre']) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="tienda_id">Tienda</label>
-                        <select id="tienda_id" name="tienda_id">
-                            <option value="">Global / No aplica</option>
-                            <?php foreach ($tiendas as $tienda): ?>
-                                <option value="<?= e_create_user((string) $tienda['id']) ?>">
-                                    <?= e_create_user($tienda['nombre']) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                        <span class="help">
-                            Superadministrador y Sistema son globales. Los demás roles deben tener tienda.
-                        </span>
-                    </div>
-                </div>
-
-                <div class="actions">
-                    <button type="submit" class="btn btn-primary">Guardar usuario</button>
-                    <a href="index.php?route=usuarios.index" class="btn btn-secondary">Cancelar</a>
-                </div>
-            </form>
-        </section>
-    </main>
-</body>
-</html>
-
-
+    <div class="mf-actions">
+        <button type="submit" class="btn btn-primary">Crear usuario</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+    </div>
+</form>

@@ -1,227 +1,83 @@
 <?php
-
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
-
-function e_edit_user(string $value): string
-{
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-}
+function e_eusr(string $v): string { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
 ?>
+<style>
+.mf-title { font-size:20px; font-weight:800; color:#172554; margin:0 0 4px; }
+.mf-subtitle { font-size:13px; color:#6b7280; margin:0 0 20px; }
+.mf-alert { padding:11px 14px; border-radius:12px; margin-bottom:14px; font-size:14px; border:1px solid #fecaca; background:#fef2f2; color:#991b1b; }
+.mf-section { background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:18px; margin-bottom:16px; }
+.mf-section h3 { margin:0 0 14px; color:#172554; font-size:15px; }
+.mf-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.mf-group { display:flex; flex-direction:column; gap:6px; }
+.mf-group.span2 { grid-column:1/-1; }
+label { font-size:13px; font-weight:700; color:#374151; }
+input, textarea, select {
+    width:100%; border:1px solid #dbe3ef; border-radius:10px;
+    padding:10px 12px; font-size:14px; outline:none; background:#fff;
+    box-sizing:border-box; font-family:inherit;
+}
+textarea { min-height:80px; resize:vertical; }
+input:focus, textarea:focus, select:focus { border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.1); }
+.mf-actions { display:flex; gap:10px; margin-top:16px; }
+.btn { display:inline-flex; align-items:center; border:0; border-radius:10px; padding:11px 18px; font-weight:700; cursor:pointer; font-size:14px; font-family:inherit; transition:opacity .15s; }
+.btn:hover { opacity:.85; }
+.btn-primary   { background:#1e3a8a; color:#fff; }
+.btn-secondary { background:#e0e7ff; color:#1e3a8a; }
+@media(max-width:520px){.mf-grid{grid-template-columns:1fr;}}
+</style>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar usuario | Mega_Uni_Store</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<h2 class="mf-title">Editar usuario</h2>
+<p class="mf-subtitle">Actualiza los datos de la cuenta.</p>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f3f6fb;
-            color: #111827;
-        }
+<?php if ($flash !== null): ?>
+    <div class="mf-alert"><?= e_eusr($flash['message']) ?></div>
+<?php endif; ?>
 
-        .container {
-            max-width: 860px;
-            margin: 0 auto;
-            padding: 34px 20px;
-        }
+<form id="form-editar-usuario" action="index.php?route=usuarios.update" method="POST">
+    <input type="hidden" name="csrf_token" value="<?= e_eusr($csrfToken) ?>">
+    <input type="hidden" name="id" value="<?= e_eusr((string) $usuario['id']) ?>">
 
-        h1 {
-            margin: 0 0 8px;
-            color: #172554;
-        }
+    <div class="mf-section">
+        <h3>Datos personales</h3>
+        <div class="mf-grid">
+            <div class="mf-group">
+                <label for="eu-nombre">Nombre *</label>
+                <input type="text" id="eu-nombre" name="nombre" required maxlength="100"
+                       value="<?= e_eusr($usuario['nombre']) ?>">
+            </div>
+            <div class="mf-group">
+                <label for="eu-apellido">Apellido</label>
+                <input type="text" id="eu-apellido" name="apellido" maxlength="100"
+                       value="<?= e_eusr($usuario['apellido'] ?? '') ?>">
+            </div>
+            <div class="mf-group">
+                <label for="eu-email">Correo electrónico *</label>
+                <input type="email" id="eu-email" name="email" required maxlength="150"
+                       value="<?= e_eusr($usuario['email'] ?? '') ?>">
+            </div>
+            <div class="mf-group">
+                <label for="eu-tel">Teléfono</label>
+                <input type="text" id="eu-tel" name="telefono" maxlength="20"
+                       value="<?= e_eusr($usuario['telefono'] ?? '') ?>">
+            </div>
+            <div class="mf-group">
+                <label for="eu-pass">Nueva contraseña <span style="font-weight:400;color:#6b7280">(dejar en blanco para no cambiar)</span></label>
+                <input type="password" id="eu-pass" name="password" minlength="8" placeholder="Nueva contraseña">
+            </div>
+            <div class="mf-group">
+                <label for="eu-estado">Estado</label>
+                <select id="eu-estado" name="estado">
+                    <option value="1" <?= (int) ($usuario['estado'] ?? 1) === 1 ? 'selected' : '' ?>>Activo</option>
+                    <option value="0" <?= (int) ($usuario['estado'] ?? 1) === 0 ? 'selected' : '' ?>>Inactivo</option>
+                </select>
+            </div>
+        </div>
+    </div>
 
-        p {
-            margin: 0 0 24px;
-            color: #6b7280;
-        }
-
-        .card {
-            background: #ffffff;
-            border: 1px solid #dbe3ef;
-            border-radius: 22px;
-            padding: 26px;
-            box-shadow: 0 18px 48px rgba(15, 23, 42, 0.10);
-        }
-
-        .alert {
-            padding: 13px 14px;
-            border-radius: 14px;
-            margin-bottom: 18px;
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #991b1b;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group.full {
-            grid-column: 1 / -1;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 800;
-            color: #1f2937;
-            font-size: 14px;
-        }
-
-        input,
-        select {
-            width: 100%;
-            border: 1px solid #dbe3ef;
-            border-radius: 14px;
-            padding: 13px 14px;
-            font-size: 15px;
-            outline: none;
-            background: #ffffff;
-        }
-
-        input:focus,
-        select:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-        }
-
-        .help {
-            display: block;
-            margin-top: 6px;
-            font-size: 12px;
-            color: #6b7280;
-            line-height: 1.4;
-        }
-
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 8px;
-        }
-
-        .btn {
-            display: inline-flex;
-            border: 0;
-            border-radius: 12px;
-            padding: 12px 16px;
-            font-weight: 800;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background: #1e3a8a;
-            color: #ffffff;
-        }
-
-        .btn-secondary {
-            background: #e0e7ff;
-            color: #1e3a8a;
-        }
-
-        @media (max-width: 680px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-                gap: 0;
-            }
-        }
-    </style>
-</head>
-<body>
-    <main class="container">
-        <h1>Editar usuario</h1>
-        <p>Actualiza los datos principales del usuario.</p>
-
-        <?php if ($flash !== null): ?>
-            <div class="alert"><?= e_edit_user($flash['message']) ?></div>
-        <?php endif; ?>
-
-        <section class="card">
-            <form action="index.php?route=usuarios.update" method="POST">
-                <input type="hidden" name="csrf_token" value="<?= e_edit_user($csrfToken) ?>">
-                <input type="hidden" name="id" value="<?= e_edit_user((string) $usuario['id']) ?>">
-
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="nombre">Nombre *</label>
-                        <input
-                            type="text"
-                            id="nombre"
-                            name="nombre"
-                            required
-                            maxlength="80"
-                            value="<?= e_edit_user($usuario['nombre']) ?>"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="apellido">Apellido *</label>
-                        <input
-                            type="text"
-                            id="apellido"
-                            name="apellido"
-                            required
-                            maxlength="80"
-                            value="<?= e_edit_user($usuario['apellido']) ?>"
-                        >
-                    </div>
-
-                    <div class="form-group full">
-                        <label for="email">Correo electrónico *</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            required
-                            maxlength="150"
-                            value="<?= e_edit_user($usuario['email']) ?>"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="telefono">Teléfono</label>
-                        <input
-                            type="text"
-                            id="telefono"
-                            name="telefono"
-                            maxlength="20"
-                            value="<?= e_edit_user($usuario['telefono'] ?? '') ?>"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="estado">Estado</label>
-                        <select id="estado" name="estado">
-                            <option value="1" <?= (int) $usuario['estado'] === 1 ? 'selected' : '' ?>>Activo</option>
-                            <option value="0" <?= (int) $usuario['estado'] === 0 ? 'selected' : '' ?>>Inactivo</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group full">
-                        <label for="password">Nueva contraseña</label>
-                        <input type="password" id="password" name="password" minlength="8">
-                        <span class="help">Déjala vacía si no quieres cambiarla.</span>
-                    </div>
-                </div>
-
-                <div class="actions">
-                    <button type="submit" class="btn btn-primary">Actualizar usuario</button>
-                    <a href="index.php?route=usuarios.index" class="btn btn-secondary">Cancelar</a>
-                </div>
-            </form>
-        </section>
-    </main>
-</body>
-</html>
+    <div class="mf-actions">
+        <button type="submit" class="btn btn-primary">Actualizar usuario</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+    </div>
+</form>

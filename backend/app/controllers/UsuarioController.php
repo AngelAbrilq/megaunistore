@@ -25,9 +25,15 @@ final class UsuarioController
     {
         $usuarios = $this->usuarioModel->listar();
 
+        // Batch: una sola query en lugar de N queries (1 por usuario)
+        $usuarioIds     = array_column($usuarios, 'id');
+        $rolesPorUsuario = $this->rolModel->obtenerRolesDeUsuariosBatch($usuarioIds);
+
         foreach ($usuarios as $key => $usuario) {
-            $usuarios[$key]['roles'] = $this->rolModel->obtenerRolesDeUsuario((int) $usuario['id']);
+            $usuarios[$key]['roles'] = $rolesPorUsuario[(int) $usuario['id']] ?? [];
         }
+
+        $csrfToken = $this->generarCsrfToken();
 
         require __DIR__ . '/../../resources/views/usuarios/index.php';
     }
@@ -72,8 +78,7 @@ final class UsuarioController
 
         $this->asignarRolDesdeFormulario($usuarioId, $_POST);
 
-        $this->guardarMensaje('success', 'Usuario creado correctamente.');
-        $this->redireccionar('index.php?route=usuarios.index');
+        $this->jsonExito('usuarios.index', 'Usuario creado correctamente.');
     }
 
     public function edit(): void
@@ -152,8 +157,7 @@ final class UsuarioController
             $this->usuarioModel->cambiarPassword($id, $password);
         }
 
-        $this->guardarMensaje('success', 'Usuario actualizado correctamente.');
-        $this->redireccionar('index.php?route=usuarios.index');
+        $this->jsonExito('usuarios.index', 'Usuario actualizado correctamente.');
     }
 
     public function asignarRol(): void
@@ -197,8 +201,7 @@ final class UsuarioController
 
         $this->asignarRolDesdeFormulario($usuarioId, $_POST);
 
-        $this->guardarMensaje('success', 'Rol asignado correctamente.');
-        $this->redireccionar('index.php?route=usuarios.asignar_rol&id=' . $usuarioId);
+        $this->jsonExito('usuarios.index', 'Rol asignado correctamente.');
     }
 
     public function toggleEstado(): void
@@ -280,7 +283,7 @@ final class UsuarioController
         }
 
         $rolesGlobales = ['Superadministrador', 'Sistema'];
-        $rolNombre = $rol['nombre'];
+        $rolNombre = $rol['nombre']; 
 
         if (in_array($rolNombre, $rolesGlobales, true)) {
             $tiendaId = null;

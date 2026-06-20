@@ -71,8 +71,7 @@ final class EmpleadoController
 
         $this->empleadoModel->crear($datos);
 
-        $this->guardarMensaje('success', 'Empleado registrado correctamente.');
-        $this->redireccionar('index.php?route=empleados.index');
+        $this->jsonExito('empleados.index', 'Empleado registrado correctamente.');
     }
 
     public function edit(): void
@@ -134,8 +133,7 @@ final class EmpleadoController
 
         $this->empleadoModel->actualizar($id, $datos);
 
-        $this->guardarMensaje('success', 'Empleado actualizado correctamente.');
-        $this->redireccionar('index.php?route=empleados.index');
+        $this->jsonExito('empleados.index', 'Empleado actualizado correctamente.');
     }
 
     public function destroy(): void

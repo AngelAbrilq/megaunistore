@@ -1,180 +1,67 @@
 <?php
-
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
-
-function e_edit_unidad(string $value): string
-{
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-}
-
-$tipos = ['Unidad', 'Peso', 'Volumen', 'Longitud', 'Tiempo', 'Otro'];
+function e_euni(string $v): string { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
 ?>
+<style>
+.mf-title { font-size:20px; font-weight:800; color:#172554; margin:0 0 4px; }
+.mf-subtitle { font-size:13px; color:#6b7280; margin:0 0 20px; }
+.mf-alert { padding:11px 14px; border-radius:12px; margin-bottom:14px; font-size:14px; border:1px solid #fecaca; background:#fef2f2; color:#991b1b; }
+.mf-section { background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:18px; margin-bottom:16px; }
+.mf-section h3 { margin:0 0 14px; color:#172554; font-size:15px; }
+.mf-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.mf-group { display:flex; flex-direction:column; gap:6px; }
+.mf-group.span2 { grid-column:1/-1; }
+label { font-size:13px; font-weight:700; color:#374151; }
+input, textarea, select {
+    width:100%; border:1px solid #dbe3ef; border-radius:10px;
+    padding:10px 12px; font-size:14px; outline:none; background:#fff;
+    box-sizing:border-box; font-family:inherit;
+}
+textarea { min-height:80px; resize:vertical; }
+input:focus, textarea:focus, select:focus { border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.1); }
+.mf-actions { display:flex; gap:10px; margin-top:16px; }
+.btn { display:inline-flex; align-items:center; border:0; border-radius:10px; padding:11px 18px; font-weight:700; cursor:pointer; font-size:14px; font-family:inherit; transition:opacity .15s; }
+.btn:hover { opacity:.85; }
+.btn-primary   { background:#1e3a8a; color:#fff; }
+.btn-secondary { background:#e0e7ff; color:#1e3a8a; }
+@media(max-width:520px){.mf-grid{grid-template-columns:1fr;}}
+</style>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar unidad | Mega_Uni_Store</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<h2 class="mf-title">Editar unidad de medida</h2>
+<p class="mf-subtitle">Actualiza la información de la unidad.</p>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f3f6fb;
-            color: #111827;
-        }
+<?php if ($flash !== null): ?>
+    <div class="mf-alert"><?= e_euni($flash['message']) ?></div>
+<?php endif; ?>
 
-        .container {
-            max-width: 760px;
-            margin: 0 auto;
-            padding: 34px 20px;
-        }
+<form id="form-editar-unidad" action="index.php?route=unidades.update" method="POST">
+    <input type="hidden" name="csrf_token" value="<?= e_euni($csrfToken) ?>">
+    <input type="hidden" name="id" value="<?= e_euni((string) $unidad['id']) ?>">
 
-        h1 {
-            margin: 0 0 8px;
-            color: #172554;
-        }
-
-        p {
-            margin: 0 0 24px;
-            color: #6b7280;
-        }
-
-        .card {
-            background: #ffffff;
-            border: 1px solid #dbe3ef;
-            border-radius: 22px;
-            padding: 26px;
-            box-shadow: 0 18px 48px rgba(15, 23, 42, 0.10);
-        }
-
-        .alert {
-            padding: 13px 14px;
-            border-radius: 14px;
-            margin-bottom: 18px;
-            border: 1px solid #fecaca;
-            background: #fef2f2;
-            color: #991b1b;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 800;
-            color: #1f2937;
-            font-size: 14px;
-        }
-
-        input,
-        select {
-            width: 100%;
-            border: 1px solid #dbe3ef;
-            border-radius: 14px;
-            padding: 13px 14px;
-            font-size: 15px;
-            outline: none;
-            background: #ffffff;
-        }
-
-        input:focus,
-        select:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-        }
-
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 8px;
-        }
-
-        .btn {
-            display: inline-flex;
-            border: 0;
-            border-radius: 12px;
-            padding: 12px 16px;
-            font-weight: 800;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background: #1e3a8a;
-            color: #ffffff;
-        }
-
-        .btn-secondary {
-            background: #e0e7ff;
-            color: #1e3a8a;
-        }
-    </style>
-</head>
-<body>
-    <main class="container">
-        <h1>Editar unidad de medida</h1>
-        <p>Actualiza la unidad seleccionada.</p>
-
-        <?php if ($flash !== null): ?>
-            <div class="alert">
-                <?= e_edit_unidad($flash['message']) ?>
+    <div class="mf-section">
+        <h3>Datos de la unidad</h3>
+        <div class="mf-grid">
+            <div class="mf-group">
+                <label for="eu-nombre">Nombre *</label>
+                <input type="text" id="eu-nombre" name="nombre" required maxlength="80"
+                       value="<?= e_euni($unidad['nombre']) ?>">
             </div>
-        <?php endif; ?>
+            <div class="mf-group">
+                <label for="eu-simbolo">Símbolo *</label>
+                <input type="text" id="eu-simbolo" name="simbolo" required maxlength="10"
+                       value="<?= e_euni($unidad['simbolo']) ?>">
+            </div>
+            <div class="mf-group span2">
+                <label for="eu-tipo">Tipo</label>
+                <input type="text" id="eu-tipo" name="tipo" maxlength="50"
+                       value="<?= e_euni($unidad['tipo'] ?? '') ?>">
+            </div>
+        </div>
+    </div>
 
-        <section class="card">
-            <form action="index.php?route=unidades.update" method="POST">
-                <input type="hidden" name="csrf_token" value="<?= e_edit_unidad($csrfToken) ?>">
-                <input type="hidden" name="id" value="<?= e_edit_unidad((string) $unidad['id']) ?>">
-
-                <div class="form-group">
-                    <label for="nombre">Nombre *</label>
-                    <input
-                        type="text"
-                        id="nombre"
-                        name="nombre"
-                        required
-                        maxlength="80"
-                        value="<?= e_edit_unidad($unidad['nombre']) ?>"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="simbolo">Símbolo *</label>
-                    <input
-                        type="text"
-                        id="simbolo"
-                        name="simbolo"
-                        required
-                        maxlength="10"
-                        value="<?= e_edit_unidad($unidad['simbolo']) ?>"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="tipo">Tipo</label>
-                    <select id="tipo" name="tipo">
-                        <option value="">Seleccionar tipo</option>
-
-                        <?php foreach ($tipos as $tipo): ?>
-                            <option value="<?= e_edit_unidad($tipo) ?>" <?= ($unidad['tipo'] ?? '') === $tipo ? 'selected' : '' ?>>
-                                <?= e_edit_unidad($tipo) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
-                <div class="actions">
-                    <button type="submit" class="btn btn-primary">Actualizar unidad</button>
-                    <a href="index.php?route=unidades.index" class="btn btn-secondary">Cancelar</a>
-                </div>
-            </form>
-        </section>
-    </main>
-</body>
-</html>
+    <div class="mf-actions">
+        <button type="submit" class="btn btn-primary">Actualizar unidad</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+    </div>
+</form>

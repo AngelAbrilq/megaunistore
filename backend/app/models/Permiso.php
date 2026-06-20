@@ -226,6 +226,15 @@ final class Permiso
 
     public function usuarioTienePermiso(int $usuarioId, string $accion, ?int $tiendaId = null): bool
     {
+        // Auto-siembra: si la acción consultada aún no existe en la tabla
+        // permisos (módulo recién desplegado), sincroniza el catálogo base
+        // y la matriz de roles una sola vez, y continúa con la validación.
+        if ($this->buscarPorAccion($accion) === null
+            && in_array($accion, array_column($this->permisosBase(), 'accion'), true)
+        ) {
+            $this->sincronizarPermisosRolesBase();
+        }
+
         if ($tiendaId === null) {
             $sql = "
                 SELECT COUNT(*) AS total
@@ -557,6 +566,58 @@ final class Permiso
                 'accion' => 'backups.manage',
                 'descripcion' => 'Permite gestionar respaldos y tareas automáticas.',
             ],
+        
+            [
+                'nombre' => 'Ver compras',
+                'modulo' => 'compras',
+                'accion' => 'compras.view',
+                'descripcion' => 'Permite consultar órdenes de compra a proveedores.',
+            ],
+            [
+                'nombre' => 'Gestionar compras',
+                'modulo' => 'compras',
+                'accion' => 'compras.manage',
+                'descripcion' => 'Permite crear, recibir y cancelar órdenes de compra.',
+            ],
+
+            [
+                'nombre' => 'Ver gastos',
+                'modulo' => 'gastos',
+                'accion' => 'gastos.view',
+                'descripcion' => 'Permite consultar los gastos operacionales.',
+            ],
+            [
+                'nombre' => 'Gestionar gastos',
+                'modulo' => 'gastos',
+                'accion' => 'gastos.manage',
+                'descripcion' => 'Permite registrar, pagar y anular gastos.',
+            ],
+
+            [
+                'nombre' => 'Ver contabilidad',
+                'modulo' => 'contabilidad',
+                'accion' => 'contabilidad.view',
+                'descripcion' => 'Permite consultar cuentas, asientos y reportes financieros.',
+            ],
+            [
+                'nombre' => 'Gestionar contabilidad',
+                'modulo' => 'contabilidad',
+                'accion' => 'contabilidad.manage',
+                'descripcion' => 'Permite crear cuentas, asientos, períodos y centros de costo.',
+            ],
+
+            [
+                'nombre' => 'Ver RRHH',
+                'modulo' => 'rrhh',
+                'accion' => 'rrhh.view',
+                'descripcion' => 'Permite consultar horas extra y vacaciones.',
+            ],
+            [
+                'nombre' => 'Gestionar RRHH',
+                'modulo' => 'rrhh',
+                'accion' => 'rrhh.manage',
+                'descripcion' => 'Permite registrar y aprobar horas extra y vacaciones.',
+            ],
         ];
     }
 
@@ -593,6 +654,14 @@ final class Permiso
                 'empleados.view',
                 'empleados.manage',
                 'usuarios.view',
+                'compras.view',
+                'compras.manage',
+                'gastos.view',
+                'gastos.manage',
+                'contabilidad.view',
+                'contabilidad.manage',
+                'rrhh.view',
+                'rrhh.manage',
             ],
 
             'Supervisor' => [
@@ -606,6 +675,8 @@ final class Permiso
                 'caja.view',
                 'caja.manage',
                 'reportes.view',
+                'compras.view',
+                'gastos.view',
             ],
 
             'Vendedor' => [
@@ -624,6 +695,8 @@ final class Permiso
                 'inventario.view',
                 'inventario.move',
                 'inventario.alerts',
+                'compras.view',
+                'compras.manage',
             ],
 
             'Reportero' => [
@@ -641,6 +714,8 @@ final class Permiso
                 'nomina.view',
                 'nomina.manage',
                 'reportes.view',
+                'rrhh.view',
+                'rrhh.manage',
             ],
 
             'Cliente' => [

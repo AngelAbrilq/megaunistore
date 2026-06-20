@@ -5,9 +5,12 @@ declare(strict_types=1);
 require_once __DIR__ . '/../models/Usuario.php';
 require_once __DIR__ . '/../models/Rol.php';
 require_once __DIR__ . '/../models/Permiso.php';
+require_once __DIR__ . '/../Helpers/ControllerHelper.php';
+require_once __DIR__ . '/../Middlewares/RateLimiter.php';
 
 final class AuthController
 {
+    use ControllerHelper;
     private Usuario $usuarioModel;
     private Rol $rolModel;
     private Permiso $permisoModel;
@@ -28,6 +31,8 @@ final class AuthController
             return;
         }
 
+        $csrfToken = $this->generarCsrfToken();
+
         require __DIR__ . '/../../resources/views/auth/login.php';
     }
 
@@ -38,12 +43,28 @@ final class AuthController
             return;
         }
 
+        $csrfToken = $this->generarCsrfToken();
+
         require __DIR__ . '/../../resources/views/auth/register.php';
     }
 
     public function login(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redireccionar('index.php?route=login');
+            return;
+        }
+
+        // Anti-CSRF en el formulario de login (login CSRF)
+        $this->validarCsrfToken();
+
+        // Anti fuerza bruta: máximo 5 intentos fallidos por IP cada 5 minutos
+        if (!RateLimiter::permitido('login', 5, 300)) {
+            $espera = RateLimiter::segundosRestantes('login', 300);
+            $this->guardarMensaje(
+                'error',
+                'Demasiados intentos fallidos. Intenta de nuevo en ' . max(1, (int) ceil($espera / 60)) . ' minuto(s).'
+            );
             $this->redireccionar('index.php?route=login');
             return;
         }
@@ -66,16 +87,20 @@ final class AuthController
         $usuario = $this->usuarioModel->buscarActivoPorEmail($email);
 
         if ($usuario === null) {
+            RateLimiter::registrarIntento('login');
             $this->guardarMensaje('error', 'Credenciales incorrectas.');
             $this->redireccionar('index.php?route=login');
             return;
         }
 
         if (!$this->usuarioModel->verificarPassword($password, $usuario['password_hash'])) {
+            RateLimiter::registrarIntento('login');
             $this->guardarMensaje('error', 'Credenciales incorrectas.');
             $this->redireccionar('index.php?route=login');
             return;
         }
+
+        RateLimiter::limpiar('login');
 
         $roles = $this->rolModel->obtenerRolesDeUsuario((int) $usuario['id']);
         $rolPrincipal = $this->rolModel->obtenerRolPrincipalDeUsuario((int) $usuario['id']);
@@ -88,6 +113,10 @@ final class AuthController
         }
 
         session_regenerate_id(true);
+
+        // Rotar el token CSRF al iniciar sesión (evita fijación de token)
+        unset($_SESSION['csrf_token']);
+        $this->generarCsrfToken();
 
         $_SESSION['auth'] = [
             'usuario_id' => (int) $usuario['id'],
@@ -116,6 +145,17 @@ final class AuthController
             $this->redireccionar('index.php?route=register');
             return;
         }
+
+        // Anti-CSRF y anti abuso de registro
+        $this->validarCsrfToken();
+
+        if (!RateLimiter::permitido('register', 3, 600)) {
+            $this->guardarMensaje('error', 'Demasiados registros desde esta conexión. Intenta más tarde.');
+            $this->redireccionar('index.php?route=register');
+            return;
+        }
+
+        RateLimiter::registrarIntento('register');
 
         $nombre = $this->limpiarTexto($_POST['nombre'] ?? '');
         $apellido = $this->limpiarTexto($_POST['apellido'] ?? '');
@@ -247,6 +287,13 @@ public function requerirPermiso(string $accion, ?int $tiendaId = null): void
 {
     $this->requerirAutenticacion();
 
+    // El Superadministrador tiene acceso total por definición (rol raíz).
+    // Evita falsos 403 cuando se agregan módulos/permisos nuevos.
+    $rolActual = $_SESSION['auth']['rol_principal']['rol_nombre'] ?? '';
+    if ($rolActual === 'Superadministrador') {
+        return;
+    }
+
     $usuarioId = (int) ($_SESSION['auth']['usuario_id'] ?? 0);
 
     if ($usuarioId <= 0) {
@@ -267,38 +314,38 @@ public function requerirPermisoEnTienda(string $accion, int $tiendaId): void
     $this->requerirPermiso($accion, $tiendaId);
 }
 
-private function denegarAcceso(): void
-{
-    http_response_code(403);
-
-    $errorTitulo = 'Acceso denegado';
-    $errorMensaje = 'No tienes permisos suficientes para realizar esta acción.';
-
-    require __DIR__ . '/../../resources/errors/403.php';
-    exit;
-}
+// denegarAcceso() — heredado de ControllerHelper (tipo de retorno: never)
 
 
-
-
+    /**
+     * Mapa centralizado rol → ruta de dashboard.
+     * Única fuente de verdad: usada tanto aquí como en web.php.
+     *
+     * @return array<string, string>
+     */
+    public static function mapaRolDashboard(): array
+    {
+        return [
+            'Superadministrador'    => 'dashboard.superadmin',
+            'Administrador de Tienda' => 'dashboard.admin_tienda',
+            'Supervisor'            => 'dashboard.supervisor',
+            'Vendedor'              => 'dashboard.vendedor',
+            'Bodeguero'             => 'dashboard.bodeguero',
+            'Reportero'             => 'dashboard.reportero',
+            'Nómina y RRHH'         => 'dashboard.nomina',
+            'Cliente'               => 'dashboard.cliente',
+            'Sistema'               => 'dashboard.sistema',
+        ];
+    }
 
     private function redireccionarSegunRolPrincipal(): void
     {
-        $rol = $_SESSION['auth']['rol_principal']['rol_nombre'] ?? '';
+        $rol  = $_SESSION['auth']['rol_principal']['rol_nombre'] ?? '';
+        $mapa = self::mapaRolDashboard();
 
-        $rutas = [
-            'Superadministrador' => 'index.php?route=dashboard.superadmin',
-            'Administrador de Tienda' => 'index.php?route=dashboard.admin_tienda',
-            'Supervisor' => 'index.php?route=dashboard.supervisor',
-            'Vendedor' => 'index.php?route=dashboard.vendedor',
-            'Bodeguero' => 'index.php?route=dashboard.bodeguero',
-            'Reportero' => 'index.php?route=dashboard.reportero',
-            'Nómina y RRHH' => 'index.php?route=dashboard.nomina',
-            'Cliente' => 'index.php?route=dashboard.cliente',
-            'Sistema' => 'index.php?route=dashboard.sistema',
-        ];
+        $ruta = isset($mapa[$rol]) ? 'index.php?route=' . $mapa[$rol] : 'index.php?route=dashboard';
 
-        $this->redireccionar($rutas[$rol] ?? 'index.php?route=dashboard');
+        $this->redireccionar($ruta);
     }
 
     private function iniciarSesionSegura(): void
@@ -325,22 +372,10 @@ private function denegarAcceso(): void
         session_start();
     }
 
-    private function guardarMensaje(string $tipo, string $mensaje): void
-    {
-        $_SESSION['flash'] = [
-            'type' => $tipo,
-            'message' => $mensaje,
-        ];
-    }
+    // guardarMensaje() y redireccionar() — heredados de ControllerHelper
 
     private function limpiarTexto(string $valor): string
     {
         return trim($valor);
-    }
-
-    private function redireccionar(string $ruta): void
-    {
-        header('Location: ' . $ruta);
-        exit;
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../models/Venta.php';
 require_once __DIR__ . '/../models/Tienda.php';
 require_once __DIR__ . '/../models/MetodoPago.php';
+require_once __DIR__ . '/../models/Cliente.php';
 require_once __DIR__ . '/../Helpers/ControllerHelper.php';
 
 final class VentaController
@@ -13,12 +14,14 @@ final class VentaController
     private Venta $ventaModel;
     private Tienda $tiendaModel;
     private MetodoPago $metodoPagoModel;
+    private Cliente $clienteModel;
 
     public function __construct()
     {
         $this->ventaModel = new Venta();
         $this->tiendaModel = new Tienda();
         $this->metodoPagoModel = new MetodoPago();
+        $this->clienteModel = new Cliente();
     }
 
     public function index(): void
@@ -41,13 +44,16 @@ final class VentaController
         $metodosPago = $this->metodoPagoModel->listarActivos();
 
         $productosPorTienda = [];
+        $clientesPorTienda  = [];
 
         foreach ($tiendas as $tienda) {
             if ($tienda === null) {
                 continue;
             }
 
-            $productosPorTienda[(int) $tienda['id']] = $this->ventaModel->productosVendiblesPorTienda((int) $tienda['id']);
+            $tid = (int) $tienda['id'];
+            $productosPorTienda[$tid] = $this->ventaModel->productosVendiblesPorTienda($tid);
+            $clientesPorTienda[$tid]  = $this->clienteModel->listarParaSelect($tid);
         }
 
         $csrfToken = $this->generarCsrfToken();
@@ -63,13 +69,15 @@ final class VentaController
 
         $this->validarCsrfToken();
 
-        $tiendaId = (int) ($_POST['tienda_id'] ?? 0);
-        $metodoPagoId = (int) ($_POST['metodo_pago_id'] ?? 0);
-        $referencia = trim((string) ($_POST['referencia'] ?? ''));
+        $tiendaId       = (int) ($_POST['tienda_id'] ?? 0);
+        $metodoPagoId   = (int) ($_POST['metodo_pago_id'] ?? 0);
+        $clienteId      = (int) ($_POST['cliente_id'] ?? 0);
+        $referencia     = trim((string) ($_POST['referencia'] ?? ''));
+        $cuponId        = (int) ($_POST['cupon_id'] ?? 0);
+        $descuentoCupon = max(0.0, (float) ($_POST['descuento_cupon'] ?? 0));
 
         if ($tiendaId <= 0) {
-            $this->guardarMensaje('error', 'Debes seleccionar una tienda.');
-            $this->redireccionar('index.php?route=ventas.create');
+            $this->jsonError('Debes seleccionar una tienda.', 'ventas.create');
         }
 
         $this->validarAccesoATienda($tiendaId);
@@ -77,23 +85,24 @@ final class VentaController
         $metodoPago = $this->metodoPagoModel->buscarPorId($metodoPagoId);
 
         if ($metodoPago === null || (int) $metodoPago['activo'] !== 1) {
-            $this->guardarMensaje('error', 'Debes seleccionar un método de pago activo.');
-            $this->redireccionar('index.php?route=ventas.create');
+            $this->jsonError('Debes seleccionar un método de pago activo.', 'ventas.create');
         }
 
         $items = $this->validarItemsVenta($_POST);
 
         if ($items === null) {
-            $this->redireccionar('index.php?route=ventas.create');
+            $this->jsonError('Debes agregar al menos un producto válido.', 'ventas.create');
         }
 
         try {
             $ventaId = $this->ventaModel->crearVenta(
                 [
-                    'tienda_id' => $tiendaId,
-                    'cliente_id' => null,
-                    'created_by' => $this->usuarioIdActual(),
-                    'updated_by' => $this->usuarioIdActual(),
+                    'tienda_id'       => $tiendaId,
+                    'cliente_id'      => $clienteId > 0 ? $clienteId : null,
+                    'created_by'      => $this->usuarioIdActual(),
+                    'updated_by'      => $this->usuarioIdActual(),
+                    'cupon_id'        => $cuponId > 0 ? $cuponId : null,
+                    'descuento_cupon' => $descuentoCupon,
                 ],
                 $items,
                 [
@@ -102,11 +111,9 @@ final class VentaController
                 ]
             );
 
-            $this->guardarMensaje('success', 'Venta registrada correctamente. ID: ' . $ventaId);
-            $this->redireccionar('index.php?route=ventas.show&id=' . $ventaId);
+            $this->jsonExito('ventas.index', 'Venta #' . $ventaId . ' registrada correctamente.');
         } catch (Throwable $error) {
-            $this->guardarMensaje('error', $error->getMessage());
-            $this->redireccionar('index.php?route=ventas.create');
+            $this->jsonError($error->getMessage(), 'ventas.create');
         }
     }
 
