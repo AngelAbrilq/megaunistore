@@ -52,7 +52,7 @@ final class TiendaController
             'telefono' => $datos['telefono'],
             'email' => $datos['email'],
             'propietario_id' => $usuarioId,
-            'plataforma_id' => 1,
+            'plataforma_id' => null,
             'estado' => 1,
             'updated_by' => $usuarioId,
         ]);

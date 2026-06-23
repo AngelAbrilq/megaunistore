@@ -1,5 +1,11 @@
 <?php
 /**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var string $csrfToken
+ * @var array $productos
+ */
+
+/**
  * Vista: productos/index.php
  * - Con ?ajax=1  → devuelve partial HTML (para loadContent del SPA)
  * - Sin ?ajax=1  → carga el shell SPA que auto-carga esta ruta

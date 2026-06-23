@@ -1,4 +1,9 @@
 <?php
+/**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var array $kpis
+ */
+
 // $kpis y $chartData vienen del DashboardController vía web.php
 $isAjax = isset($_GET['ajax']) && $_GET['ajax'] === '1';
 

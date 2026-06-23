@@ -52,7 +52,15 @@ footer{font-size:11px;color:#9ca3af;text-align:center;margin-top:16px;padding-to
     <div class="stat"><small>Fecha generación</small><strong style="font-size:13px"><?= date('d/m/Y') ?></strong></div>
 </div>
 
-<?php if (!empty($datos)): ?>
+<?php 
+/**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var array $columnas
+ * @var array $datos
+ * @var array $meta
+ */
+
+if (!empty($datos)): ?>
 <table>
     <thead>
         <tr>

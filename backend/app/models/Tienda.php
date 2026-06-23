@@ -114,7 +114,7 @@ final class Tienda
             ':telefono' => $datos['telefono'] ?? null,
             ':email' => $datos['email'] ?? null,
             ':propietario_id' => (int) $datos['propietario_id'],
-            ':plataforma_id' => $datos['plataforma_id'] ?? 1,
+            ':plataforma_id' => $datos['plataforma_id'] ?? null,
             ':estado' => $datos['estado'] ?? 1,
             ':updated_by' => $datos['updated_by'] ?? null,
         ]);

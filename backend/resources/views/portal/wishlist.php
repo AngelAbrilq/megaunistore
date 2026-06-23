@@ -1,4 +1,11 @@
-<?php require __DIR__ . '/../layout/portal_layout.php'; ?>
+<?php 
+/**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var string $csrfToken
+ * @var array $productos
+ */
+
+require __DIR__ . '/../layout/portal_layout.php'; ?>
 
 <h1 style="font-size:26px;font-weight:800;margin-bottom:24px;">❤️ Mis favoritos</h1>
 

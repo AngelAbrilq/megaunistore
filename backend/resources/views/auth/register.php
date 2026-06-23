@@ -1,4 +1,8 @@
 <?php
+/**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var string $csrfToken
+ */
 
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);

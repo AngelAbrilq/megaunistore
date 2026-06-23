@@ -1,11 +1,17 @@
 <?php
 /**
- * migrate_004.php — Migración: módulo contraseñas
- * Crea las tablas password_resets y solicitudes_cambio_contrasena.
+ * ⚠️  ESTE ARCHIVO YA FUE EJECUTADO — ELIMÍNALO DEL SERVIDOR.
+ *     No debe estar accesible públicamente.
+ *     migrate_004.php — Migración: módulo contraseñas
+ *     Crea las tablas password_resets y solicitudes_cambio_contrasena.
  *
  * USO: Abre en el navegador  http://localhost/Mega_Uni_Store_v3/backend/public/migrate_004.php
  * ELIMINA este archivo una vez ejecutado correctamente.
  */
+
+// ⚠️ MIGRACIÓN YA EJECUTADA — Elimina este archivo del servidor.
+http_response_code(404);
+exit;
 
 declare(strict_types=1);
 

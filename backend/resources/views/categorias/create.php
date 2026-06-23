@@ -1,4 +1,10 @@
 <?php
+/**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var array $categoriasPadre
+ * @var string $csrfToken
+ */
+
 function e_catc(string $v):string{return htmlspecialchars($v,ENT_QUOTES,'UTF-8');}
 $flash=$_SESSION['flash']??null; unset($_SESSION['flash']);
 ?>

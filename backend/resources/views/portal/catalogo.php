@@ -1,4 +1,16 @@
-<?php require __DIR__ . '/../layout/portal_layout.php'; ?>
+<?php 
+/**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var string $busqueda
+ * @var int|null $categoriaId
+ * @var array $categorias
+ * @var string $csrfToken
+ * @var string $orden
+ * @var array $productos
+ * @var array $wishlistIds
+ */
+
+require __DIR__ . '/../layout/portal_layout.php'; ?>
 
 <div style="display:flex;gap:24px;align-items:flex-start;">
 

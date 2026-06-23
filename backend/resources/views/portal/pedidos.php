@@ -1,4 +1,10 @@
-<?php require __DIR__ . '/../layout/portal_layout.php'; ?>
+<?php 
+/**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var array $pedidos
+ */
+
+require __DIR__ . '/../layout/portal_layout.php'; ?>
 
 <h1 style="font-size:26px; font-weight:800; margin-bottom:24px;">📦 Mis pedidos</h1>
 

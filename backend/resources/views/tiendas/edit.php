@@ -1,4 +1,10 @@
 <?php
+/**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var string $csrfToken
+ * @var array $tienda
+ */
+
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 function e_etnd(string $v): string { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }

@@ -1,4 +1,9 @@
 <?php
+/**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var array|null $flash
+ */
+
 function e_pf(string $v): string { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
 ?>
 <!DOCTYPE html>

@@ -1,5 +1,14 @@
 <?php
 /**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var string $csrfToken
+ * @var array $roles
+ * @var array $rolesUsuario
+ * @var array $tiendas
+ * @var array $usuario
+ */
+
+/**
  * Vista: usuarios/asignar_rol.php
  * Modal partial — abre desde usuarios/index.php con openModal()
  */

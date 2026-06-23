@@ -1,4 +1,11 @@
 <?php
+/**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var array $cargos
+ * @var string $csrfToken
+ * @var array $empleados
+ */
+
 // Soporta modal (ajax=1) y SPA page
 $isAjax = isset($_GET['ajax']) && $_GET['ajax'] === '1';
 if (!$isAjax) { require __DIR__ . '/../layout/dashboard_layout.php'; return; }

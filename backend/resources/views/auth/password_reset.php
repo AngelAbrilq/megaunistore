@@ -1,4 +1,11 @@
 <?php
+/**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var array|null $flash
+ * @var array|null $registro
+ * @var string $token
+ */
+
 function e_pr(string $v): string { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
 // $token y $registro vienen del controller
 ?>

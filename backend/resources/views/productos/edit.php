@@ -1,5 +1,17 @@
 <?php
 /**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var array $categorias
+ * @var string $csrfToken
+ * @var array $impuestos
+ * @var array $impuestosProducto
+ * @var array $producto
+ * @var array $tiendas
+ * @var array $tiendasProducto
+ * @var array $unidades
+ */
+
+/**
  * Vista: productos/edit.php
  * Solo se usa como partial dentro del modal global.
  */
@@ -36,7 +48,8 @@ input:focus, textarea:focus, select:focus { border-color:#2563eb; box-shadow:0 0
 .store-card { border:1px solid #dbe3ef; border-radius:14px; padding:14px; background:#fff; margin-bottom:10px; }
 .store-card-header { display:flex; align-items:center; gap:8px; margin-bottom:12px; font-weight:700; }
 .store-card-header input { width:auto; }
-.price-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.price-grid { display:none; grid-template-columns:1fr 1fr; gap:12px; }
+.price-grid.activo { display:grid; }
 .mf-actions { display:flex; gap:10px; margin-top:16px; }
 .btn { display:inline-flex; align-items:center; border:0; border-radius:10px; padding:11px 18px; font-weight:700; cursor:pointer; font-size:14px; font-family:inherit; transition:opacity .15s; }
 .btn:hover { opacity:.85; }
@@ -153,7 +166,7 @@ input:focus, textarea:focus, select:focus { border-color:#2563eb; box-shadow:0 0
                         <?= e_eprod($tienda['nombre']) ?>
                     </label>
                 </div>
-                <div class="price-grid">
+                <div class="price-grid<?= $asociada ? ' activo' : '' ?>">
                     <div class="mf-group">
                         <label>Precio de venta *</label>
                         <input type="number"
@@ -184,10 +197,13 @@ input:focus, textarea:focus, select:focus { border-color:#2563eb; box-shadow:0 0
 
 <script>
 document.querySelectorAll('.ep-store-check').forEach(function(cb) {
+    var id   = cb.dataset.storeId;
+    var grid = cb.closest('.store-card').querySelector('.price-grid');
+    var pv   = document.getElementById('ep-pventa-' + id);
+
     cb.addEventListener('change', function() {
-        var id = this.dataset.storeId;
-        var pv = document.getElementById('ep-pventa-' + id);
-        if (pv) pv.required = this.checked;
+        if (grid) grid.classList.toggle('activo', this.checked);
+        if (pv)   pv.required = this.checked;
     });
 });
 </script>

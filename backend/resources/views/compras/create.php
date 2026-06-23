@@ -1,4 +1,12 @@
 <?php
+/**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var string $csrfToken
+ * @var array $productos
+ * @var array $proveedores
+ * @var array $tiendas
+ */
+
 $isAjax = isset($_GET['ajax']) && $_GET['ajax'] === '1';
 if (!$isAjax) { require __DIR__ . '/../layout/dashboard_layout.php'; return; }
 

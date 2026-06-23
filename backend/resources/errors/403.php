@@ -1,4 +1,9 @@
 <?php
+/**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var string $errorMensaje
+ * @var string $errorTitulo
+ */
 
 $titulo = $errorTitulo ?? 'Acceso denegado';
 $mensaje = $errorMensaje ?? 'No tienes permisos suficientes para acceder a este recurso.';

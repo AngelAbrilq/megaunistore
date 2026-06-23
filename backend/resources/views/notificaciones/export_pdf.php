@@ -53,6 +53,11 @@ footer{font-size:11px;color:#9ca3af;text-align:center;margin-top:16px;padding-to
 </header>
 
 <?php
+/**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var array $datos
+ */
+
 $leidas   = count(array_filter($datos, fn($r) => $r['estado'] === 'Leída'));
 $noLeidas = count($datos) - $leidas;
 $porTipo  = array_count_values(array_column($datos, 'tipo'));

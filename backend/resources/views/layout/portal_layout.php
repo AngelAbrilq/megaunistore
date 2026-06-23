@@ -255,7 +255,14 @@
             <a href="index.php?route=portal.wishlist" class="btn-icon" title="Favoritos">❤️</a>
             <a href="index.php?route=portal.carrito" class="btn-icon" title="Carrito">
                 🛒
-                <?php if (($carritoCount ?? 0) > 0): ?>
+                <?php 
+/**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var int $carritoCount
+ * @var string $pageTitle
+ */
+
+if (($carritoCount ?? 0) > 0): ?>
                     <span class="badge"><?= $carritoCount ?></span>
                 <?php endif; ?>
             </a>

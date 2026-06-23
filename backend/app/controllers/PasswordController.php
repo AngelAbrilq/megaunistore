@@ -275,6 +275,8 @@ final class PasswordController
         $tiendaId    = $this->tiendaIdActual();
         $solicitudes = $this->resetModel->listarPendientes($tiendaId);
         $csrfToken   = $this->generarCsrfToken();
+        $flash       = $_SESSION['flash'] ?? null;
+        unset($_SESSION['flash']);
 
         require __DIR__ . '/../../resources/views/password/requests.php';
     }

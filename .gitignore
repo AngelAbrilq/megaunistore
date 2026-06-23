@@ -12,10 +12,14 @@ node_modules/
 *.log
 backend/storage/logs/
 
-# Backups con datos reales — nunca subir
+# Backups y dumps con datos reales — NUNCA subir
 backup_deploy.sql
 backup.sql
 *.sql.bak
+# ⚠️ Estos archivos contienen usuarios y hashes reales — dejar en .gitignore
+mega_uni_store.sql
+byethost_import.sql
+byethost_views.sql
 
 # Scripts sueltos / archivos temporales
 felipe.php

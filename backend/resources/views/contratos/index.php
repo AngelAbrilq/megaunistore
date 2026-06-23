@@ -1,4 +1,10 @@
 <?php
+/**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var array $contratos
+ * @var string $csrfToken
+ */
+
 $isAjax = isset($_GET['ajax']) && $_GET['ajax'] === '1';
 if (!$isAjax) { require __DIR__ . '/../layout/dashboard_layout.php'; return; }
 $flash = $_SESSION['flash'] ?? null; unset($_SESSION['flash']);

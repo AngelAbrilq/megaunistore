@@ -84,7 +84,15 @@ footer{font-size:11px;color:#9ca3af;text-align:center;padding-top:16px;border-to
         </tr>
     </thead>
     <tbody>
-        <?php foreach ($datos as $r): ?>
+        <?php 
+/**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var array $datos
+ * @var float $totalMonto
+ * @var int $totalPagos
+ */
+
+foreach ($datos as $r): ?>
             <tr>
                 <td style="color:#9ca3af"><?= (int)$r['id'] ?></td>
                 <td><strong><?= htmlspecialchars($r['nombre'], ENT_QUOTES, 'UTF-8') ?></strong></td>

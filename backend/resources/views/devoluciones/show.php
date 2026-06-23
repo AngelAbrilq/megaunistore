@@ -1,4 +1,10 @@
 <?php
+/**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var array $detalle
+ * @var array $devolucion
+ */
+
 $isAjax = isset($_GET['ajax']) && $_GET['ajax'] === '1';
 if (!$isAjax) {
     require __DIR__ . '/../layout/dashboard_layout.php';

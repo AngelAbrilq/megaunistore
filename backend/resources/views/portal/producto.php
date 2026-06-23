@@ -1,4 +1,16 @@
-<?php require __DIR__ . '/../layout/portal_layout.php'; ?>
+<?php 
+/**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var bool $comproProd
+ * @var string $csrfToken
+ * @var bool $enWishlist
+ * @var array $producto
+ * @var float $ratingPromedio
+ * @var array $valoraciones
+ * @var bool $yaValoro
+ */
+
+require __DIR__ . '/../layout/portal_layout.php'; ?>
 
 <div class="breadcrumb">
     <a href="index.php?route=portal.catalogo">Inicio</a> ›

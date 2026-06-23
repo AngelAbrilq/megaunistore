@@ -1,4 +1,8 @@
 <?php
+/**
+ * Variables inyectadas por el controlador (via require/include con scope compartido).
+ * @var string $csrfToken
+ */
 
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
@@ -396,7 +400,7 @@ function e(string $value): string
                     <a href="index.php?route=register">Crear cuenta como cliente</a>
                 </div>
 
-                <a class="back-home" href="/index.php">← Volver al inicio</a>
+                <a class="back-home" href="../../../../frontend/public/">← Volver al inicio</a>
             </div>
         </section>
     </main>
